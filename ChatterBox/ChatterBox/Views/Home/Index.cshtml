@@ -48,6 +48,7 @@
             </div>
 
             <div class="md:max-w-[580px] mx-auto flex-1 xl:space-y-6 space-y-3">
+
                 <div class="bg-white rounded-xl shadow-sm md:p-4 p-2 space-y-4 text-sm font-medium border1">
                     <div class="flex items-center md:gap-3 gap-1">
                         <div class="flex-1 bg-slate-100 hover:bg-opacity-80 transition-all rounded-lg cursor-pointer" uk-toggle="target: #create-status">
@@ -62,6 +63,103 @@
                                 <path d="M3.5 15.5l4.5 -4.5c.928 -.893 2.072 -.893 3 0l5 5" />
                                 <path d="M14 14l1 -1c.928 -.893 2.072 -.893 3 0l2.5 2.5" />
                             </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm md:p-4 p-2 space-y-4 text-gray-800 font-medium border1" style="width:500px">
+                    Currently, there are no posts available. Would you like to create the first one?
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm text-sm font-medium border1">
+                    @*Post heading*@
+                    <div class="flex gap-3 sm:p-4 p-2.5 text-sm font-medium">
+                        <a>
+                            <img src="/images/avatar/user.png" class="w-9 h-9 rounded-full" />
+                        </a>
+
+                        <div class="flex-1">
+                            <a>
+                                <h4 class="text-black">Kalin Todorov</h4>
+                                <div class="text-xs text-gray-400">1 day ago</div>
+                            </a>
+                        </div>
+
+                        <div class="mr-1">
+                            <button type="button" class="button-icon w-8 h-8 bg-gray-300 dark:bg-gray-600 hover:bg-transparent">
+                                <ion-icon class="text-xl text-black dark:text-gray-200" name="ellipsis-horizontal"></ion-icon>
+                            </button>
+
+                            <div class="w-[245px]" uk-dropdown="pos: bottom-right; animation: uk-animation-scale-up uk-transform-origin-top-right; animate-out: true; mode: click">
+                                <form>
+                                    <button type="submit" class="hover:dark:hover:bg-red-500/50 icon-link">
+                                        <ion-icon class="text-xl text-white shrink-0" name="flag-outline"></ion-icon> Report
+                                    </button>
+                                </form>
+                                <hr />
+                                <form>
+                                    <button type="submit" class="hover:dark:hover:bg-red-500/50 icon-link">
+                                        <ion-icon class="text-xl text-white shrink-0" name="lock-closed-outline"></ion-icon> Set as private
+                                    </button>
+                                </form>
+                                <hr />
+                                <form>
+                                    <button type="submit" class="hover:dark:hover:bg-red-500/50 icon-link">
+                                        <ion-icon class="text-xl text-white shrink-0" name="trash-bin-outline"></ion-icon> Delete post
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    @*Post content*@
+                    <a>
+                        <div class="px-sm-4 p-2\.5 pt-0 w-full">
+                            <p class="font-normal">
+                                This is our first status from the #chatbox where you can share text or pictures with your friends and family...
+                            </p>
+                        </div>
+                    </a>
+
+                    <a>
+                        <div class="relative w-full lg\:h-96 h-full sm:px-4">
+                            <img src="/images/placeholders/post-placeholder.jpg" class="sm:rounder-lg w-full h-full object-cover"/>
+                        </div>
+                    </a>
+
+                    @*Icons*@
+                    <div class="p-sm-4 p-2.5 flex items-center gap-4 text-xs font-semibold">
+                        <div class="flex items-center gap-2.5">
+                            <a class="button-icon text-red-500 bg-red-100">
+                                <ion-icon name="heart" class="text-lg text-red-800" style="width: 24px; height: 24px;"></ion-icon>
+                            </a>
+                        </div>
+
+                        <div class="flex items-center gap-3">
+                            <a class="button-icon">
+                                <ion-icon name="chatbubble-ellipses-outline" class="text-lg text-gray-800" style="width: 24px; height: 24px;"></ion-icon>
+                            </a>
+                        </div>
+
+                        <div class="ml-auto"></div>
+
+                        <div>
+                            <a class="button-icon ml-auto">
+                                <ion-icon name="bookmark-outline" class="text-lg text-gray-800" style="width: 24px; height: 24px;"></ion-icon>
+                            </a>
+                        </div>
+                    </div>
+
+                    @*Add comment section*@
+                    <div>
+                        <div class="px-sm-4 py-sm-3 p-2\.5 border-t border-gray-100 flex items-center gap-1">
+                            <img src="/images/avatar/user.png" class="w-6 h-6 rounded-full"/>
+
+                            <div class="flex-1 relative overflow-hidden h-10">
+                                <textarea rows="1" class="w-full resize-none \!bg-transparent px-4 py-2 focus\:\!border-transparent focus\:\!ring-transparent" placeholder="Add comment...."></textarea>
+                            </div>
+
+                            <button class="text-sm rounded-full py-1.5 px-3.5 bg-secondary">Comment</button>
                         </div>
                     </div>
                 </div>

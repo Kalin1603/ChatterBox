@@ -1474,8 +1474,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .button-icon:hover {
-  --tw-bg-opacity: 1;
-  background-color: rgb(var(--color-secondery) / var(--tw-bg-opacity));
+    --tw-bg-opacity: 1;
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
 .box {

@@ -1,26 +1,30 @@
-﻿html {
-    font-size: 14px;
-    position: relative;
-    min-height: 100%;
-}
-
+﻿/* Dark theme настройки */
 body {
-    margin-bottom: 60px;
+    background-color: #121212; /* Тъмен фон */
+    color: #e0e0e0; /* Светъл цвят на текста */
 }
 
-form > button.icon-link, button.delete-post-btn {
-    padding: 8px 10px;
-    display: flex; /* Enables flexbox */
-    align-items: center; /* Vertically centers the content */
-    text-decoration: none; /* Removes underline from the link */
-    cursor: pointer;
-    border: none; /* Removes default button border */
-    background: none; /* Removes default button background */
-    width: 100%; /* Makes sure the button takes up the full width of the parent */
-    /* Add any additional button styling here */
+/* Пренаписване на .bg-white за тъмен фон */
+.bg-white {
+    background-color: #1e1e1e;
 }
 
-    form > button.icon-link > ion-icon, button.delete-post-btn > ion-icon {
-        margin-right: 8px; /* Adds space between the icon and text */
-    }
+/* Пренаписване на .text-black за светъл текст */
+.text-black {
+    color: #ffffff;
+}
 
+/* Граница */
+.border1 {
+    border: 1px solid #333;
+}
+
+/* Стилизиране на placeholder‑ите */
+textarea::placeholder {
+    color: #888;
+}
+
+/* Допълнително стилизиране при активирана тъмна тема */
+.dark textarea::placeholder {
+    color: #bbb;
+}
