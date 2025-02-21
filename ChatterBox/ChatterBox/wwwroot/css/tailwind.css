@@ -924,7 +924,7 @@ input:checked + .switch-button {
 }
 
 .container {
-  width: 100%;
+    width: 100%;
 }
 
 @media (min-width: 640px) {
