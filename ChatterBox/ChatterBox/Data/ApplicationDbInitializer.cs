@@ -10,7 +10,7 @@ namespace ChatterBox.Data
             {
                 var user = new User()
                 {
-                    ProfilePictureURL = "https://game-tournaments.com/media/news/n37757.jpeg",
+                    ProfilePictureURL = "https://proconfig.net/storage/s1mple-csgo-player.jpg",
                     FullName = "Kalin Todorov",
                     UserName = "forsaken",
                     Email = "kalintodorov03@gmail.com",
