@@ -9,8 +9,9 @@
             </button>
         </div>
 
-        <form class="p-4 space-y-5">
-            <textarea class="w-full text-white placeholder-black-500 bg-gray-300 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring focus:ring-blue-200 text-lg p-3"
+        <!-- Формата изпраща POST заявка към Home/CreatePost и поддържа качване на файлове -->
+        <form method="post" action="@Url.Action("CreatePost", "Home")" enctype="multipart/form-data" class="p-4 space-y-5">
+            <textarea class="w-full text-black placeholder-gray-500 bg-gray-300 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring focus:ring-blue-200 text-lg p-3"
                       name="content" rows="3" placeholder="What do you have in mind?"></textarea>
 
             <div id="imagePreviewContainer" class="hidden">
@@ -28,3 +29,10 @@
         </form>
     </div>
 </div>
+
+<!-- JavaScript за задействане на скритото поле за избор на файл -->
+<script>
+    document.getElementById("imageUploadBtn").addEventListener("click", function() {
+        document.getElementById("imageUpload").click();
+    });
+</script>
