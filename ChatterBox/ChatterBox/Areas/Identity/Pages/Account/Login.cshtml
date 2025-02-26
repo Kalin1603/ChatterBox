@@ -12,8 +12,8 @@
             <div asp-validation-summary="ModelOnly" class="text-red-500 text-sm" role="alert"></div>
 
             <div>
-                <label asp-for="Input.Email" class="block text-sm font-medium">Email</label>
-                <input asp-for="Input.Email" class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500" autocomplete="username" placeholder="name@example.com" />
+                <label asp-for="Input.Email" class="block text-sm font-medium">Email or username</label>
+                <input asp-for="Input.Email" class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500" autocomplete="username" placeholder="name@example.com or username" />
                 <span asp-validation-for="Input.Email" class="text-red-500 text-sm"></span>
             </div>
 
@@ -28,7 +28,6 @@
                     <input asp-for="Input.RememberMe" class="form-checkbox h-4 w-4 text-blue-600 bg-gray-700 border-gray-600 rounded" />
                     <span class="ml-2">Remember me</span>
                 </label>
-                <a id="forgot-password" asp-page="./ForgotPassword" class="text-blue-400 hover:underline text-sm">Forgot password?</a>
             </div>
 
             <button id="login-submit" type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-lg transition">

@@ -20,7 +20,7 @@
   <ItemGroup>
     <Folder Include="wwwroot\images\avatar\" />
     <Folder Include="wwwroot\images\placeholders\" />
-    <Folder Include="wwwroot\uploads\" />
+    <Folder Include="wwwroot\uploads\profile\" />
   </ItemGroup>
 
 </Project>

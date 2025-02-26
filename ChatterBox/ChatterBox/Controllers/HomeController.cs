@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Security.Claims;
 using ChatterBox.Data;
 using ChatterBox.Models;
+using ChatterBox.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -18,7 +19,7 @@ namespace ChatterBox.Controllers
         {
             _logger = logger;
             _context = context;
-            _env = env;
+            _env = env; 
         }
 
         public async Task<IActionResult> Index()
@@ -27,7 +28,14 @@ namespace ChatterBox.Controllers
                                       .Include(p => p.User)
                                       .OrderByDescending(p => p.DateCreated)
                                       .ToListAsync();
-            return View(posts);
+
+            var viewModel = new HomeViewModel
+            {
+                Posts = posts,
+                StatusMessage = (string)TempData["StatusMessage"]
+            };
+
+            return View(viewModel);
         }
 
         [HttpPost]

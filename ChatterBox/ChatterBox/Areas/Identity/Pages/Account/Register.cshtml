@@ -3,23 +3,37 @@
 @{
     ViewData["Title"] = "Register";
 }
+<partial name="~/Areas/Identity/Pages/Account/_StatusMessage.cshtml" model="Model.StatusMessage" />
 
 <div class="flex min-h-screen items-center justify-center bg-gray-900 text-white">
-    <div class="w-full max-w-md bg-gray-800 rounded-lg shadow-lg p-8">
-        <h2 class="text-2xl font-bold text-center mb-6">Create an account</h2>
+    <div class="w-full max-w-4xl bg-gray-800 rounded-lg shadow-lg p-8 pt-5">
+        <h2 class="text-2xl pl-10 text-center font-bold text-center mb-6">Create an account</h2>
+        <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post" enctype="multipart/form-data" class="grid grid-cols-2 gap-4">
 
-        <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="space-y-4">
-            <div asp-validation-summary="ModelOnly" class="text-red-500 text-sm" role="alert"></div>
+            <div asp-validation-summary="ModelOnly" class="text-red-500 text-sm col-span-2" role="alert"></div>
+
+            <!-- Profile Picture Input stretched to the full width -->
+            <div class="col-span-2">
+                <label asp-for="Input.ProfilePicture" class="block text-sm font-medium">Profile picture</label>
+                <input asp-for="Input.ProfilePicture" class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500" />
+                <span asp-validation-for="Input.ProfilePicture" class="text-red-500 text-sm"></span>
+            </div>
+
+            <div>
+                <label asp-for="Input.UserName" class="block text-sm font-medium">Username</label>
+                <input asp-for="Input.UserName" class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500" autocomplete="username" placeholder="username" />
+                <span asp-validation-for="Input.UserName" class="text-red-500 text-sm"></span>
+            </div>
 
             <div>
                 <label asp-for="Input.Email" class="block text-sm font-medium">Email</label>
-                <input asp-for="Input.Email" class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500" autocomplete="username" placeholder="name@example.com" />
+                <input asp-for="Input.Email" class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500" autocomplete="email" placeholder="name@example.com" />
                 <span asp-validation-for="Input.Email" class="text-red-500 text-sm"></span>
             </div>
 
             <div>
                 <label asp-for="Input.Password" class="block text-sm font-medium">Password</label>
-                <input asp-for="Input.Password" type="password" class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500" autocomplete="new-password" placeholder="********" />
+                <input asp-for="Input.Password" type="password" class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500" autocomplete="password" placeholder="********" />
                 <span asp-validation-for="Input.Password" class="text-red-500 text-sm"></span>
             </div>
 
@@ -29,11 +43,59 @@
                 <span asp-validation-for="Input.ConfirmPassword" class="text-red-500 text-sm"></span>
             </div>
 
-            <button id="registerSubmit" type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-lg transition">
+            <div>
+                <label asp-for="Input.FullName" class="block text-sm font-medium">Full name</label>
+                <input asp-for="Input.FullName" class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500" autocomplete="fullname" placeholder="full name" />
+                <span asp-validation-for="Input.FullName" class="text-red-500 text-sm"></span>
+            </div>
+
+            <div>
+                <label asp-for="Input.DateOfBirth" class="block text-sm font-medium">Date of birth</label>
+                <input asp-for="Input.DateOfBirth" type="date" aria-required="true" value="" onclick="this.showPicker()" class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500" />
+                <span asp-validation-for="Input.DateOfBirth" class="text-red-500 text-sm"></span>
+            </div>
+
+            <div>
+                <label asp-for="Input.PhoneNumber" class="block text-sm font-medium">Phone number</label>
+                <input asp-for="Input.PhoneNumber" class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500" autocomplete="phonenumber" placeholder="phone number" />
+                <span asp-validation-for="Input.PhoneNumber" class="text-red-500 text-sm"></span>
+            </div>
+
+            <div>
+                <label asp-for="Input.Country" class="block text-sm font-medium">Country</label>
+                <input asp-for="Input.Country" class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500" autocomplete="country" placeholder="country" />
+                <span asp-validation-for="Input.Country" class="text-red-500 text-sm"></span>
+            </div>
+
+            <div>
+                <label asp-for="Input.City" class="block text-sm font-medium">City</label>
+                <input asp-for="Input.City" class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500" autocomplete="city" placeholder="city" />
+                <span asp-validation-for="Input.City" class="text-red-500 text-sm"></span>
+            </div>
+
+            <div>
+                <label asp-for="Input.State" class="block text-sm font-medium">State</label>
+                <input asp-for="Input.State" class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500" autocomplete="state" placeholder="state" />
+                <span asp-validation-for="Input.State" class="text-red-500 text-sm"></span>
+            </div>
+
+            <div>
+                <label asp-for="Input.Address" class="block text-sm font-medium">Address</label>
+                <input asp-for="Input.Address" class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500" autocomplete="address" placeholder="address" />
+                <span asp-validation-for="Input.Address" class="text-red-500 text-sm"></span>
+            </div>
+
+            <div>
+                <label asp-for="Input.Zip" class="block text-sm font-medium">Zip code</label>
+                <input asp-for="Input.Zip" class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500" autocomplete="zip" placeholder="zip code" />
+                <span asp-validation-for="Input.Zip" class="text-red-500 text-sm"></span>
+            </div>
+
+            <button id="registerSubmit" type="submit" class="col-span-2 bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-lg transition">
                 Sign up
             </button>
 
-            <p class="text-center text-sm">
+            <p class="text-center text-sm col-span-2">
                 Already have an account?
                 <a asp-page="./Login" asp-route-returnUrl="@Model.ReturnUrl" class="text-blue-400 hover:underline">Log in</a>
             </p>
