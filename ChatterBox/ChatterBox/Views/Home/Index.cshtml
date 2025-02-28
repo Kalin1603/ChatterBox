@@ -12,7 +12,7 @@
         <div class="max-w-[680px] mx-auto">
             <!-- Stories -->
             <div>
-                <h3 class="font-extrabold text-2xl text-black hidden">Stories</h3>
+                <h3 class="font-extrabold text-2xl text-black">Stories</h3>
 
                 <div class="relative pt-2 pl-24 pb-0" tabindex="-1" uk-slider="autoplay: true; finite: true" uk-lightbox>
                     <div class="py-5 uk-slider-container">
@@ -22,35 +22,22 @@
                                     <ion-icon name="camera" class="text-2xl"></ion-icon>
                                 </div>
                             </li>
-                            <li class="md:pr-3 pr-2 hover:scale-[1.15] hover:-rotate-2 duration-300">
-                                <a href="~/images/avatar/user.png">
-                                    <div class="md:w-16 md:h-16 w-12 h-12 relative md:border-4 border-2 shadow border-white rounded-full overflow-hidden">
-                                        <img src="~/images/avatar/user.png" alt="User avatar" />
-                                    </div>
-                                </a>
-                            </li>
-                            <li class="md:pr-3 pr-2 hover:scale-[1.15] hover:-rotate-2 duration-300">
-                                <a href="~/images/avatar/user.png">
-                                    <div class="md:w-16 md:h-16 w-12 h-12 relative md:border-4 border-2 shadow border-white rounded-full overflow-hidden">
-                                        <img src="~/images/avatar/user.png" alt="User avatar" />
-                                    </div>
-                                </a>
-                            </li>
-                            <li class="md:pr-3 pr-2 hover:scale-[1.15] hover:-rotate-2 duration-300">
-                                <a href="~/images/avatar/user.png">
-                                    <div class="md:w-16 md:h-16 w-12 h-12 relative md:border-4 border-2 shadow border-white rounded-full overflow-hidden">
-                                        <img src="~/images/avatar/user.png" alt="User avatar" />
-                                    </div>
-                                </a>
-                            </li>
-                            <li class="md:pr-3 pr-2">
-                                <div class="md:w-16 md:h-16 w-12 h-12 bg-slate-200/60 rounded-full animate-pulse"></div>
-                            </li>
+                            @foreach (var story in Model.Stories)
+                            {
+                                <li class="md:pr-3 pr-2 hover:scale-[1.15] hover:-rotate-2 duration-300">
+                                    <a href="@story.ImageURL" uk-lightbox>
+                                        <div class="md:w-16 md:h-16 w-12 h-12 relative md:border-4 border-2 shadow border-white rounded-full overflow-hidden">
+                                            <img src="@story.ImageURL" alt="Story" class="object-cover w-full h-full" />
+                                        </div>
+                                    </a>
+                                </li>
+                            }
                         </ul>
                     </div>
                 </div>
             </div>
 
+            <!-- Posts -->
             <div class="md:max-w-[580px] mx-auto flex-1 xl:space-y-6 space-y-3">
 
                 <div class="bg-white rounded-xl shadow-sm md:p-4 p-2 space-y-4 text-sm font-medium border1">
@@ -101,4 +88,4 @@
     </div>
 </main>
 <partial name="Popups/_CreateStory"></partial>
-<partial name="Popups/_CreateStatus"></partial>
+<partial name="Popups/_CreatePost"></partial>
