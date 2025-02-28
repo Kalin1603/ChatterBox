@@ -20,6 +20,7 @@
   <ItemGroup>
     <Folder Include="wwwroot\images\avatar\" />
     <Folder Include="wwwroot\images\placeholders\" />
+    <Folder Include="wwwroot\uploads\posts\" />
     <Folder Include="wwwroot\uploads\profile\" />
   </ItemGroup>
 

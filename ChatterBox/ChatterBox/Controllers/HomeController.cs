@@ -39,7 +39,7 @@ namespace ChatterBox.Controllers
         }
 
         [HttpPost]
-        [AllowAnonymous]
+        [Authorize]
         public async Task<IActionResult> CreatePost(string content, IFormFile uploadContent)
         {
             if (string.IsNullOrWhiteSpace(content))
@@ -48,21 +48,18 @@ namespace ChatterBox.Controllers
                 return RedirectToAction("Index");
             }
 
-            // Вземане на ID-то на текущия логнат потребител
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId == null)
             {
-                return Unauthorized();
+                return RedirectToAction("Login", "Account");
             }
 
-            // Извличане на потребителя от базата данни
             var user = await _context.Users.FindAsync(userId);
             if (user == null)
             {
-                return Unauthorized();
+                return RedirectToAction("Login", "Account");
             }
 
-            // Създаване на нов обект Post
             var post = new Post
             {
                 Content = content,
@@ -70,10 +67,9 @@ namespace ChatterBox.Controllers
                 User = user
             };
 
-            // Ако има качено изображение, запазваме го в папката wwwroot/uploads
             if (uploadContent != null && uploadContent.Length > 0)
             {
-                var uploadsFolder = Path.Combine(_env.WebRootPath, "uploads");
+                var uploadsFolder = Path.Combine(_env.WebRootPath, "uploads", "posts");
                 if (!Directory.Exists(uploadsFolder))
                 {
                     Directory.CreateDirectory(uploadsFolder);
@@ -86,8 +82,7 @@ namespace ChatterBox.Controllers
                 {
                     await uploadContent.CopyToAsync(fileStream);
                 }
-                // Запазваме относителния URL на изображението
-                post.ImageURL = "/uploads/" + uniqueFileName;
+                post.ImageURL = "/uploads/posts/" + uniqueFileName;
             }
 
             _context.Posts.Add(post);
