@@ -25,5 +25,7 @@ namespace ChatterBox.Models
         [ForeignKey(nameof(User))]
         public string UserId { get; set; }
         public User User { get; set; }
+
+        public ICollection<Like> Likes { get; set; } = new List<Like>();
     }
 }

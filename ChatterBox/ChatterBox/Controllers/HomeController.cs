@@ -25,9 +25,9 @@ namespace ChatterBox.Controllers
         public async Task<IActionResult> Index()
         {
             var posts = await _context.Posts
-                                      .Include(p => p.User)
-                                      .OrderByDescending(p => p.DateCreated)
-                                      .ToListAsync();
+                .Include(p => p.User) 
+                .OrderByDescending(p => p.DateCreated)
+                .ToListAsync();
 
             var viewModel = new HomeViewModel
             {
@@ -52,13 +52,13 @@ namespace ChatterBox.Controllers
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId == null)
             {
-                return RedirectToAction("Login", "Account");
+                return RedirectToPage("Login");
             }
 
             var user = await _context.Users.FindAsync(userId);
             if (user == null)
             {
-                return RedirectToAction("Login", "Account");
+                return RedirectToPage("Login");
             }
 
             var post = new Post
