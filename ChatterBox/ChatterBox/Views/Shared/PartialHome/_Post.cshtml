@@ -1,4 +1,6 @@
-﻿@model Post
+﻿@using System.Security.Claims
+
+@model Post
 
 @{
     TimeSpan timeAgo = DateTime.Now.Subtract(Model.DateCreated);
@@ -73,11 +75,35 @@
 
     @*Icons*@
     <div class="p-sm-4 p-2.5 flex items-center gap-4 text-xs font-semibold">
+        @{
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var hasLiked = Model.Likes.Any(l => l.UserId == userId);
+        }
+
         <div class="flex items-center gap-2">
-            <a class="button-icon text-red-500 bg-red-100">
-                <ion-icon name="heart" class="text-lg text-red-800" style="width: 24px; height: 24px;"></ion-icon>
-            </a>
-            <p style="color: black">24</p>
+            @if (User.Identity.IsAuthenticated)
+            {
+                <form asp-controller="Home" asp-action="ToggleLike" method="post">
+                    <input type="hidden" name="postId" value="@Model.Id" />
+                    <button type="submit" class="button-icon @(hasLiked ? "text-red-500 bg-red-100" : "")">
+                        @if (hasLiked)
+                        {
+                            <ion-icon name="heart" class="text-lg text-red-800" style="width: 24px; height: 24px;"></ion-icon>
+                        }
+                        else
+                        {
+                            <ion-icon name="heart-outline" class="text-lg text-gray-800" style="width: 24px; height: 24px;"></ion-icon>
+                        }
+                    </button>
+                </form>
+            }
+            else
+            {
+                <a asp-area="Identity" asp-page="/Account/Login" class="button-icon">
+                    <ion-icon name="heart-outline" class="text-lg text-gray-800" style="width: 24px; height: 24px;"></ion-icon>
+                </a>
+            }
+            <p style="color: black">@Model.Likes.Count</p>
         </div>
 
         <div class="flex items-center gap-2">
@@ -109,3 +135,41 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.like-button').forEach(button => {
+            button.addEventListener('click', async function() {
+                const postId = this.dataset.postId;
+                const likeCountElement = document.getElementById(`like-count-${postId}`);
+
+                try {
+                    const response = await fetch(`/Home/ToggleLike`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                        },
+                        body: JSON.stringify({ postId: parseInt(postId) })
+                    });
+
+                    const result = await response.json();
+                    if (result.success) {
+                        likeCountElement.textContent = result.newLikeCount;
+
+                        // Превключване на състоянието на бутона
+                        if (result.isLiked) {
+                            this.classList.add('liked');
+                            this.innerHTML = `<ion-icon name="heart" class="text-lg text-red-800"></ion-icon>`;
+                        } else {
+                            this.classList.remove('liked');
+                            this.innerHTML = `<ion-icon name="heart-outline" class="text-lg text-gray-800"></ion-icon>`;
+                        }
+                    }
+                } catch (error) {
+                    console.error('Грешка при харесването:', error);
+                }
+            });
+        });
+    });
+</script>

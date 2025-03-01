@@ -26,6 +26,7 @@ namespace ChatterBox.Controllers
         {
             var posts = await _context.Posts
                 .Include(p => p.User) 
+                .Include(p => p.Likes)
                 .OrderByDescending(p => p.DateCreated)
                 .ToListAsync();
 
@@ -143,6 +144,38 @@ namespace ChatterBox.Controllers
             _context.Posts.Add(post);
             await _context.SaveChangesAsync();
 
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> ToggleLike(PostLikeViewModel postLikeViewModel)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+            {
+                return RedirectToPage("/Account/Login", new { area = "Identity" });
+            }
+
+            var existingLike = await _context.Likes
+                .FirstOrDefaultAsync(l => l.PostId == postLikeViewModel.PostId && l.UserId == userId);
+
+            if (existingLike != null)
+            {
+                _context.Likes.Remove(existingLike);
+                await _context.SaveChangesAsync();
+            }
+            else
+            {
+                var newLike = new Like
+                {
+                    PostId = postLikeViewModel.PostId,
+                    UserId = userId
+                };
+                await _context.Likes.AddAsync(newLike);
+
+                await _context.SaveChangesAsync();
+            }
             return RedirectToAction("Index");
         }
     }
