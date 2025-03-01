@@ -1,7 +1,15 @@
 ﻿@using System.Security.Claims
+@using Microsoft.AspNetCore.Identity
 
 @model Post
 
+@inject UserManager<User> UserManager
+
+@{
+    var currentUser = await UserManager.GetUserAsync(User);
+}
+
+@*Timespan for posts*@
 @{
     TimeSpan timeAgo = DateTime.Now.Subtract(Model.DateCreated);
 
@@ -57,7 +65,7 @@
 
     @*Post content*@
     <a>
-        <div class="px-sm-4 p-2\.5 pt-0 w-full" style="color: black">
+        <div class="px-sm-4 p-2\.5 pt-0 w-full mb-1" style="color: black">
             <p class="font-normal">
                 @Model.Content
             </p>
@@ -78,9 +86,9 @@
         @{
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var hasLiked = Model.Likes.Any(l => l.UserId == userId);
+            var likeCount = Model.Likes.Count;
         }
-
-        <div class="flex items-center gap-2">
+        <div class="relative flex items-center gap-2">
             @if (User.Identity.IsAuthenticated)
             {
                 <form asp-controller="Home" asp-action="ToggleLike" method="post">
@@ -103,14 +111,36 @@
                     <ion-icon name="heart-outline" class="text-lg text-gray-800" style="width: 24px; height: 24px;"></ion-icon>
                 </a>
             }
-            <p style="color: black">@Model.Likes.Count</p>
+
+            @if (likeCount > 0)
+            {
+                <p class="like-count text-black cursor-pointer hover:underline" data-post-id="@Model.Id">
+                    @likeCount
+                </p>
+
+                <div class="like-tooltip hidden absolute left-0 top-8 w-48 bg-white shadow-lg border border-gray-300 rounded-lg p-2 text-sm z-20"
+                     id="tooltip-@Model.Id">
+                    @foreach (var like in Model.Likes)
+                    {
+                        @if (like.User != null)
+                        {
+                            <div class="flex items-center gap-2 p-1 hover:bg-gray-100 rounded-md">
+                                <img src="@like.User.ProfilePictureURL"
+                                     alt="@like.User.FullName"
+                                     class="w-8 h-8 rounded-full object-cover" />
+                                <span class="text-gray-900">@like.User.FullName</span>
+                            </div>
+                        }
+                    }
+                </div>
+            }
         </div>
 
         <div class="flex items-center gap-2">
             <a class="button-icon">
                 <ion-icon name="chatbubble-ellipses-outline" class="text-lg text-gray-800" style="width: 24px; height: 24px;"></ion-icon>
             </a>
-            <p style="color: black">4</p>
+            <p style="color: black">@Model.Comments.Count</p>
         </div>
 
         <div class="ml-auto"></div>
@@ -122,53 +152,81 @@
         </div>
     </div>
 
-    @*Add comment section*@
-    <div>
-        <div class="px-sm-4 py-sm-3 p-2\.5 border-t border-gray-100 flex items-center gap-1">
-            <img src="@(Model.User.ProfilePictureURL ?? "~/images/avatar/user.png")" class="w-6 h-6 rounded-full" />
+    @if (User.Identity.IsAuthenticated)
+    {
+        @*Add comment section*@
+        <div>
+            <div p-2.5 border-t border-gray-100 font-normal space-y-3 relative>
+                @foreach (var comment in Model.Comments)
+                {
+                    TimeSpan commentTimeAgo = DateTime.Now.Subtract(comment.DateCreated);
 
-            <div class="flex-1 relative overflow-hidden h-10">
-                <textarea rows="1" class="w-full resize-none \!bg-transparent px-4 py-2 focus\:\!border-transparent focus\:\!ring-transparent" placeholder="Add comment...."></textarea>
+                    string commentDisplayTime = commentTimeAgo switch
+                    {
+                        var t when t.TotalDays >= 1 => $"{(int)t.TotalDays}d ago",
+                        var t when t.TotalHours >= 1 => $"{(int)t.TotalHours}h ago",
+                        var t when t.TotalMinutes >= 1 => $"{(int)t.TotalMinutes}m ago",
+                        _ => "Just now"
+                    };
+
+                    <div class="flex items-start gap-3 relative">
+                        <a>
+                            <img src="@(comment.User.ProfilePictureURL ?? "~/images/avatar/user.png")" class="w-6 h-6 mt-1 rounded-full" />
+                        </a>
+
+                        <div class="flex-1 text-black border dark\:border-gray-700 rounded-lg bg-gray-50">
+                            <div class="flex justify-content-between">
+                                <a class="text-black font-medium inline-block flex-grow">
+                                    @comment.User.FullName
+                                </a>
+                                <small>
+                                    @commentDisplayTime
+                                </small>
+                            </div>
+                            <p class="mt-0\.5 mb-2">
+                                @comment.Content
+                            </p>
+                        </div>
+                    </div>
+                }
             </div>
 
-            <button class="text-sm rounded-full py-1.5 px-3.5 bg-secondary">Comment</button>
+            <form asp-controller="Home" asp-action="CreateComment">
+                <div class="px-sm-4 py-sm-3 p-2\.5 border-t border-gray-100 flex items-center gap-1">
+                    <img src="@Url.Content(currentUser?.ProfilePictureURL ?? "~/images/avatar/user.png")" class="w-6 h-6 rounded-full" />
+
+                    <input type="hidden" name="postId" value="@Model.Id" />
+
+
+                    <div class="flex-1 relative overflow-hidden h-10">
+                        <textarea name="content" rows="1" class="w-full resize-none \!bg-transparent px-4 py-2 focus\:\!border-transparent focus\:\!ring-transparent" placeholder="Add comment...."></textarea>
+                    </div>
+
+                    <button type="submit" class="text-sm rounded-full py-1.5 px-3.5 bg-secondary">Comment</button>
+                </div>
+            </form>
         </div>
-    </div>
+    }
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        document.querySelectorAll('.like-button').forEach(button => {
-            button.addEventListener('click', async function() {
-                const postId = this.dataset.postId;
-                const likeCountElement = document.getElementById(`like-count-${postId}`);
+    @*Show like window popup on click*@
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.like-count').forEach(function (likeCountElement) {
+            const postId = likeCountElement.dataset.postId;
+            const tooltip = document.getElementById('tooltip-' + postId);
 
-                try {
-                    const response = await fetch(`/Home/ToggleLike`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
-                        },
-                        body: JSON.stringify({ postId: parseInt(postId) })
-                    });
+            likeCountElement.addEventListener('click', function (e) {
+                e.stopPropagation();
+                tooltip.classList.toggle('hidden');
+            });
 
-                    const result = await response.json();
-                    if (result.success) {
-                        likeCountElement.textContent = result.newLikeCount;
+            document.addEventListener('click', function () {
+                tooltip.classList.add('hidden');
+            });
 
-                        // Превключване на състоянието на бутона
-                        if (result.isLiked) {
-                            this.classList.add('liked');
-                            this.innerHTML = `<ion-icon name="heart" class="text-lg text-red-800"></ion-icon>`;
-                        } else {
-                            this.classList.remove('liked');
-                            this.innerHTML = `<ion-icon name="heart-outline" class="text-lg text-gray-800"></ion-icon>`;
-                        }
-                    }
-                } catch (error) {
-                    console.error('Грешка при харесването:', error);
-                }
+            tooltip.addEventListener('click', function (e) {
+                e.stopPropagation();
             });
         });
     });

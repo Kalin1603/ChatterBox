@@ -28,3 +28,7 @@ textarea::placeholder {
 .dark textarea::placeholder {
     color: #bbb;
 }
+
+.like-tooltip {
+    transition: opacity 0.2s ease-in-out;
+}

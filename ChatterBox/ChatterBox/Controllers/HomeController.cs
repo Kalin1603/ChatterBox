@@ -26,7 +26,8 @@ namespace ChatterBox.Controllers
         {
             var posts = await _context.Posts
                 .Include(p => p.User) 
-                .Include(p => p.Likes)
+                .Include(p => p.Likes).ThenInclude(l => l.User)
+                .Include(p => p.Comments).ThenInclude(c => c.User)
                 .OrderByDescending(p => p.DateCreated)
                 .ToListAsync();
 
@@ -176,6 +177,37 @@ namespace ChatterBox.Controllers
 
                 await _context.SaveChangesAsync();
             }
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> CreateComment(PostCommentViewModel postComment)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+            {
+                return RedirectToPage("Login");
+            }
+
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null)
+            {
+                return RedirectToPage("Login");
+            }
+
+            var newComment = new Comment
+            {
+                User = user,
+                PostId = postComment.PostId,
+                Content = postComment.Content,
+                DateCreated = DateTime.Now,
+                DateUpdate = DateTime.Now
+            };
+
+            await _context.Comments.AddAsync(newComment);
+            await _context.SaveChangesAsync();
+
             return RedirectToAction("Index");
         }
     }
