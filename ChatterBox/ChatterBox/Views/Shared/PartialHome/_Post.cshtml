@@ -156,8 +156,13 @@
     {
         @*Add comment section*@
         <div>
-            <div p-2.5 border-t border-gray-100 font-normal space-y-3 relative>
-                @foreach (var comment in Model.Comments)
+            <div class="p-2.5 border-t border-gray-100 font-normal space-y-3 relative">
+                @{
+                    var visibleComments = Model.Comments.OrderByDescending(c => c.DateCreated).Take(3).ToList();
+                    var hiddenComments = Model.Comments.OrderByDescending(c => c.DateCreated).Skip(3).OrderByDescending(c => c.DateCreated).ToList();
+                }
+
+                @foreach (var comment in visibleComments)
                 {
                     TimeSpan commentTimeAgo = DateTime.Now.Subtract(comment.DateCreated);
 
@@ -174,7 +179,7 @@
                             <img src="@(comment.User.ProfilePictureURL ?? "~/images/avatar/user.png")" class="w-6 h-6 mt-1 rounded-full" />
                         </a>
 
-                        <div class="flex-1 text-black border dark\:border-gray-700 rounded-lg bg-gray-50">
+                        <div class="flex-1 text-black border dark:border-gray-700 rounded-lg bg-gray-50">
                             <div class="flex justify-content-between">
                                 <a class="text-black font-medium inline-block flex-grow">
                                     @comment.User.FullName
@@ -183,11 +188,55 @@
                                     @commentDisplayTime
                                 </small>
                             </div>
-                            <p class="mt-0\.5 mb-2">
+                            <p class="mt-0.5 mb-2">
                                 @comment.Content
                             </p>
                         </div>
                     </div>
+                }
+
+                @if (Model.Comments.Count > 3)
+                {
+                    <div id="hiddenComments" style="display: none;">
+                        @foreach (var comment in hiddenComments)
+                        {
+                            TimeSpan commentTimeAgo = DateTime.Now.Subtract(comment.DateCreated);
+
+                            string commentDisplayTime = commentTimeAgo switch
+                            {
+                                var t when t.TotalDays >= 1 => $"{(int)t.TotalDays}d ago",
+                                var t when t.TotalHours >= 1 => $"{(int)t.TotalHours}h ago",
+                                var t when t.TotalMinutes >= 1 => $"{(int)t.TotalMinutes}m ago",
+                                _ => "Just now"
+                            };
+
+                            <div class="flex items-start gap-3 relative">
+                                <a>
+                                    <img src="@(comment.User.ProfilePictureURL ?? "~/images/avatar/user.png")" class="w-6 h-6 mt-1 rounded-full" />
+                                </a>
+
+                                <div class="flex-1 text-black border dark:border-gray-700 rounded-lg bg-gray-50">
+                                    <div class="flex justify-content-between">
+                                        <a class="text-black font-medium inline-block flex-grow">
+                                            @comment.User.FullName
+                                        </a>
+                                        <small>
+                                            @commentDisplayTime
+                                        </small>
+                                    </div>
+                                    <p class="mt-0.5 mb-2">
+                                        @comment.Content
+                                    </p>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    <button id="toggleComments"
+                            onclick="toggleComments()"
+                            class="text-blue-600 text-sm hover:text-blue-800 mt-2 cursor-pointer">
+                        Show more
+                    </button>
                 }
             </div>
 
@@ -230,4 +279,18 @@
             });
         });
     });
+
+    @*Show more comments*@
+    function toggleComments() {
+        const hiddenDiv = document.getElementById('hiddenComments');
+        const button = document.getElementById('toggleComments');
+
+        if (hiddenDiv.style.display === 'none' || !hiddenDiv.style.display) {
+            hiddenDiv.style.display = 'block';
+            button.textContent = 'Show less';
+        } else {
+            hiddenDiv.style.display = 'none';
+            button.textContent = 'Show more';
+        }
+    }
 </script>
