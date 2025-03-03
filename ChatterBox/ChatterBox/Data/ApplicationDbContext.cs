@@ -17,6 +17,14 @@ namespace ChatterBox.Data
 
         public DbSet<Comment> Comments { get; set; }
 
+        public DbSet<Story> Stories { get; set; }
+
+        public DbSet<Report> Reports { get; set; }
+
+        public DbSet<Hashtag> Hashtags { get; set; }
+
+        public DbSet<Favorite> Favorites { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -46,6 +54,32 @@ namespace ChatterBox.Data
                 .WithMany(u => u.Comments)
                 .HasForeignKey(l => l.UserId)
                 .OnDelete(DeleteBehavior.NoAction);
+
+            //Favorites
+            modelBuilder.Entity<Favorite>()
+                .HasOne(f => f.Post)
+                .WithMany(p => p.Favorites)
+                .HasForeignKey(f => f.PostId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<Favorite>()
+                .HasOne(f => f.User)
+                .WithMany(u => u.Favorites)
+                .HasForeignKey(f => f.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            //Reports
+            modelBuilder.Entity<Report>()
+                .HasOne(f => f.Post)
+                .WithMany(p => p.Reports)
+                .HasForeignKey(f => f.PostId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<Report>()
+                .HasOne(f => f.User)
+                .WithMany(u => u.Reports)
+                .HasForeignKey(f => f.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }
