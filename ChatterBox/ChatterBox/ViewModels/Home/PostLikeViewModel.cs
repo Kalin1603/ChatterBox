@@ -1,4 +1,4 @@
-﻿namespace ChatterBox.ViewModels
+﻿namespace ChatterBox.ViewModels.Home
 {
     public class PostLikeViewModel
     {

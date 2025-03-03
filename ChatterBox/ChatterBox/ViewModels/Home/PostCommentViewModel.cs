@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace ChatterBox.ViewModels
+namespace ChatterBox.ViewModels.Home
 {
     public class PostCommentViewModel
     {

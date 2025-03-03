@@ -1,6 +1,6 @@
 ﻿using ChatterBox.Models;
 
-namespace ChatterBox.ViewModels
+namespace ChatterBox.ViewModels.Home
 {
     public class HomeViewModel
     {

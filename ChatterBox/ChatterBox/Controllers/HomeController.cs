@@ -2,7 +2,7 @@ using System.Diagnostics;
 using System.Security.Claims;
 using ChatterBox.Data;
 using ChatterBox.Models;
-using ChatterBox.ViewModels;
+using ChatterBox.ViewModels.Home;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -207,6 +207,20 @@ namespace ChatterBox.Controllers
 
             await _context.Comments.AddAsync(newComment);
             await _context.SaveChangesAsync();
+
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> RemoveComment(RemoveCommentViewModel removeComment)
+        {
+            var comment = await _context.Comments.FindAsync(removeComment.CommentId);
+            if (comment != null)
+            {
+                _context.Comments.Remove(comment);
+                await _context.SaveChangesAsync();
+            }
 
             return RedirectToAction("Index");
         }
