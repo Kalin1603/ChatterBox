@@ -1,35 +1,30 @@
 ﻿@model List<Post>
 
-<main id="site__main" class="2xl:ml-[--w-side]  xl:ml-[--w-side-sm] p-2.5 h-[calc(100vh-var(--m-top))] mt-[--m-top]">
-    <div class="lg:flex 2xl:gap-16 gap-12 max-w-[1065px] mx-auto" id="js-oversized">
-        <div class="max-w-[680px] mx-auto">
+@{
+    ViewData["Title"] = "My Favorited Posts";
+}
 
-            <div class="md:max-w-[580px] mx-auto flex-1 xl:space-y-6 space-y-3">
+<main id="site__main" class="p-4 min-h-screen mt-16">
+    <div class="max-w-2xl mx-auto">
+        <header class="mb-6">
+            <h1 class="text-3xl font-bold text-center text-gray-800">My Favorited Posts</h1>
+            <p class="text-center text-gray-600 mt-2">Your bookmarked posts appear here.</p>
+        </header>
 
-                @if (Model.Count == 0)
+        @if (!Model.Any())
+        {
+            <div class="bg-white rounded-xl shadow-sm p-4 text-center text-sm font-medium border border-gray-200">
+                Currently, there are no favorited posts available.
+            </div>
+        }
+        else
+        {
+            <div class="space-y-6">
+                @foreach (var post in Model)
                 {
-                    <div class="bg-white rounded-xl shadow-sm md:p-4 p-2 space-y-4 text-sm font-medium border1" style="width: 580px;">
-                        Currently, there are no favorited posts available.
-                    </div>
-                }
-                else
-                {
-                    @foreach (var post in Model)
-                    {
-                        <partial name="PartialHome/_Post" model="post" view-data='new ViewDataDictionary(ViewData) { { "ShowAllComment", false } }' />
-                    }
+                    <partial name="PartialHome/_Post" model="post" />
                 }
             </div>
-        </div>
-        <div class="flex-1">
-            <div class="lg:space-y-4 lg:pb-8 max-lg:grid sm:grid-cols-2 max-lg:gap-6">
-                <div class="box p-5 px-6">  
-                    <partial name="Sidebar/_SuggestedFriends" />
-                </div>
-                <div class="box p-5 px-6 border1">
-                    @*@await Component.InvokeAsync("Hashtags")*@
-                </div>
-            </div>
-        </div>
+        }
     </div>
 </main>

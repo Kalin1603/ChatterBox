@@ -7,7 +7,7 @@
 
 @{
     var currentUser = await UserManager.GetUserAsync(User);
-    bool isFavorited = Model.Favorites.Any(f => f.UserId == currentUser.Id);
+    bool isFavorited = Model.Favorites.Any(f => f.UserId == currentUser?.Id);
 }
 
 @*Timespan for posts*@
