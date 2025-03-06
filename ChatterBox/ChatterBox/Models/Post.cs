@@ -22,6 +22,10 @@ namespace ChatterBox.Models
 
         public int NumberOfReports { get; set; }
 
+        public bool IsDeleted { get; set; }
+
+        public bool IsPrivate { get; set; }
+
         [ForeignKey(nameof(User))]
         public string UserId { get; set; }
         public User User { get; set; }

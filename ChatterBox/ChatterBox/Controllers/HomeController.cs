@@ -28,6 +28,7 @@ namespace ChatterBox.Controllers
                 .Include(p => p.User) 
                 .Include(p => p.Likes).ThenInclude(l => l.User)
                 .Include(p => p.Comments).ThenInclude(c => c.User)
+                .Include(p => p.Favorites).ThenInclude(f => f.User)
                 .OrderByDescending(p => p.DateCreated)
                 .ToListAsync();
 

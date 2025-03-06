@@ -7,6 +7,7 @@
 
 @{
     var currentUser = await UserManager.GetUserAsync(User);
+    bool isFavorited = Model.Favorites.Any(f => f.UserId == currentUser.Id);
 }
 
 @*Timespan for posts*@
@@ -145,10 +146,19 @@
 
         <div class="ml-auto"></div>
 
-        <div>
-            <a class="button-icon ml-auto">
-                <ion-icon name="bookmark-outline" class="text-lg text-gray-800" style="width: 24px; height: 24px;"></ion-icon>
-            </a>
+        <div class="flex items-center gap-2">
+            <form asp-controller="Favorites" asp-action="AddPostToFavorite" method="post">
+                <input type="hidden" name="postId" value="@Model.Id" />
+                <button type="submit" class="button-icon ml-auto @(isFavorited ? "text-orange-500 bt-orange-100" : "text-gray-800")">
+                    <ion-icon name="@(isFavorited ? "bookmark" : "bookmark-outline")" class="text-lg" style="width: 24px; height: 24px;"></ion-icon>
+                </button>
+            </form>
+
+            @* Ако повече хора са bookmark-нали публикацията *@
+            @if (Model.Favorites.Count > 0)
+            {
+                <a href="#" class="text-sm text-gray-700 ml-1">@Model.Favorites.Count</a>
+            }
         </div>
     </div>
 
