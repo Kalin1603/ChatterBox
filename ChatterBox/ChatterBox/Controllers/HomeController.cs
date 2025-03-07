@@ -30,7 +30,6 @@ namespace ChatterBox.Controllers
                 .Include(p => p.Likes).ThenInclude(l => l.User)
                 .Include(p => p.Comments).ThenInclude(c => c.User)
                 .Include(p => p.Favorites).ThenInclude(f => f.User)
-                .Where(p => !p.IsDeleted && (p.UserId == currentUserId || (p.Reports.Count < 5 && !p.IsPrivate)))
                 .OrderByDescending(p => p.DateCreated)
                 .ToListAsync();
 

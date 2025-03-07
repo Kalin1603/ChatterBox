@@ -37,46 +37,54 @@
             </a>
         </div>
 
-        <div class="mr-1">
-            <button type="button" class="button-icon w-8 h-8 bg-gray-300 dark:bg-gray-600 hover:bg-transparent">
-                <ion-icon class="text-xl text-black dark:text-gray-200" name="ellipsis-horizontal"></ion-icon>
-            </button>
+        @if (User.Identity.IsAuthenticated)
+        {
+            <div class="mr-1">
+                <button type="button" class="button-icon w-8 h-8 bg-gray-300 dark:bg-gray-600 hover:bg-transparent">
+                    <ion-icon class="text-xl text-black dark:text-gray-200" name="ellipsis-horizontal"></ion-icon>
+                </button>
 
-            <div class="w-[245px]" uk-dropdown="pos: bottom-right; animation: uk-animation-scale-up uk-transform-origin-top-right; animate-out: true; mode: click">
-                <form asp-controller="Home" asp-action="ReportPost" method="post">
-                    <input type="hidden" name="postId" value="@Model.Id" />
-                    <button type="submit" class="hover:dark:hover:bg-red-500/50 icon-link">
-                        <ion-icon class="text-xl text-white shrink-0" name="flag-outline"></ion-icon> Report
-                    </button>
-                </form>
-
-                @if (Model.IsPrivate)
-                {
-                    <form asp-controller="Home" asp-action="SetPostAsPublic" method="post">
-                        <input type="hidden" name="postId" value="@Model.Id" />
-                        <button type="submit" class="hover:dark:hover:bg-green-500/50 icon-link">
-                            <ion-icon class="text-xl text-white shrink-0" name="eye-outline"></ion-icon> Make Public
-                        </button>
-                    </form>
-                }
-                else
-                {
-                    <form asp-controller="Home" asp-action="SetPostAsPrivate" method="post">
+                <div class="w-[245px]" uk-dropdown="pos: bottom-right; animation: uk-animation-scale-up uk-transform-origin-top-right; animate-out: true; mode: click">
+                    <form asp-controller="Home" asp-action="ReportPost" method="post">
                         <input type="hidden" name="postId" value="@Model.Id" />
                         <button type="submit" class="hover:dark:hover:bg-red-500/50 icon-link">
-                            <ion-icon class="text-xl text-white shrink-0" name="lock-closed-outline"></ion-icon> Set as Private
+                            <ion-icon class="text-xl text-white shrink-0" name="flag-outline"></ion-icon> Report
                         </button>
                     </form>
-                }
 
-                <form asp-controller="Home" asp-action="DeletePost" method="post">
-                    <input type="hidden" name="postId" value="@Model.Id" />
-                    <button type="submit" class="hover:dark:hover:bg-red-500/50 icon-link">
-                        <ion-icon class="text-xl text-white shrink-0" name="trash-bin-outline"></ion-icon> Delete post
-                    </button>
-                </form>
+                    @if (Model.User.Id == User.FindFirstValue(ClaimTypes.NameIdentifier))
+                    {
+                        @if (Model.IsPrivate)
+                        {
+                            <form asp-controller="Home" asp-action="SetPostAsPublic" method="post">
+                                <input type="hidden" name="postId" value="@Model.Id" />
+                                <button type="submit" class="hover:dark:hover:bg-green-500/50 icon-link">
+                                    <ion-icon class="text-xl text-white shrink-0" name="eye-outline"></ion-icon> Make Public
+                                </button>
+                            </form>
+                        }
+                        else
+                        {
+                            <form asp-controller="Home" asp-action="SetPostAsPrivate" method="post">
+                                <input type="hidden" name="postId" value="@Model.Id" />
+                                <button type="submit" class="hover:dark:hover:bg-red-500/50 icon-link">
+                                    <ion-icon class="text-xl text-white shrink-0" name="lock-closed-outline"></ion-icon> Set as Private
+                                </button>
+                            </form>
+                        }
+
+                        <form asp-controller="Home" asp-action="DeletePost" method="post">
+                            <input type="hidden" name="postId" value="@Model.Id" />
+                            <button type="submit" class="hover:dark:hover:bg-red-500/50 icon-link">
+                                <ion-icon class="text-xl text-white shrink-0" name="trash-bin-outline"></ion-icon> Delete post
+                            </button>
+                        </form>
+                    }
+
+                </div>
             </div>
-        </div>
+        }
+
     </div>
 
     @*Post content*@
