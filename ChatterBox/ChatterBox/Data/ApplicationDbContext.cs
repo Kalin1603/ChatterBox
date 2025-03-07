@@ -60,7 +60,7 @@ namespace ChatterBox.Data
                 .HasOne(f => f.Post)
                 .WithMany(p => p.Favorites)
                 .HasForeignKey(f => f.PostId)
-                .OnDelete(DeleteBehavior.NoAction);
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Favorite>()
                 .HasOne(f => f.User)
@@ -73,7 +73,7 @@ namespace ChatterBox.Data
                 .HasOne(f => f.Post)
                 .WithMany(p => p.Reports)
                 .HasForeignKey(f => f.PostId)
-                .OnDelete(DeleteBehavior.NoAction);
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Report>()
                 .HasOne(f => f.User)

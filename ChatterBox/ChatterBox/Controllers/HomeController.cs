@@ -19,16 +19,18 @@ namespace ChatterBox.Controllers
         {
             _logger = logger;
             _context = context;
-            _env = env; 
+            _env = env;
         }
 
         public async Task<IActionResult> Index()
         {
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var posts = await _context.Posts
-                .Include(p => p.User) 
+                .Include(p => p.User)
                 .Include(p => p.Likes).ThenInclude(l => l.User)
                 .Include(p => p.Comments).ThenInclude(c => c.User)
                 .Include(p => p.Favorites).ThenInclude(f => f.User)
+                .Where(p => !p.IsDeleted && (p.UserId == currentUserId || (p.Reports.Count < 5 && !p.IsPrivate)))
                 .OrderByDescending(p => p.DateCreated)
                 .ToListAsync();
 
@@ -168,6 +170,121 @@ namespace ChatterBox.Controllers
                 await _context.SaveChangesAsync();
             }
 
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> ReportPost(int postId)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var post = await _context.Posts.FirstOrDefaultAsync(p => p.Id == postId);
+            if (post == null)
+            {
+                TempData["Error"] = "The post was not found.";
+                return RedirectToAction("Index");
+            }
+
+            var report = new Report
+            {
+                PostId = postId,
+                UserId = userId,
+                DateCreated = DateTime.Now
+            };
+
+            await _context.Reports.AddAsync(report);
+            await _context.SaveChangesAsync();
+
+            TempData["StatusMessage"] = "The report was sent successfully.";
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> SetPostAsPrivate(int postId)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var post = await _context.Posts.FirstOrDefaultAsync(p => p.Id == postId);
+            if (post == null)
+            {
+                TempData["Error"] = "The post was not found.";
+                return RedirectToAction("Index");
+            }
+
+            if (post.UserId != userId)
+            {
+                TempData["Error"] = "You have no rights to delete this post.";
+                return RedirectToAction("Index");
+            }
+
+            post.IsPrivate = true;
+            _context.Posts.Update(post);
+            await _context.SaveChangesAsync();
+
+            TempData["StatusMessage"] = "The post was set to private.";
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> SetPostAsPublic(int postId)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var post = await _context.Posts.FirstOrDefaultAsync(p => p.Id == postId);
+            if (post == null)
+            {
+                TempData["Error"] = "The post was not found.";
+                return RedirectToAction("Index");
+            }
+
+            if (post.UserId != userId)
+            {
+                TempData["Error"] = "You have no rights to delete this post.";
+                return RedirectToAction("Index");
+            }
+
+            post.IsPrivate = false;
+            _context.Posts.Update(post);
+            await _context.SaveChangesAsync();
+
+            TempData["StatusMessage"] = "The post was set to public.";
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> DeletePost(int postId)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var post = await _context.Posts.FirstOrDefaultAsync(p => p.Id == postId);
+            if (post == null)
+            {
+                TempData["Error"] = "Post not found.";
+                return RedirectToAction("Index");
+            }
+
+            if (post.UserId != userId)
+            {
+                TempData["Error"] = "You have no rights to delete this post.";
+                return RedirectToAction("Index");
+            }
+
+            _context.Posts.Remove(post);
+            await _context.SaveChangesAsync();
+
+            TempData["StatusMessage"] = "The post was removed successfully.";
             return RedirectToAction("Index");
         }
     }
