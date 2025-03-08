@@ -1,0 +1,69 @@
+﻿@using ChatterBox.ViewModels.Profile
+@model ProfileViewModel
+
+@{
+    ViewData["Title"] = "Profile - " + Model.User.UserName;
+}
+
+<main id="site__main" class="2xl:ml-[var(--w-side)] xl:ml-[var(--w-side-sm)] p-2.5 h-[calc(100vh - var(--m-top))] mt-[var(--m-top)]">
+    <div class="max-w-[1065px] mx-auto">
+        <!-- Profile Header -->
+        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-4 mb-6">
+            <div class="flex items-center gap-4">
+                <img src="@Model.User.ProfilePictureURL" alt="@Model.User.UserName" class="w-24 h-24 rounded-full" onerror="this.src='/images/default-profile.png'" />
+                <div>
+                    <h2 class="text-2xl font-bold text-black dark:text-white">@Model.User.UserName</h2>
+                    <!-- You can add additional details such as bio, location, etc. here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- User Posts -->
+        <div class="space-y-6">
+            @foreach (var post in Model.Posts)
+            {
+                <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-4">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <img src="@post.User.ProfilePictureURL" alt="@post.User.UserName" class="w-8 h-8 rounded-full" onerror="this.src='/images/default-profile.png'" />
+                            <span class="text-lg font-medium text-black dark:text-white">@post.User.UserName</span>
+                        </div>
+                        <span class="text-sm text-gray-500">@post.DateCreated.ToString("g")</span>
+                    </div>
+                    <div class="mt-2 text-black dark:text-white">
+                        <p>@post.Content</p>
+                        @if (!string.IsNullOrEmpty(post.ImageURL))
+                        {
+                            <img src="@post.ImageURL" alt="Post Image" class="mt-2 rounded-lg" />
+                        }
+                    </div>
+                    <!-- Comments Section -->
+                    <div class="mt-4">
+                        <h4 class="font-semibold text-black dark:text-white">Comments</h4>
+                        @if (post.Comments.Any())
+                        {
+                            <ul class="space-y-2">
+                                @foreach (var comment in post.Comments)
+                                {
+                                    <li class="flex items-start gap-3">
+                                        <img src="@comment.User.ProfilePictureURL" alt="@comment.User.UserName" class="w-6 h-6 rounded-full" onerror="this.src='/images/default-profile.png'" />
+                                        <div>
+                                            <p class="text-sm text-black dark:text-white">
+                                                <span class="font-medium">@comment.User.UserName</span> @comment.Content
+                                            </p>
+                                            <small class="text-gray-500">@comment.DateCreated.ToString("g")</small>
+                                        </div>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                        else
+                        {
+                            <p class="text-sm text-gray-500">No comments yet.</p>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</main>

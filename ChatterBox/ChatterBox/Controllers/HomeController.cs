@@ -42,6 +42,36 @@ namespace ChatterBox.Controllers
             return View(viewModel);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> Search(string query)
+        {
+            if (string.IsNullOrWhiteSpace(query))
+            {
+                TempData["Error"] = "Please enter a search term.";
+                return RedirectToAction("Index");
+            }
+
+            var posts = await _context.Posts
+                            .Include(p => p.User)
+                            .Where(p => p.Content.Contains(query))
+                            .OrderByDescending(p => p.DateCreated)
+                            .ToListAsync();
+
+            var users = await _context.Users
+                            .Where(u => u.FullName.Contains(query))
+                            .ToListAsync();
+
+            var viewModel = new SearchViewModel
+            {
+                Query = query,
+                Posts = posts,
+                Users = users
+            };
+
+            return View(viewModel);
+        }
+
+
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> CreatePost(string content, IFormFile uploadContent)
