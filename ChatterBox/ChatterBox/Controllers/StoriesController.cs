@@ -68,5 +68,34 @@ namespace ChatterBox.Controllers
 
             return RedirectToAction("Index", "Home");
         }
+
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> DeleteStory(int id)
+        {
+            var story = await _context.Stories.Include(s => s.User).FirstOrDefaultAsync(s => s.Id == id);
+            if (story == null)
+            {
+                return NotFound();
+            }
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (story.User.Id != userId)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var filePath = Path.Combine(_env.WebRootPath, story.ImageURL?.TrimStart('/') ?? string.Empty);
+            if (System.IO.File.Exists(filePath))
+            {
+                System.IO.File.Delete(filePath);
+            }
+
+            _context.Stories.Remove(story);
+            await _context.SaveChangesAsync();
+
+            TempData["StatusMessage"] = "The story was removed successfully.";
+            return RedirectToAction("Index", "Home");
+        }
     }
 }

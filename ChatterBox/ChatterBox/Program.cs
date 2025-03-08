@@ -33,6 +33,9 @@ builder.Services.ConfigureApplicationCookie(options =>
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 
+//Story cleanup service
+builder.Services.AddHostedService<StoryCleanupService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

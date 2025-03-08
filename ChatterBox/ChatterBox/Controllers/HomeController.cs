@@ -280,6 +280,12 @@ namespace ChatterBox.Controllers
                 return RedirectToAction("Index");
             }
 
+            var filePath = Path.Combine(_env.WebRootPath, post.ImageURL?.TrimStart('/') ?? string.Empty);
+            if (System.IO.File.Exists(filePath))
+            {
+                System.IO.File.Delete(filePath);
+            }
+
             _context.Posts.Remove(post);
             await _context.SaveChangesAsync();
 
