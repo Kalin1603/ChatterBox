@@ -43,6 +43,7 @@ namespace ChatterBox.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> Search(string query)
         {
             if (string.IsNullOrWhiteSpace(query))
@@ -58,8 +59,8 @@ namespace ChatterBox.Controllers
                             .ToListAsync();
 
             var users = await _context.Users
-                            .Where(u => u.FullName.Contains(query))
-                            .ToListAsync();
+                .Where(u => (u.FullName != null && u.FullName.Contains(query)) || (u.UserName != null && u.UserName.Contains(query)))
+                .ToListAsync();
 
             var viewModel = new SearchViewModel
             {

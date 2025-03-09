@@ -33,7 +33,7 @@
             @if (Model.Users.Any())
             {
                 <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-4">
-                    <h3 class="text-xl font-semibold text-black dark:text-white mb-2">Profiles</h3>
+                    <h3 class="text-xl font-semibold text-black dark:text-white mb-2">Profiles found</h3>
                     <ul class="divide-y divide-gray-200">
                         @foreach (var user in Model.Users)
                         {
@@ -41,8 +41,7 @@
                                 <div class="flex items-center">
                                     <img src="@user.ProfilePictureURL" alt="@user.UserName" class="w-10 h-10 rounded-full mr-4" onerror="this.src='/images/default-profile.png'" />
                                     <div>
-                                        <p class="text-lg font-medium text-black dark:text-white">@user.UserName</p>
-                                        <!-- Additional user info can go here -->
+                                        <p class="text-lg font-medium text-black dark:text-white">@user.FullName</p>
                                     </div>
                                 </div>
                                 <div>
