@@ -22,11 +22,11 @@
             </div>
         </button>
 
-        <div class="hidden bg-gray-800/80 backdrop-blur-lg pr-1.5 rounded-xl shadow-xl
-                  md:w-[365px] w-96 border border-gray-600/50 z-[150]"
+        <div class="hidden bg-gray-800 pr-1.5 rounded-xl shadow-xl
+                  md:w-[365px] w-96 border border-gray-700 z-[150]"
              uk-drop="offset:6;pos: bottom-right; mode: click; animate-out: true;">
-            <div class="flex items-center justify-between gap-2 p-4 pb-2 border-b border-gray-600/50">
-                <h3 class="font-bold text-lg text-white/90">Notifications</h3>
+            <div class="flex items-center justify-between gap-2 p-4 pb-2 border-b border-gray-700">
+                <h3 class="font-bold text-lg text-white">Notifications</h3>
                 <button class="text-gray-400 hover:text-white transition-colors">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -34,7 +34,7 @@
                 </button>
             </div>
             <div class="p-3 h-[400px] overflow-y-auto space-y-2">
-                <div class="p-3 text-sm text-gray-300 rounded-lg bg-gray-700/30 hover:bg-gray-700/50
+                <div class="p-3 text-sm text-gray-300 rounded-lg bg-gray-700 hover:bg-gray-600
                           transition-colors cursor-pointer">
                     No notifications...
                 </div>
@@ -51,12 +51,12 @@
                         hover:scale-105 transition-transform" />
         </button>
 
-        <div class="hidden bg-gray-800/80 backdrop-blur-lg pr-1.5 rounded-xl shadow-xl
-                  md:w-[200px] w-64 border border-gray-600/50 z-[150]"
+        <div class="hidden bg-gray-800 pr-1.5 rounded-xl shadow-xl
+                  md:w-[200px] w-64 border border-gray-700 z-[150]"
              uk-drop="offset:6;pos: bottom-right; mode: click; animate-out: true;">
             <div class="flex flex-col p-2 space-y-1.5">
                 <a asp-area="Identity" asp-page="/Account/Manage/Index"
-                   class="flex items-center px-3 py-2 text-sm text-gray-300 hover:bg-gray-700/50 rounded-lg
+                   class="flex items-center px-3 py-2 text-sm text-gray-300 hover:bg-gray-700 rounded-lg
                           transition-all hover:translate-x-1.5">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -68,7 +68,7 @@
                       asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
                     <button type="submit"
                             class="w-full flex items-center px-3 py-2 text-sm text-red-400
-                                   hover:bg-red-400/10 rounded-lg transition-all hover:translate-x-1.5">
+                                   hover:bg-red-500/10 rounded-lg transition-all hover:translate-x-1.5">
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                   d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />

@@ -5,22 +5,41 @@
     ViewData["Title"] = "Search Results";
 }
 
-<main id="site__main" class="2xl:ml-[var(--w-side)] xl:ml-[var(--w-side-sm)] p-2.5 h-[calc(100vh - var(--m-top))] mt-[var(--m-top)]">
+<main id="site__main" class="2xl:ml-[var(--w-side)] xl:ml-[var(--w-side-sm)] p-4 h-[calc(100vh - var(--m-top))] mt-[var(--m-top)]">
     <div class="max-w-[1065px] mx-auto">
-        <h2 class="text-2xl font-bold text-black dark:text-white mb-4">Search Results for "@Model.Query"</h2>
+        <div class="mb-8">
+            <h2 class="text-3xl font-bold text-white mb-2">
+                Search Results for <span class="text-sky-400">"@Model.Query"</span>
+            </h2>
+            <p class="text-gray-400">
+                Found @(Model.Posts.Count + Model.Users.Count) results
+            </p>
+        </div>
 
         @if (!Model.Posts.Any() && !Model.Users.Any())
         {
-            <p class="text-gray-700 dark:text-gray-300">No results found.</p>
+            <div class="text-center py-20">
+                <div class="inline-flex items-center justify-center w-20 h-20 bg-gray-700 rounded-full mb-4">
+                    <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 21h7a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v11m0 5l4.879-4.879m0 0a3 3 0 104.243-4.242 3 3 0 00-4.243 4.242z" />
+                    </svg>
+                </div>
+                <p class="text-xl text-gray-300">No results found.</p>
+                <p class="text-gray-400">Try different keywords or check your spelling.</p>
+            </div>
         }
         else
         {
-            @* Display matching posts *@
             @if (Model.Posts.Any())
             {
-                <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-4 mb-6">
-                    <h3 class="text-xl font-semibold text-black dark:text-white mb-2">Posts</h3>
-                    <div class="space-y-4">
+                <div class="bg-gray-800 rounded-xl shadow-lg p-6 mb-8">
+                    <h3 class="text-xl font-semibold text-white mb-6 flex items-center">
+                        <svg class="w-6 h-6 mr-2 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        Posts (@Model.Posts.Count)
+                    </h3>
+                    <div class="space-y-6">
                         @foreach (var post in Model.Posts)
                         {
                             <partial name="PartialHome/_Post" model="post"></partial>
@@ -29,24 +48,35 @@
                 </div>
             }
 
-            @* Display matching profiles *@
             @if (Model.Users.Any())
             {
-                <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-4">
-                    <h3 class="text-xl font-semibold text-black dark:text-white mb-2">Profiles found</h3>
-                    <ul class="divide-y divide-gray-200">
+                <div class="bg-gray-800 rounded-xl shadow-lg p-6">
+                    <h3 class="text-xl font-semibold text-white mb-6 flex items-center">
+                        <svg class="w-6 h-6 mr-2 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                        Profiles (@Model.Users.Count)
+                    </h3>
+                    <ul class="divide-y divide-gray-700">
                         @foreach (var user in Model.Users)
                         {
-                            <li class="py-3 flex items-center justify-between">
-                                <div class="flex items-center">
-                                    <img src="@user.ProfilePictureURL" alt="@user.UserName" class="w-10 h-10 rounded-full mr-4" onerror="this.src='/images/default-profile.png'" />
-                                    <div>
-                                        <p class="text-lg font-medium text-black dark:text-white">@user.FullName</p>
+                            <li class="py-4 hover:bg-gray-750 transition-colors">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center space-x-4">
+                                        <img src="@user.ProfilePictureURL" alt="@user.UserName"
+                                             class="w-12 h-12 rounded-full object-cover border-2 border-gray-800 shadow-sm"
+                                             onerror="this.src='/images/default-profile.png'" />
+                                        <div>
+                                            <p class="text-lg font-semibold text-white">@user.FullName</p>
+                                            <p class="text-sm text-gray-400">@@@user.UserName</p>
+                                        </div>
                                     </div>
-                                </div>
-                                <div>
-                                    <a href="@Url.Action("Details", "Profile", new { id = user.Id })" class="bg-blue-500 hover:bg-blue-600 text-white py-1 px-3 rounded-full text-sm">
-                                        View Profile
+                                    <a href="@Url.Action("Details", "Profile", new { id = user.Id })"
+                                       class="flex items-center px-4 py-2 bg-sky-600 hover:bg-sky-500 text-white rounded-full transition-colors">
+                                        <span>View Profile</span>
+                                        <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                        </svg>
                                     </a>
                                 </div>
                             </li>
