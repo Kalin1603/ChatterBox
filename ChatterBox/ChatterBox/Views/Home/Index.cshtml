@@ -59,9 +59,8 @@
                 <div class="box p-5 px-6">
                     <partial name="SideBar/_SuggestedFriends"></partial>
                 </div>
-                <div class="box p-5 px-6 border1">
-                    <partial name="SideBar/_TrendsForYou"></partial>
-                </div>
+
+                @await Component.InvokeAsync("Hashtags")
             </div>
         </div>
     </div>

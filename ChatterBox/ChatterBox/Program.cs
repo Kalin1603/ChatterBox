@@ -1,5 +1,6 @@
 using ChatterBox.Data;
 using ChatterBox.Models;
+using ChatterBox.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -35,6 +36,9 @@ builder.Services.AddRazorPages();
 
 //Story cleanup service
 builder.Services.AddHostedService<StoryCleanupService>();
+
+// Hashtags service
+builder.Services.AddScoped<HashtagsService>();
 
 var app = builder.Build();
 

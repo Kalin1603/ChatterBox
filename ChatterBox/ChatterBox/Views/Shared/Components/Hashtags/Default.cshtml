@@ -1,0 +1,21 @@
+﻿<div class="box p-5 px-6 border1 rounded-2xl shadow-lg bg-slate-900 border border-slate-800 w-full max-w-md">
+    <h3 class="text-lg font-bold text-white mb-4">Trends for you</h3>
+
+    <div class="space-y-3">
+        @foreach (var hashtag in Model)
+        {
+            <a href="@Url.Action("Index", "Home", new { hashtag = hashtag.Name })" class="block">
+                <div class="flex items-center justify-between p-4 rounded-lg bg-slate-800 hover:bg-slate-700 transition-all duration-200">
+                    <div>
+                        <h2 class="font-semibold text-white">@hashtag.Name</h2>
+                        <span class="text-xs text-gray-400">@hashtag.Count posts</span>
+                    </div>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                        <path d="M9 6l6 6l-6 6" />
+                    </svg>
+                </div>
+            </a>
+        }
+    </div>
+</div>

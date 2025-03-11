@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Security.Claims;
 using ChatterBox.Data;
 using ChatterBox.Models;
+using ChatterBox.Services;
 using ChatterBox.ViewModels.Home;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,24 +15,31 @@ namespace ChatterBox.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly ApplicationDbContext _context;
         private readonly IWebHostEnvironment _env;
+        private readonly HashtagsService _hashtagsService;
 
-        public HomeController(ILogger<HomeController> logger, ApplicationDbContext context, IWebHostEnvironment env)
+        public HomeController(ILogger<HomeController> logger, ApplicationDbContext context, IWebHostEnvironment env, HashtagsService hashtagsService)
         {
             _logger = logger;
             _context = context;
             _env = env;
+            _hashtagsService = hashtagsService;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string hashtag)
         {
-            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var posts = await _context.Posts
+            IQueryable<Post> query = _context.Posts
                 .Include(p => p.User)
                 .Include(p => p.Likes).ThenInclude(l => l.User)
                 .Include(p => p.Comments).ThenInclude(c => c.User)
                 .Include(p => p.Favorites).ThenInclude(f => f.User)
-                .OrderByDescending(p => p.DateCreated)
-                .ToListAsync();
+                .OrderByDescending(p => p.DateCreated);
+
+            if (!string.IsNullOrEmpty(hashtag))
+            {
+                query = query.Where(p => p.Content.Contains(hashtag));
+            }
+
+            var posts = await query.ToListAsync();
 
             var viewModel = new HomeViewModel
             {
@@ -41,6 +49,7 @@ namespace ChatterBox.Controllers
 
             return View(viewModel);
         }
+
 
         [HttpGet]
         [AllowAnonymous]
@@ -122,6 +131,10 @@ namespace ChatterBox.Controllers
 
             _context.Posts.Add(post);
             await _context.SaveChangesAsync();
+
+            TempData["StatusMessage"] = "The post was created successfully.";
+
+            await _hashtagsService.ProcessHashtagsForNewPostAsync(content);
 
             return RedirectToAction("Index");
         }
@@ -310,6 +323,8 @@ namespace ChatterBox.Controllers
                 TempData["Error"] = "You have no rights to delete this post.";
                 return RedirectToAction("Index");
             }
+
+            await _hashtagsService.ProcessHashtagsForRemovedPostAsync(post.Content);
 
             var filePath = Path.Combine(_env.WebRootPath, post.ImageURL?.TrimStart('/') ?? string.Empty);
             if (System.IO.File.Exists(filePath))
