@@ -1,59 +1,61 @@
-﻿<div class="flex items-baseline justify-between text-black">
-    <h3 class="font-bold text-base" style="padding-top: 20px">People you may know</h3>
-</div>
-
-<div class="side-list">
-    <div class="side-list-item">
-        <a>
-            <img src="~/images/avatar/user.png" class="side-list-image rounded-full" />
-        </a>
-        <div class="flex-1">
-            <a>
-                <h4 class="side-list-title">
-                    First User
-                </h4>
-            </a>
-            <div class="side-list-info">5 flowers</div>
-        </div>
-        <form>
-            <button type="submit" class="button bg-primary-soft text-primary">Follow</button>
-        </form>
+﻿<div class="bg-gray-800 p-6 rounded-xl shadow-lg">
+    <div class="flex items-center justify-between mb-4">
+        <h3 class="font-bold text-xl bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 text-transparent bg-clip-text">
+            People you may know
+        </h3>
     </div>
-
-    <div class="side-list">
-        <div class="side-list-item">
-            <a>
-                <img src="~/images/avatar/user.png" class="side-list-image rounded-full" />
+    <div class="space-y-4">
+        <!-- User Card -->
+        <div class="flex items-center bg-gray-700 p-4 rounded-lg transition-transform transform hover:scale-105">
+            <a href="#">
+                <img src="~/images/avatar/user.png" class="w-12 h-12 rounded-full border-2 border-indigo-500" alt="User Avatar" />
             </a>
-            <div class="flex-1">
-                <a>
-                    <h4 class="side-list-title">
-                        Second User
-                    </h4>
+            <div class="flex-1 ml-4">
+                <a href="#">
+                    <h4 class="font-semibold text-white">First User</h4>
                 </a>
-                <div class="side-list-info">6 flowers</div>
+                <div class="text-sm text-gray-300">5 flowers</div>
             </div>
             <form>
-                <button type="submit" class="button bg-primary-soft text-primary">Follow</button>
+                <button type="submit" class="px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-full transition duration-300">
+                    Follow
+                </button>
             </form>
         </div>
-    </div>
 
-    <div class="side-list">
-        <div class="side-list-item">
-            <a>
-                <img src="~/images/avatar/user.png" class="side-list-image rounded-full" />
+        <!-- User Card -->
+        <div class="flex items-center bg-gray-700 p-4 rounded-lg transition-transform transform hover:scale-105">
+            <a href="#">
+                <img src="~/images/avatar/user.png" class="w-12 h-12 rounded-full border-2 border-indigo-500" alt="User Avatar" />
             </a>
-            <div class="flex-1">
-                <a>
-                    <h4 class="side-list-title">
-                        Third User
-                    </h4>
+            <div class="flex-1 ml-4">
+                <a href="#">
+                    <h4 class="font-semibold text-white">Second User</h4>
                 </a>
-                <div class="side-list-info">7 flowers</div>
+                <div class="text-sm text-gray-300">6 flowers</div>
             </div>
             <form>
-                <button type="submit" class="button bg-primary-soft text-primary">Follow</button>
+                <button type="submit" class="px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-full transition duration-300">
+                    Follow
+                </button>
+            </form>
+        </div>
+
+        <!-- User Card -->
+        <div class="flex items-center bg-gray-700 p-4 rounded-lg transition-transform transform hover:scale-105">
+            <a href="#">
+                <img src="~/images/avatar/user.png" class="w-12 h-12 rounded-full border-2 border-indigo-500" alt="User Avatar" />
+            </a>
+            <div class="flex-1 ml-4">
+                <a href="#">
+                    <h4 class="font-semibold text-white">Third User</h4>
+                </a>
+                <div class="text-sm text-gray-300">7 flowers</div>
+            </div>
+            <form>
+                <button type="submit" class="px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-full transition duration-300">
+                    Follow
+                </button>
             </form>
         </div>
     </div>
