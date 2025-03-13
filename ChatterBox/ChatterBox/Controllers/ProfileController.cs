@@ -25,25 +25,30 @@ namespace ChatterBox.Controllers
 
             var user = await _context.Users
                 .Include(u => u.Followers)
-                    .ThenInclude(uf => uf.Follower) // Зареждане на Follower за всеки UserFollow
+                    .ThenInclude(uf => uf.Follower)
                 .Include(u => u.Followings)
-                    .ThenInclude(uf => uf.FollowedUser) // Зареждане на FollowedUser за всеки UserFollow
+                    .ThenInclude(uf => uf.FollowedUser)
                 .FirstOrDefaultAsync(u => u.Id == id);
 
             if (user == null) return NotFound();
 
-            // Списък с ID-та на всички последователи и последвани
-            var followerIds = user.Followers.Select(uf => uf.Follower.Id).ToList();
-            var followingIds = user.Followings.Select(uf => uf.FollowedUser.Id).ToList();
-
-            // Проверка кои от тях currentUserId следва
-            var currentUserFollowedIds = await _context.UserFollows
-                .Where(uf => uf.FollowerId == currentUserId &&
-                       (followerIds.Contains(uf.FollowedUserId) || followingIds.Contains(uf.FollowedUserId)))
-                .Select(uf => uf.FollowedUserId)
+            var suggestedUsers = await _context.Users
+                .Where(u =>
+                    u.Id != currentUserId &&
+                    u.Id != id &&
+                    !_context.UserFollows.Any(uf =>
+                        uf.FollowerId == currentUserId &&
+                        uf.FollowedUserId == u.Id
+                    )
+                )
+                .Take(5)
+                .Select(u => new SuggestedUserViewModel
+                {
+                    User = u,
+                    IsFollowed = false 
+                })
                 .ToListAsync();
 
-            // Попълване на Followers и Followings
             var viewModel = new ProfileViewModel
             {
                 User = user,
@@ -53,21 +58,25 @@ namespace ChatterBox.Controllers
                     .Where(p => p.UserId == id)
                     .OrderByDescending(p => p.DateCreated)
                     .ToListAsync(),
+                PeopleYouMayKnow = suggestedUsers,
                 Followers = user.Followers
                     .Select(uf => new SuggestedUserViewModel
                     {
                         User = uf.Follower,
-                        IsFollowed = currentUserFollowedIds.Contains(uf.Follower.Id)
+                        IsFollowed = _context.UserFollows
+                            .Any(f => f.FollowerId == currentUserId && f.FollowedUserId == uf.Follower.Id)
                     })
                     .ToList(),
                 Followings = user.Followings
                     .Select(uf => new SuggestedUserViewModel
                     {
                         User = uf.FollowedUser,
-                        IsFollowed = currentUserFollowedIds.Contains(uf.FollowedUser.Id)
+                        IsFollowed = _context.UserFollows
+                            .Any(f => f.FollowerId == currentUserId && f.FollowedUserId == uf.FollowedUser.Id)
                     })
                     .ToList(),
-                // ... останалите свойства
+                IsFollowed = await _context.UserFollows
+                    .AnyAsync(uf => uf.FollowerId == currentUserId && uf.FollowedUserId == id)
             };
 
             return View(viewModel);
@@ -82,28 +91,28 @@ namespace ChatterBox.Controllers
                 return BadRequest();
             }
 
-            // Проверете дали вече съществува follow връзка
             var existingFollow = await _context.UserFollows
                 .FirstOrDefaultAsync(uf => uf.FollowerId == currentUserId && uf.FollowedUserId == followedUserId);
 
             if (existingFollow == null)
             {
-                // Създаване на нова follow връзка
                 var newFollow = new UserFollow
                 {
                     FollowerId = currentUserId,
                     FollowedUserId = followedUserId
                 };
                 _context.UserFollows.Add(newFollow);
+                TempData["StatusMessage"] = "You successfuly followed the user!";
             }
             else
             {
-                // Ако връзката съществува, изтриваме я (Unfollow)
                 _context.UserFollows.Remove(existingFollow);
+                TempData["StatusMessage"] = "You successfuly unfollowed the user!";
+                return RedirectToAction("Index", "Home");
             }
 
             await _context.SaveChangesAsync();
-            return RedirectToAction("Details", new { id = followedUserId });
+            return RedirectToAction("Details", "Profile", new { id = currentUserId });
         }
     }
 }

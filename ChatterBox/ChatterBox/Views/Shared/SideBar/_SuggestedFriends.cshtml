@@ -1,4 +1,4 @@
-﻿@model IEnumerable<ChatterBox.ViewModels.UserViewModels.SuggestedUserViewModel> 
+﻿@model IEnumerable<ChatterBox.ViewModels.UserViewModels.SuggestedUserViewModel>
 
 <div class="bg-gray-800 p-6 rounded-xl shadow-lg">
     <div class="flex items-center justify-between mb-4">
@@ -7,23 +7,44 @@
         </h3>
     </div>
     <div class="space-y-4">
-        @foreach (var friend in Model)
+        @if (Model.Any())
         {
-            <div class="flex items-center bg-gray-700 p-4 rounded-lg transition-transform transform hover:scale-105 hover:bg-gray-600">
-                <a href="@Url.Action("Details", "Profile", new { id = friend.User.Id })">
-                    <img src="@friend.User.ProfilePictureURL" class="w-12 h-12 rounded-full border-2 border-indigo-500" alt="User Avatar" onerror="this.src='/images/default-profile.png'" />
-                </a>
-                <div class="flex-1 ml-4">
+            @foreach (var friend in Model)
+            {
+                <div class="flex items-center bg-gray-700 p-4 rounded-lg transition-transform transform hover:scale-105 hover:bg-gray-600">
                     <a href="@Url.Action("Details", "Profile", new { id = friend.User.Id })">
-                        <h4 class="font-semibold text-white">@friend.User.FullName</h4>
+                        <img src="@friend.User.ProfilePictureURL"
+                             class="w-12 h-12 rounded-full border-2 border-indigo-500"
+                             alt="User Avatar"
+                             onerror="this.src='/images/default-profile.png'" />
                     </a>
+                    <div class="flex-1 ml-4">
+                        <a href="@Url.Action("Details", "Profile", new { id = friend.User.Id })">
+                            <h4 class="font-semibold text-white">@friend.User.FullName</h4>
+                        </a>
+                    </div>
+                    <form asp-action="Follow" asp-controller="Profile" method="post">
+                        <input type="hidden" name="followedUserId" value="@friend.User.Id" />
+                        <button type="submit"
+                                class="px-4 py-2 @(friend.IsFollowed ? "bg-red-500 hover:bg-red-600" : "bg-indigo-500 hover:bg-indigo-600")
+                                       text-white rounded-full transition duration-300">
+                            @(friend.IsFollowed ? "Unfollow" : "Follow")
+                        </button>
+                    </form>
                 </div>
-                <form asp-action="Follow" asp-controller="Profile" method="post">
-                    <input type="hidden" name="followedUserId" value="@friend.User.Id" />
-                    <button type="submit" class="px-4 py-2 @(friend.IsFollowed ? "bg-red-500 hover:bg-red-600" : "bg-indigo-500 hover:bg-indigo-600") text-white rounded-full transition duration-300">
-                        @(friend.IsFollowed ? "Unfollow" : "Follow")
-                    </button>
-                </form>
+            }
+        }
+        else
+        {
+            <div class="text-center p-4 text-gray-400 italic">
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <span>No suggestions. You're following everyone! 🎉</span>
+                }
+                else
+                {
+                    <span>Login to see suggestions</span>
+                }
             </div>
         }
     </div>
