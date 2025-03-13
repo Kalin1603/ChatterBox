@@ -94,87 +94,153 @@
         </div>
 
         <!-- User Posts -->
-        <div class="space-y-6">
-            @foreach (var post in Model.Posts)
-            {
-                <div class="bg-slate-900 rounded-xl shadow-sm p-6 border border-slate-800">
-                    <!-- Post Header -->
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="flex items-center gap-3">
-                            <img src="@post.User.ProfilePictureURL"
-                                 alt="@post.User.UserName"
-                                 class="w-10 h-10 rounded-full border-2 border-slate-700 shadow-sm"
-                                 onerror="this.src='/images/default-profile.png'" />
-                            <div>
-                                <span class="block font-semibold text-gray-100">@post.User.FullName</span>
-                                <span class="block text-sm text-gray-400">
-                                    @@@post.User.UserName • @post.DateCreated.ToString("dd MMMM, yyyy • h:mm tt")
-                                </span>
+        @if (Model.Posts.Any())
+        {
+            <div class="space-y-6">
+                @foreach (var post in Model.Posts)
+                {
+                    <div class="bg-slate-900 rounded-xl shadow-sm p-6 border border-slate-800">
+                        <!-- Post Header -->
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center gap-3">
+                                <img src="@post.User.ProfilePictureURL"
+                                     alt="@post.User.UserName"
+                                     class="w-10 h-10 rounded-full border-2 border-slate-700 shadow-sm"
+                                     onerror="this.src='/images/default-profile.png'" />
+                                <div>
+                                    <span class="block font-semibold text-gray-100">@post.User.FullName</span>
+                                    <span class="block text-sm text-gray-400">
+                                        @@@post.User.UserName • @post.DateCreated.ToString("dd MMMM, yyyy • h:mm tt")
+                                    </span>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Post Content -->
-                    <div class="text-gray-200 space-y-4">
-                        <p class="text-lg leading-relaxed">@post.Content</p>
-                        @if (!string.IsNullOrEmpty(post.ImageURL))
-                        {
-                            <img src="@post.ImageURL"
-                                 alt="Post Image"
-                                 class="rounded-xl w-full object-cover max-h-96 border border-slate-800" />
-                        }
-                    </div>
-
-                    <!-- Comments Section -->
-                    <div class="mt-6 pt-4 border-t border-slate-800">
-                        <div class="flex items-center gap-2 mb-4">
-                            <svg class="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-                            </svg>
-                            <h4 class="font-semibold text-gray-100 text-sm uppercase tracking-wide">Comments • @post.Comments.Count</h4>
+                        <!-- Post Content -->
+                        <div class="text-gray-200 space-y-4">
+                            <p class="text-lg leading-relaxed">@post.Content</p>
+                            @if (!string.IsNullOrEmpty(post.ImageURL))
+                            {
+                                <img src="@post.ImageURL"
+                                     alt="Post Image"
+                                     class="rounded-xl w-full object-cover max-h-96 border border-slate-800" />
+                            }
                         </div>
 
-                        <ul class="space-y-4">
-                            @if (post.Comments.Any())
-                            {
-                                @foreach (var comment in post.Comments)
-                                {
-                                    <li class="flex items-start gap-3 p-3 rounded-lg hover:bg-slate-800 transition-colors group">
-                                        <div class="relative">
-                                            <img src="@comment.User.ProfilePictureURL"
-                                                 alt="@comment.User.UserName"
-                                                 class="w-8 h-8 rounded-full border-2 border-slate-700 flex-shrink-0 shadow-sm"
-                                                 onerror="this.src='/images/default-profile.png'" />
-                                            <div class="absolute -bottom-1 -right-1 w-3 h-3 bg-indigo-500 rounded-full border-2 border-slate-800"></div>
-                                        </div>
+                        <!-- Comments Section -->
+                        <div class="mt-6 pt-4 border-t border-slate-800">
+                            <div class="flex items-center gap-2 mb-4">
+                                <svg class="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                                </svg>
+                                <h4 class="font-semibold text-gray-100 text-sm uppercase tracking-wide">Comments • @post.Comments.Count</h4>
+                            </div>
 
-                                        <div class="flex-1 min-w-0">
-                                            <div class="flex flex-wrap items-baseline gap-2">
-                                                <span class="font-medium text-gray-100">@comment.User.FullName</span>
-                                                <span class="text-xs text-gray-400">
-                                                    @@@comment.User.UserName •
-                                                    <time>@comment.DateCreated.ToString("MMM dd, h:mm tt")</time>
-                                                </span>
+                            <ul class="space-y-4">
+                                @if (post.Comments.Any())
+                                {
+                                    @foreach (var comment in post.Comments)
+                                    {
+                                        <li class="flex items-start gap-3 p-3 rounded-lg hover:bg-slate-800 transition-colors group">
+                                            <div class="relative">
+                                                <img src="@comment.User.ProfilePictureURL"
+                                                     alt="@comment.User.UserName"
+                                                     class="w-8 h-8 rounded-full border-2 border-slate-700 flex-shrink-0 shadow-sm"
+                                                     onerror="this.src='/images/default-profile.png'" />
+                                                <div class="absolute -bottom-1 -right-1 w-3 h-3 bg-indigo-500 rounded-full border-2 border-slate-800"></div>
                                             </div>
-                                            <p class="text-gray-200 mt-1 text-sm leading-relaxed bg-slate-800 px-3 py-2 rounded-md">
-                                                @comment.Content
-                                            </p>
-                                        </div>
-                                    </li>
+
+                                            <div class="flex-1 min-w-0">
+                                                <div class="flex flex-wrap items-baseline gap-2">
+                                                    <span class="font-medium text-gray-100">@comment.User.FullName</span>
+                                                    <span class="text-xs text-gray-400">
+                                                        @@@comment.User.UserName •
+                                                        <time>@comment.DateCreated.ToString("MMM dd, h:mm tt")</time>
+                                                    </span>
+                                                </div>
+                                                <p class="text-gray-200 mt-1 text-sm leading-relaxed bg-slate-800 px-3 py-2 rounded-md">
+                                                    @comment.Content
+                                                </p>
+                                            </div>
+                                        </li>
+                                    }
                                 }
-                            }
-                            else
-                            {
-                                <div class="text-center p-4 border-2 border-dashed border-slate-700 rounded-lg">
-                                    <p class="text-sm text-gray-400 italic">
-                                        No comments yet. Be the first to comment!
-                                    </p>
-                                </div>
-                            }
-                        </ul>
+                                else
+                                {
+                                    <div class="text-center p-4 border-2 border-dashed border-slate-700 rounded-lg">
+                                        <p class="text-sm text-gray-400 italic">
+                                            No comments yet. Be the first to comment!
+                                        </p>
+                                    </div>
+                                }
+                            </ul>
+                        </div>
                     </div>
-                </div>
-            }
+                }
+            </div>
+        }
+
+        else
+        {
+            <div class="bg-slate-900 rounded-xl p-8 text-center border-2 border-dashed border-slate-800">
+                <svg class="w-16 h-16 mx-auto text-slate-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                <h3 class="text-xl font-semibold text-gray-300 mb-2">No posts yet</h3>
+                <p class="text-gray-400">When @Model.User.FullName shares something, it'll show up here.</p>
+            </div>
+        }
+        
+        <!-- Добавете следния код след секцията с постовете -->
+        <!-- Followers and Followings Sections -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+            <!-- Followers -->
+            <div class="bg-slate-900 rounded-xl shadow-lg p-6 border border-slate-800">
+                <h3 class="font-bold text-xl mb-4 text-gray-100">
+                    Followers (@Model.Followers.Count)
+                    <span class="text-sm text-gray-400">People following @Model.User.FullName</span>
+                </h3>
+
+                @if (Model.Followers.Any())
+                {
+                    <div class="space-y-4">
+                        @foreach (var follower in Model.Followers)
+                        {
+                            <partial name="~/Views/PartialUser/_UserCard.cshtml" model="follower" />
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center p-4 text-gray-400 italic">
+                        No followers yet. Be the first to follow! 😊
+                    </div>
+                }
+            </div>
+
+            <!-- Followings -->
+            <div class="bg-slate-900 rounded-xl shadow-lg p-6 border border-slate-800">
+                <h3 class="font-bold text-xl mb-4 text-gray-100">
+                    Following (@Model.Followings.Count)
+                    <span class="text-sm text-gray-400">People @Model.User.FullName follows</span>
+                </h3>
+
+                @if (Model.Followings.Any())
+                {
+                    <div class="space-y-4">
+                        @foreach (var following in Model.Followings)
+                        {
+                            <partial name="~/Views/PartialUser/_UserCard.cshtml" model="following" />
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center p-4 text-gray-400 italic">
+                        Not following anyone yet. 🌎
+                    </div>
+                }
+            </div>
         </div>
     </div>
 </main>

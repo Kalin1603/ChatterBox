@@ -25,6 +25,8 @@ namespace ChatterBox.Data
 
         public DbSet<Favorite> Favorites { get; set; }
 
+        public DbSet<UserFollow> UserFollows { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -79,6 +81,21 @@ namespace ChatterBox.Data
                 .HasOne(f => f.User)
                 .WithMany(u => u.Reports)
                 .HasForeignKey(f => f.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            //UserFollows
+            modelBuilder.Entity<UserFollow>().HasKey(uf => new { uf.FollowerId, uf.FollowedUserId });
+
+            modelBuilder.Entity<UserFollow>()
+                .HasOne(uf => uf.Follower)
+                .WithMany(u => u.Followings)
+                .HasForeignKey(uf => uf.FollowerId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<UserFollow>()
+                .HasOne(uf => uf.FollowedUser)
+                .WithMany(u => u.Followers)
+                .HasForeignKey(uf => uf.FollowedUserId)
                 .OnDelete(DeleteBehavior.Restrict);
         }
     }

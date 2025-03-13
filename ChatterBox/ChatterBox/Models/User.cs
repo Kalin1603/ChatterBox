@@ -45,5 +45,9 @@ namespace ChatterBox.Models
         public ICollection<Favorite> Favorites { get; set; } = new List<Favorite>();
 
         public ICollection<Report> Reports { get; set; } = new List<Report>();
+
+        public ICollection<UserFollow> Followers { get; set; } = new List<UserFollow>();
+
+        public ICollection<UserFollow> Followings { get; set; } = new List<UserFollow>();
     }
 }

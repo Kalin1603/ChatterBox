@@ -4,6 +4,7 @@ using ChatterBox.Data;
 using ChatterBox.Models;
 using ChatterBox.Services;
 using ChatterBox.ViewModels.Home;
+using ChatterBox.ViewModels.UserViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -27,12 +28,25 @@ namespace ChatterBox.Controllers
 
         public async Task<IActionResult> Index(string hashtag)
         {
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
             IQueryable<Post> query = _context.Posts
                 .Include(p => p.User)
                 .Include(p => p.Likes).ThenInclude(l => l.User)
                 .Include(p => p.Comments).ThenInclude(c => c.User)
                 .Include(p => p.Favorites).ThenInclude(f => f.User)
                 .OrderByDescending(p => p.DateCreated);
+
+            var suggestedUsers = await _context.Users
+                .Where(u => u.Id != currentUserId) 
+                .Take(5)
+                .Select(u => new SuggestedUserViewModel
+                {
+                    User = u,
+                    IsFollowed = _context.UserFollows
+                        .Any(uf => uf.FollowerId == currentUserId && uf.FollowedUserId == u.Id)
+                })
+                .ToListAsync();
 
             if (!string.IsNullOrEmpty(hashtag))
             {
@@ -44,7 +58,8 @@ namespace ChatterBox.Controllers
             var viewModel = new HomeViewModel
             {
                 Posts = posts.Where(p => !string.IsNullOrEmpty(p.Content)).ToList(),
-                StatusMessage = (string)TempData["StatusMessage"]
+                StatusMessage = (string)TempData["StatusMessage"],
+                PeopleYouMayKnow = suggestedUsers
             };
 
             return View(viewModel);
