@@ -52,6 +52,7 @@ namespace ChatterBox.Controllers
             var viewModel = new ProfileViewModel
             {
                 User = user,
+                StatusMessage = (string)TempData["StatusMessage"],
                 Posts = await _context.Posts
                     .Include(p => p.User)
                     .Include(p => p.Comments).ThenInclude(c => c.User)
@@ -102,17 +103,16 @@ namespace ChatterBox.Controllers
                     FollowedUserId = followedUserId
                 };
                 _context.UserFollows.Add(newFollow);
-                TempData["StatusMessage"] = "You successfuly followed the user!";
+                TempData["StatusMessage"] = "You successfully followed the user!";
             }
             else
             {
                 _context.UserFollows.Remove(existingFollow);
-                TempData["StatusMessage"] = "You successfuly unfollowed the user!";
-                return RedirectToAction("Index", "Home");
+                TempData["StatusMessage"] = "You successfully unfollowed the user!";
             }
 
             await _context.SaveChangesAsync();
-            return RedirectToAction("Details", "Profile", new { id = currentUserId });
+            return RedirectToAction("Details", "Profile", new { id = followedUserId });
         }
     }
 }

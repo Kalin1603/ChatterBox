@@ -1,15 +1,20 @@
-﻿@using ChatterBox.ViewModels.Profile
+﻿@using System.Security.Claims
+@using ChatterBox.ViewModels.Profile
 @model ProfileViewModel
 
 @{
     ViewData["Title"] = "Profile - " + Model.User.FullName;
+    var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+    var isOwnProfile = currentUserId == Model.User.Id;
 }
+
+<partial name="~/Areas/Identity/Pages/Account/_StatusMessage.cshtml" model="Model.StatusMessage" />
 
 <main id="site__main" class="2xl:ml-[var(--w-side)] xl:ml-[var(--w-side-sm)] p-2.5 h-[calc(100vh - var(--m-top))] mt-[var(--m-top)]">
     <div class="max-w-4xl mx-auto pt-8">
         <!-- Profile Header -->
         <div class="bg-slate-900 rounded-2xl shadow-lg p-6 mb-6 border border-slate-800">
-            <div class="flex flex-col md:flex-row items-center md:items-start gap-6">
+            <div class="flex flex-col md:flex-row items-center gap-6">
                 <!-- Profile Picture -->
                 <div class="flex-shrink-0">
                     <img src="@Model.User.ProfilePictureURL"
@@ -18,19 +23,32 @@
                          onerror="this.src='/images/default-profile.png'" />
                 </div>
 
-                <!-- User Info -->
-                <div class="flex-1 space-y-4">
-                    <!-- Name and Username -->
-                    <div class="text-center md:text-left">
-                        <h1 class="text-3xl font-bold text-gray-100">@Model.User.FullName</h1>
-                        <p class="text-lg text-gray-300 mt-1">@@@Model.User.UserName</p>
-                        <p class="text-sm text-gray-400 mt-1">
-                            Member since @Model.User.DateOfBirth.ToString("MMMM yyyy")
-                        </p>
+                <!-- User Info and Follow Button -->
+                <div class="flex-1 space-y-4 w-full">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                        <!-- Name, Username and Member info -->
+                        <div class="text-center sm:text-left">
+                            <h1 class="text-3xl font-bold text-gray-100">@Model.User.FullName</h1>
+                            <p class="text-lg text-gray-300 mt-1">@@@Model.User.UserName</p>
+                            <p class="text-sm text-gray-400 mt-1">
+                                Member since @Model.User.DateOfBirth.ToString("MMMM yyyy")
+                            </p>
+                        </div>
+
+                        <!-- Follow/Unfollow Button (ако не е собствения профил) -->
+                        @if (User.Identity.IsAuthenticated && !isOwnProfile)
+                        {
+                            <form asp-action="Follow" asp-controller="Profile" method="post" class="mt-4 sm:mt-0">
+                                <input type="hidden" name="followedUserId" value="@Model.User.Id" />
+                                <button type="submit" class="px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-full transition duration-300">
+                                    @(Model.IsFollowed ? "Unfollow" : "Follow")
+                                </button>
+                            </form>
+                        }
                     </div>
 
                     <!-- User Details Grid -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mt-4">
                         <!-- Location -->
                         <div class="flex items-center gap-3 p-3 bg-slate-800 rounded-lg hover:bg-slate-750 transition-colors">
                             <div class="p-2 bg-slate-700 rounded-lg shadow-sm">
@@ -179,7 +197,6 @@
                 }
             </div>
         }
-
         else
         {
             <div class="bg-slate-900 rounded-xl p-8 text-center border-2 border-dashed border-slate-800">
@@ -190,9 +207,7 @@
                 <p class="text-gray-400">When @Model.User.FullName shares something, it'll show up here.</p>
             </div>
         }
-        
-        <!-- Добавете следния код след секцията с постовете -->
-        <!-- Followers and Followings Sections -->
+
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
             <!-- Followers -->
             <div class="bg-slate-900 rounded-xl shadow-lg p-6 border border-slate-800">

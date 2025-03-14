@@ -17,5 +17,7 @@ namespace ChatterBox.ViewModels.Profile
         public List<SuggestedUserViewModel> Followers { get; set; } = new List<SuggestedUserViewModel>(); 
 
         public List<SuggestedUserViewModel> Followings { get; set; } = new List<SuggestedUserViewModel>();
+
+        public string StatusMessage { get; set; }
     }
 }

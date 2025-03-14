@@ -1,14 +1,14 @@
 ﻿@model IEnumerable<ChatterBox.ViewModels.UserViewModels.SuggestedUserViewModel>
 
-<div class="bg-gray-800 p-6 rounded-xl shadow-lg">
-    <div class="flex items-center justify-between mb-4">
-        <h3 class="font-bold text-xl bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 text-transparent bg-clip-text">
-            People you may know
-        </h3>
-    </div>
-    <div class="space-y-4">
-        @if (Model.Any())
-        {
+@if (Model.Any())
+{
+    <div class="bg-gray-800 p-6 rounded-xl shadow-lg">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="font-bold text-xl bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 text-transparent bg-clip-text">
+                People you may know
+            </h3>
+        </div>
+        <div class="space-y-4">
             @foreach (var friend in Model)
             {
                 <div class="flex items-center bg-gray-700 p-4 rounded-lg transition-transform transform hover:scale-105 hover:bg-gray-600">
@@ -26,26 +26,12 @@
                     <form asp-action="Follow" asp-controller="Profile" method="post">
                         <input type="hidden" name="followedUserId" value="@friend.User.Id" />
                         <button type="submit"
-                                class="px-4 py-2 @(friend.IsFollowed ? "bg-red-500 hover:bg-red-600" : "bg-indigo-500 hover:bg-indigo-600")
-                                       text-white rounded-full transition duration-300">
+                                class="px-4 py-2 @(friend.IsFollowed ? "bg-red-500 hover:bg-red-600" : "bg-indigo-500 hover:bg-indigo-600") text-white rounded-full transition duration-300">
                             @(friend.IsFollowed ? "Unfollow" : "Follow")
                         </button>
                     </form>
                 </div>
             }
-        }
-        else
-        {
-            <div class="text-center p-4 text-gray-400 italic">
-                @if (User.Identity.IsAuthenticated)
-                {
-                    <span>No suggestions. You're following everyone! 🎉</span>
-                }
-                else
-                {
-                    <span>Login to see suggestions</span>
-                }
-            </div>
-        }
+        </div>
     </div>
-</div>
+}
