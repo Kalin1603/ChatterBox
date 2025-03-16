@@ -10,115 +10,118 @@
 
 <partial name="~/Areas/Identity/Pages/Account/_StatusMessage.cshtml" model="Model.StatusMessage" />
 
-<main id="site__main" class="2xl:ml-[var(--w-side)] xl:ml-[var(--w-side-sm)] p-2.5 h-[calc(100vh - var(--m-top))] mt-[var(--m-top)]">
-    <div class="max-w-4xl mx-auto pt-8">
-        <!-- Profile Header -->
-        <div class="bg-slate-900 rounded-2xl shadow-lg p-6 mb-6 border border-slate-800">
-            <div class="flex flex-col md:flex-row items-center gap-6">
-                <!-- Profile Picture -->
+<main id="site__main" class="2xl:ml-[var(--w-side)] xl:ml-[var(--w-side-sm)] p-4 h-[calc(100vh - var(--m-top))] mt-[var(--m-top)]">
+    <div class="max-w-4xl mx-auto space-y-8">
+        <!-- Профилна секция -->
+        <div class="bg-slate-900 rounded-2xl shadow-lg p-6 border border-slate-800">
+            <!-- Горе: Снимка и основна информация -->
+            <div class="flex flex-col md:flex-row items-center gap-6 border-b border-slate-800 pb-6 mb-6">
+                <!-- Профилна снимка -->
                 <div class="flex-shrink-0">
                     <img src="@Model.User.ProfilePictureURL"
                          alt="@Model.User.UserName"
                          class="w-32 h-32 rounded-full border-4 border-slate-700 shadow-lg hover:border-slate-600 transition-colors"
                          onerror="this.src='/images/default-profile.png'" />
                 </div>
+                <!-- Име, потребителско име, дата на членство и бутон Follow -->
+                <div class="flex-1 text-center md:text-left">
+                    <h1 class="text-3xl font-bold text-gray-100">@Model.User.FullName</h1>
+                    <p class="text-lg text-gray-300 mt-1">@@@Model.User.UserName</p>
+                    <p class="text-sm text-gray-400 mt-1">
+                        Member since @Model.User.DateOfBirth.ToString("MMMM yyyy")
+                    </p>
+                    @if (User.Identity.IsAuthenticated && !isOwnProfile)
+                    {
+                        <form asp-action="Follow" asp-controller="Profile" method="post" class="mt-4">
+                            <input type="hidden" name="followedUserId" value="@Model.User.Id" />
+                            <button type="submit" class="px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-full transition duration-300">
+                                @(Model.IsFollowed ? "Unfollow" : "Follow")
+                            </button>
+                        </form>
+                    }
+                </div>
+            </div>
 
-                <!-- User Info and Follow Button -->
-                <div class="flex-1 space-y-4 w-full">
-                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                        <!-- Name, Username and Member info -->
-                        <div class="text-center sm:text-left">
-                            <h1 class="text-3xl font-bold text-gray-100">@Model.User.FullName</h1>
-                            <p class="text-lg text-gray-300 mt-1">@@@Model.User.UserName</p>
-                            <p class="text-sm text-gray-400 mt-1">
-                                Member since @Model.User.DateOfBirth.ToString("MMMM yyyy")
-                            </p>
-                        </div>
-
-                        <!-- Follow/Unfollow Button (ако не е собствения профил) -->
-                        @if (User.Identity.IsAuthenticated && !isOwnProfile)
-                        {
-                            <form asp-action="Follow" asp-controller="Profile" method="post" class="mt-4 sm:mt-0">
-                                <input type="hidden" name="followedUserId" value="@Model.User.Id" />
-                                <button type="submit" class="px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-full transition duration-300">
-                                    @(Model.IsFollowed ? "Unfollow" : "Follow")
-                                </button>
-                            </form>
-                        }
+            <!-- Детайли за потребителя -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+                <!-- Местоположение -->
+                <div class="flex items-center gap-3 p-3 bg-slate-800 rounded-lg hover:bg-slate-750 transition-colors">
+                    <div class="p-2 bg-slate-700 rounded-lg shadow-sm">
+                        <svg class="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
                     </div>
-
-                    <!-- User Details Grid -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mt-4">
-                        <!-- Location -->
-                        <div class="flex items-center gap-3 p-3 bg-slate-800 rounded-lg hover:bg-slate-750 transition-colors">
-                            <div class="p-2 bg-slate-700 rounded-lg shadow-sm">
-                                <svg class="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                                </svg>
-                            </div>
-                            <div>
-                                <p class="text-sm text-gray-400">Location</p>
-                                <p class="font-medium text-gray-100">
-                                    @Model.User.City, @Model.User.State
-                                </p>
-                                <p class="text-xs text-gray-400">
-                                    @Model.User.Country
-                                </p>
-                            </div>
-                        </div>
-
-                        <!-- Age -->
-                        <div class="flex items-center gap-3 p-3 bg-slate-800 rounded-lg hover:bg-slate-750 transition-colors">
-                            <div class="p-2 bg-slate-700 rounded-lg shadow-sm">
-                                <svg class="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                </svg>
-                            </div>
-                            <div>
-                                <p class="text-sm text-gray-400">Age</p>
-                                <p class="font-medium text-gray-100">
-                                    @(DateTime.Now.Year - Model.User.DateOfBirth.Year) years
-                                </p>
-                                <p class="text-xs text-gray-400">
-                                    Born @Model.User.DateOfBirth.ToString("dd MMM yyyy")
-                                </p>
-                            </div>
-                        </div>
-
-                        <!-- Address -->
-                        @if (!string.IsNullOrEmpty(Model.User.Address))
-                        {
-                            <div class="flex items-center gap-3 p-3 bg-slate-800 rounded-lg hover:bg-slate-750 transition-colors">
-                                <div class="p-2 bg-slate-700 rounded-lg shadow-sm">
-                                    <svg class="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                                    </svg>
-                                </div>
-                                <div>
-                                    <p class="text-sm text-gray-400">Address</p>
-                                    <p class="font-medium text-gray-100">
-                                        @Model.User.Address
-                                    </p>
-                                    <p class="text-xs text-gray-400">
-                                        ZIP: @Model.User.Zip
-                                    </p>
-                                </div>
-                            </div>
-                        }
+                    <div>
+                        <p class="text-sm text-gray-400">Location</p>
+                        <p class="font-medium text-gray-100">@Model.User.City, @Model.User.State</p>
+                        <p class="text-xs text-gray-400">@Model.User.Country</p>
                     </div>
+                </div>
+
+                <!-- Възраст -->
+                <div class="flex items-center gap-3 p-3 bg-slate-800 rounded-lg hover:bg-slate-750 transition-colors">
+                    <div class="p-2 bg-slate-700 rounded-lg shadow-sm">
+                        <svg class="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 012-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-400">Age</p>
+                        <p class="font-medium text-gray-100">@(DateTime.Now.Year - Model.User.DateOfBirth.Year) years</p>
+                        <p class="text-xs text-gray-400">Born @Model.User.DateOfBirth.ToString("dd MMM yyyy")</p>
+                    </div>
+                </div>
+
+                <!-- Адрес (ако има) -->
+                @if (!string.IsNullOrEmpty(Model.User.Address))
+                {
+                    <div class="flex items-center gap-3 p-3 bg-slate-800 rounded-lg hover:bg-slate-750 transition-colors">
+                        <div class="p-2 bg-slate-700 rounded-lg shadow-sm">
+                            <svg class="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-400">Address</p>
+                            <p class="font-medium text-gray-100">@Model.User.Address</p>
+                            <p class="text-xs text-gray-400">ZIP: @Model.User.Zip</p>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <!-- Социална информация -->
+            <div class="grid grid-cols-2 gap-4">
+                <!-- Followers -->
+                <div class="flex items-center p-4 bg-slate-800 rounded-xl shadow border border-slate-700 hover:border-slate-600 transition-colors">
+                    <button onclick="openModal('followers-modal')" class="w-full text-left">
+                        <h3 class="font-bold text-lg text-gray-100 transition-colors">
+                            Followers <span class="text-indigo-400">(@Model.Followers.Count)</span>
+                        </h3>
+                        <p class="text-xs text-gray-400 mt-1">People following @Model.User.FullName</p>
+                    </button>
+                </div>
+                <!-- Following -->
+                <div class="flex items-center p-4 bg-slate-800 rounded-xl shadow border border-slate-700 hover:border-slate-600 transition-colors">
+                    <button onclick="openModal('following-modal')" class="w-full text-left">
+                        <h3 class="font-bold text-lg text-gray-100 transition-colors">
+                            Following <span class="text-indigo-400">(@Model.Followings.Count)</span>
+                        </h3>
+                        <p class="text-xs text-gray-400 mt-1">People @Model.User.FullName follows</p>
+                    </button>
                 </div>
             </div>
         </div>
 
-        <!-- User Posts -->
+        <!-- Публикации (ако има) -->
         @if (Model.Posts.Any())
         {
             <div class="space-y-6">
                 @foreach (var post in Model.Posts)
                 {
                     <div class="bg-slate-900 rounded-xl shadow-sm p-6 border border-slate-800">
-                        <!-- Post Header -->
+                        <!-- Заглавна част на публикацията -->
                         <div class="flex items-center justify-between mb-4">
                             <div class="flex items-center gap-3">
                                 <img src="@post.User.ProfilePictureURL"
@@ -133,8 +136,7 @@
                                 </div>
                             </div>
                         </div>
-
-                        <!-- Post Content -->
+                        <!-- Съдържание на публикацията -->
                         <div class="text-gray-200 space-y-4">
                             <p class="text-lg leading-relaxed">@post.Content</p>
                             @if (!string.IsNullOrEmpty(post.ImageURL))
@@ -144,8 +146,7 @@
                                      class="rounded-xl w-full object-cover max-h-96 border border-slate-800" />
                             }
                         </div>
-
-                        <!-- Comments Section -->
+                        <!-- Коментари -->
                         <div class="mt-6 pt-4 border-t border-slate-800">
                             <div class="flex items-center gap-2 mb-4">
                                 <svg class="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -153,7 +154,6 @@
                                 </svg>
                                 <h4 class="font-semibold text-gray-100 text-sm uppercase tracking-wide">Comments • @post.Comments.Count</h4>
                             </div>
-
                             <ul class="space-y-4">
                                 @if (post.Comments.Any())
                                 {
@@ -163,11 +163,10 @@
                                             <div class="relative">
                                                 <img src="@comment.User.ProfilePictureURL"
                                                      alt="@comment.User.UserName"
-                                                     class="w-8 h-8 rounded-full border-2 border-slate-700 flex-shrink-0 shadow-sm"
+                                                     class="w-8 h-8 rounded-full border-2 border-slate-700 shadow-sm"
                                                      onerror="this.src='/images/default-profile.png'" />
                                                 <div class="absolute -bottom-1 -right-1 w-3 h-3 bg-indigo-500 rounded-full border-2 border-slate-800"></div>
                                             </div>
-
                                             <div class="flex-1 min-w-0">
                                                 <div class="flex flex-wrap items-baseline gap-2">
                                                     <span class="font-medium text-gray-100">@comment.User.FullName</span>
@@ -207,55 +206,98 @@
                 <p class="text-gray-400">When @Model.User.FullName shares something, it'll show up here.</p>
             </div>
         }
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-            <!-- Followers -->
-            <div class="bg-slate-900 rounded-xl shadow-lg p-6 border border-slate-800">
-                <h3 class="font-bold text-xl mb-4 text-gray-100">
-                    Followers (@Model.Followers.Count)
-                    <span class="text-sm text-gray-400">People following @Model.User.FullName</span>
-                </h3>
-
-                @if (Model.Followers.Any())
-                {
-                    <div class="space-y-4">
-                        @foreach (var follower in Model.Followers)
-                        {
-                            <partial name="~/Views/PartialUser/_UserCard.cshtml" model="follower" />
-                        }
-                    </div>
-                }
-                else
-                {
-                    <div class="text-center p-4 text-gray-400 italic">
-                        No followers yet. Be the first to follow! 😊
-                    </div>
-                }
-            </div>
-
-            <!-- Followings -->
-            <div class="bg-slate-900 rounded-xl shadow-lg p-6 border border-slate-800">
-                <h3 class="font-bold text-xl mb-4 text-gray-100">
-                    Following (@Model.Followings.Count)
-                    <span class="text-sm text-gray-400">People @Model.User.FullName follows</span>
-                </h3>
-
-                @if (Model.Followings.Any())
-                {
-                    <div class="space-y-4">
-                        @foreach (var following in Model.Followings)
-                        {
-                            <partial name="~/Views/PartialUser/_UserCard.cshtml" model="following" />
-                        }
-                    </div>
-                }
-                else
-                {
-                    <div class="text-center p-4 text-gray-400 italic">
-                        Not following anyone yet. 🌎
-                    </div>
-                }
-            </div>
-        </div>
     </div>
 </main>
+
+<!-- Модали за Followers и Following (остават същите) -->
+<div id="followers-modal" class="hidden fixed inset-0 bg-black/50 z-[999] backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-slate-900 rounded-xl w-full max-w-md max-h-[90vh] flex flex-col">
+        <div class="p-6 border-b border-slate-800 flex justify-between items-center">
+            <h3 class="text-xl font-bold text-gray-100">Followers</h3>
+            <button onclick="closeModal('followers-modal')" class="text-2xl text-gray-400 hover:text-gray-200 transition-colors">
+                &times;
+            </button>
+        </div>
+        <div class="overflow-y-auto flex-1 p-4">
+            @if (Model.Followers.Any())
+            {
+                <div class="space-y-3">
+                    @foreach (var follower in Model.Followers)
+                    {
+                        <div class="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-800 transition-colors">
+                            <img src="@follower.User.ProfilePictureURL"
+                                 class="w-12 h-12 rounded-full border-2 border-slate-700"
+                                 onerror="this.src='/images/default-profile.png'" />
+                            <div>
+                                <h4 class="font-semibold text-gray-100">@follower.User.FullName</h4>
+                                <p class="text-sm text-gray-400">@@@follower.User.UserName</p>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="text-center p-6 text-gray-400 italic">
+                    No followers yet
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<div id="following-modal" class="hidden fixed inset-0 bg-black/50 z-[999] backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-slate-900 rounded-xl w-full max-w-md max-h-[90vh] flex flex-col">
+        <div class="p-6 border-b border-slate-800 flex justify-between items-center">
+            <h3 class="text-xl font-bold text-gray-100">Following</h3>
+            <button onclick="closeModal('following-modal')" class="text-2xl text-gray-400 hover:text-gray-200 transition-colors">
+                &times;
+            </button>
+        </div>
+        <div class="overflow-y-auto flex-1 p-4">
+            @if (Model.Followings.Any())
+            {
+                <div class="space-y-3">
+                    @foreach (var following in Model.Followings)
+                    {
+                        <div class="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-800 transition-colors">
+                            <img src="@following.User.ProfilePictureURL"
+                                 class="w-12 h-12 rounded-full border-2 border-slate-700"
+                                 onerror="this.src='/images/default-profile.png'" />
+                            <div>
+                                <h4 class="font-semibold text-gray-100">@following.User.FullName</h4>
+                                <p class="text-sm text-gray-400">@@@following.User.UserName</p>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="text-center p-6 text-gray-400 italic">
+                    Not following anyone yet
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<script>
+    function openModal(modalId) {
+        document.getElementById(modalId).classList.remove('hidden');
+        document.body.classList.add('overflow-hidden');
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).classList.add('hidden');
+        document.body.classList.remove('overflow-hidden');
+    }
+
+    // Затваряне на модала при клик извън него
+    window.onclick = function(event) {
+        if (event.target.classList.contains('bg-black/50')) {
+            event.target.classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+        }
+    }
+</script>
