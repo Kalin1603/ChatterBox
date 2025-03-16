@@ -11,36 +11,40 @@
 <partial name="~/Areas/Identity/Pages/Account/_StatusMessage.cshtml" model="Model.StatusMessage" />
 
 <main id="site__main" class="2xl:ml-[var(--w-side)] xl:ml-[var(--w-side-sm)] p-4 h-[calc(100vh - var(--m-top))] mt-[var(--m-top)]">
-    <div class="max-w-4xl mx-auto space-y-8">
+    <!-- Добавих малко top padding към съдържанието -->
+    <div class="max-w-4xl mx-auto space-y-8 pt-5">
         <!-- Профилна секция -->
         <div class="bg-slate-900 rounded-2xl shadow-lg p-6 border border-slate-800">
-            <!-- Горе: Снимка и основна информация -->
-            <div class="flex flex-col md:flex-row items-center gap-6 border-b border-slate-800 pb-6 mb-6">
-                <!-- Профилна снимка -->
-                <div class="flex-shrink-0">
-                    <img src="@Model.User.ProfilePictureURL"
-                         alt="@Model.User.UserName"
-                         class="w-32 h-32 rounded-full border-4 border-slate-700 shadow-lg hover:border-slate-600 transition-colors"
-                         onerror="this.src='/images/default-profile.png'" />
+            <div class="relative">
+                <div class="flex flex-col md:flex-row items-center gap-6 border-b border-slate-800 pb-4 mb-4">
+
+                    <div class="flex-shrink-0">
+                        <img src="@Model.User.ProfilePictureURL"
+                             alt="@Model.User.UserName"
+                             class="w-32 h-32 rounded-full border-4 border-slate-700 shadow-lg hover:border-slate-600 transition-colors"
+                             onerror="this.src='/images/default-profile.png'" />
+                    </div>
+
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-100">@Model.User.FullName</h1>
+                        <p class="text-lg text-gray-300 mt-1">@@@Model.User.UserName</p>
+                        <p class="text-sm text-gray-400 mt-1">
+                            Member since @Model.User.DateOfBirth.ToString("MMMM yyyy")
+                        </p>
+                    </div>
                 </div>
-                <!-- Име, потребителско име, дата на членство и бутон Follow -->
-                <div class="flex-1 text-center md:text-left">
-                    <h1 class="text-3xl font-bold text-gray-100">@Model.User.FullName</h1>
-                    <p class="text-lg text-gray-300 mt-1">@@@Model.User.UserName</p>
-                    <p class="text-sm text-gray-400 mt-1">
-                        Member since @Model.User.DateOfBirth.ToString("MMMM yyyy")
-                    </p>
-                    @if (User.Identity.IsAuthenticated && !isOwnProfile)
-                    {
-                        <form asp-action="Follow" asp-controller="Profile" method="post" class="mt-4">
-                            <input type="hidden" name="followedUserId" value="@Model.User.Id" />
-                            <button type="submit" class="px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-full transition duration-300">
-                                @(Model.IsFollowed ? "Unfollow" : "Follow")
-                            </button>
-                        </form>
-                    }
-                </div>
+
+                @if (User.Identity.IsAuthenticated && !isOwnProfile)
+                {
+                    <form asp-action="Follow" asp-controller="Profile" method="post" class="absolute bottom-2 right-0">
+                        <input type="hidden" name="followedUserId" value="@Model.User.Id" />
+                        <button type="submit" class="px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-full transition duration-300">
+                            @(Model.IsFollowed ? "Unfollow" : "Follow")
+                        </button>
+                    </form>
+                }
             </div>
+
 
             <!-- Детайли за потребителя -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
