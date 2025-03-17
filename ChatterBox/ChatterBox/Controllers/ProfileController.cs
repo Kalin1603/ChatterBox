@@ -114,5 +114,26 @@ namespace ChatterBox.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction("Details", "Profile", new { id = followedUserId });
         }
+
+        public async Task<IActionResult> SuggestedFriends()
+        {
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var suggestedUsers = await _context.Users
+                .Where(u =>
+                    u.Id != currentUserId &&
+                    !_context.UserFollows.Any(uf =>
+                        uf.FollowerId == currentUserId && uf.FollowedUserId == u.Id
+                    )
+                )
+                .Select(u => new SuggestedUserViewModel
+                {
+                    User = u,
+                    IsFollowed = false
+                })
+                .ToListAsync();
+
+            return View(suggestedUsers);
+        }
     }
 }

@@ -228,15 +228,17 @@
                 <div class="space-y-3">
                     @foreach (var follower in Model.Followers)
                     {
-                        <div class="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-800 transition-colors">
-                            <img src="@follower.User.ProfilePictureURL"
-                                 class="w-12 h-12 rounded-full border-2 border-slate-700"
-                                 onerror="this.src='/images/default-profile.png'" />
-                            <div>
-                                <h4 class="font-semibold text-gray-100">@follower.User.FullName</h4>
-                                <p class="text-sm text-gray-400">@@@follower.User.UserName</p>
+                        <a href="@Url.Action("Details", "Profile", new { id = follower.User.Id })" class="block">
+                            <div class="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-800 transition-colors">
+                                <img src="@follower.User.ProfilePictureURL"
+                                     class="w-12 h-12 rounded-full border-2 border-slate-700"
+                                     onerror="this.src='/images/default-profile.png'" />
+                                <div>
+                                    <h4 class="font-semibold text-gray-100">@follower.User.FullName</h4>
+                                    <p class="text-sm text-gray-400">@@@follower.User.UserName</p>
+                                </div>
                             </div>
-                        </div>
+                        </a>
                     }
                 </div>
             }
@@ -264,15 +266,17 @@
                 <div class="space-y-3">
                     @foreach (var following in Model.Followings)
                     {
-                        <div class="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-800 transition-colors">
-                            <img src="@following.User.ProfilePictureURL"
-                                 class="w-12 h-12 rounded-full border-2 border-slate-700"
-                                 onerror="this.src='/images/default-profile.png'" />
-                            <div>
-                                <h4 class="font-semibold text-gray-100">@following.User.FullName</h4>
-                                <p class="text-sm text-gray-400">@@@following.User.UserName</p>
+                        <a href="@Url.Action("Details", "Profile", new { id = following.User.Id })" class="block">
+                            <div class="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-800 transition-colors">
+                                <img src="@following.User.ProfilePictureURL"
+                                     class="w-12 h-12 rounded-full border-2 border-slate-700"
+                                     onerror="this.src='/images/default-profile.png'" />
+                                <div>
+                                    <h4 class="font-semibold text-gray-100">@following.User.FullName</h4>
+                                    <p class="text-sm text-gray-400">@@@following.User.UserName</p>
+                                </div>
                             </div>
-                        </div>
+                        </a>
                     }
                 </div>
             }
