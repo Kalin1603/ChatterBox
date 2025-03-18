@@ -7,6 +7,7 @@ using ChatterBox.ViewModels.Profile;
 using ChatterBox.Models;
 using System.Security.Claims;
 using ChatterBox.ViewModels.UserViewModels;
+using ChatterBox.Enums;
 
 namespace ChatterBox.Controllers
 {
@@ -45,7 +46,7 @@ namespace ChatterBox.Controllers
                 .Select(u => new SuggestedUserViewModel
                 {
                     User = u,
-                    IsFollowed = false 
+                    IsFollowed = false
                 })
                 .ToListAsync();
 
@@ -92,27 +93,96 @@ namespace ChatterBox.Controllers
                 return BadRequest();
             }
 
-            var existingFollow = await _context.UserFollows
-                .FirstOrDefaultAsync(uf => uf.FollowerId == currentUserId && uf.FollowedUserId == followedUserId);
+            var sender = await _context.Users.FindAsync(currentUserId);
 
-            if (existingFollow == null)
+            var existingNotification = await _context.Notifications
+                .FirstOrDefaultAsync(n => n.SenderId == currentUserId
+                                          && n.ReceiverId == followedUserId
+                                          && n.Type == NotificationType.FollowRequest);
+
+            if (existingNotification == null)
             {
-                var newFollow = new UserFollow
+                var notification = new Notification
                 {
-                    FollowerId = currentUserId,
-                    FollowedUserId = followedUserId
+                    SenderId = currentUserId,
+                    ReceiverId = followedUserId,
+                    Type = NotificationType.FollowRequest,
+                    Message = $"{sender?.FullName} wants to follow you.",
+                    IsRead = false,
+                    CreatedAt = DateTime.UtcNow
                 };
-                _context.UserFollows.Add(newFollow);
-                TempData["StatusMessage"] = "You successfully followed the user!";
+
+                _context.Notifications.Add(notification);
+                TempData["StatusMessage"] = "The request is sent!";
             }
             else
             {
-                _context.UserFollows.Remove(existingFollow);
-                TempData["StatusMessage"] = "You successfully unfollowed the user!";
+                TempData["StatusMessage"] = "The request is already sent!";
             }
 
             await _context.SaveChangesAsync();
-            return RedirectToAction("Details", "Profile", new { id = followedUserId });
+            return Redirect(Request.Headers["Referer"].ToString());
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AcceptFollowRequest(int notificationId)
+        {
+            var notification = await _context.Notifications.FindAsync(notificationId);
+
+            if (notification == null)
+            {
+                return NotFound();
+            }
+
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (notification.ReceiverId != currentUserId)
+            {
+                return Unauthorized();
+            }
+
+            var existingFollow = await _context.UserFollows
+                .FirstOrDefaultAsync(uf => uf.FollowerId == notification.SenderId && uf.FollowedUserId == currentUserId);
+
+            if (existingFollow == null)
+            {
+                var userFollow = new UserFollow
+                {
+                    FollowerId = notification.SenderId,
+                    FollowedUserId = currentUserId
+                };
+                _context.UserFollows.Add(userFollow);
+            }
+
+            _context.Notifications.Remove(notification);
+            await _context.SaveChangesAsync();
+
+            TempData["StatusMessage"] = "You are now following this user!";
+            return Redirect(Request.Headers["Referer"].ToString());
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> RejectFollowRequest(int notificationId)
+        {
+            var notification = await _context.Notifications.FindAsync(notificationId);
+
+            if (notification == null)
+            {
+                return NotFound();
+            }
+
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (notification.ReceiverId != currentUserId)
+            {
+                return Unauthorized();
+            }
+
+            _context.Notifications.Remove(notification);
+            await _context.SaveChangesAsync();
+
+            TempData["StatusMessage"] = "The request is rejected!";
+            return Redirect(Request.Headers["Referer"].ToString());
         }
 
         public async Task<IActionResult> SuggestedFriends()

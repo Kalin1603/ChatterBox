@@ -27,6 +27,8 @@ namespace ChatterBox.Data
 
         public DbSet<UserFollow> UserFollows { get; set; }
 
+        public DbSet<Notification> Notifications { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -96,6 +98,19 @@ namespace ChatterBox.Data
                 .HasOne(uf => uf.FollowedUser)
                 .WithMany(u => u.Followers)
                 .HasForeignKey(uf => uf.FollowedUserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            //Notifications
+            modelBuilder.Entity<Notification>()
+                .HasOne(n => n.Receiver)
+                .WithMany()
+                .HasForeignKey(n => n.ReceiverId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Notification>()
+                .HasOne(n => n.Sender)
+                .WithMany()
+                .HasForeignKey(n => n.SenderId)
                 .OnDelete(DeleteBehavior.Restrict);
         }
     }

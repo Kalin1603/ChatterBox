@@ -10,5 +10,7 @@ namespace ChatterBox.ViewModels.Home
         public string StatusMessage { get; set; }
 
         public List<SuggestedUserViewModel> PeopleYouMayKnow { get; set; } = new();
+
+        public List<Notification> Notifications { get; set; } = new();
     }
 }

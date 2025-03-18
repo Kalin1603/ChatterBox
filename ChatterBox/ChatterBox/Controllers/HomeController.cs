@@ -59,8 +59,17 @@ namespace ChatterBox.Controllers
             {
                 Posts = posts.Where(p => !string.IsNullOrEmpty(p.Content)).ToList(),
                 StatusMessage = (string)TempData["StatusMessage"],
-                PeopleYouMayKnow = suggestedUsers
+                PeopleYouMayKnow = suggestedUsers,
+                Notifications = new List<Notification>()
             };
+
+            if (User.Identity.IsAuthenticated && !string.IsNullOrEmpty(currentUserId))
+            {
+                viewModel.Notifications = await _context.Notifications
+                    .Where(n => n.ReceiverId == currentUserId)
+                    .OrderByDescending(n => n.CreatedAt)
+                    .ToListAsync();
+            }
 
             return View(viewModel);
         }
