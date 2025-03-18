@@ -18,7 +18,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Views\Shared\Components\Notifications\" />
     <Folder Include="wwwroot\images\avatar\" />
     <Folder Include="wwwroot\images\placeholders\" />
     <Folder Include="wwwroot\uploads\stories\" />

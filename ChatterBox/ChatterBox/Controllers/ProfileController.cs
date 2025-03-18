@@ -125,6 +125,35 @@ namespace ChatterBox.Controllers
         }
 
         [HttpPost]
+        public async Task<IActionResult> Unfollow(string unfollowUserId)
+        {
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(currentUserId) || string.IsNullOrEmpty(unfollowUserId))
+            {
+                return BadRequest();
+            }
+
+            var followingUser = await _context.Users.FindAsync(unfollowUserId);
+
+            var followRelation = await _context.UserFollows
+                .FirstOrDefaultAsync(uf => uf.FollowerId == currentUserId && uf.FollowedUserId == unfollowUserId);
+
+            if (followRelation != null)
+            {
+                _context.UserFollows.Remove(followRelation);
+                await _context.SaveChangesAsync();
+                TempData["StatusMessage"] = $"You have unfollowed {followingUser?.FullName}!";
+            }
+            else
+            {
+                TempData["StatusMessage"] = "You are not following this user.";
+            }
+
+            return Redirect(Request.Headers["Referer"].ToString());
+        }
+
+
+        [HttpPost]
         public async Task<IActionResult> AcceptFollowRequest(int notificationId)
         {
             var notification = await _context.Notifications.FindAsync(notificationId);
@@ -135,6 +164,8 @@ namespace ChatterBox.Controllers
             }
 
             var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var sender = await _context.Users.FindAsync(currentUserId);
 
             if (notification.ReceiverId != currentUserId)
             {
@@ -157,7 +188,7 @@ namespace ChatterBox.Controllers
             _context.Notifications.Remove(notification);
             await _context.SaveChangesAsync();
 
-            TempData["StatusMessage"] = "You are now following this user!";
+            TempData["StatusMessage"] = $"{sender?.FullName} is now following you!";
             return Redirect(Request.Headers["Referer"].ToString());
         }
 

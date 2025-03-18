@@ -1,0 +1,64 @@
+﻿@model List<ChatterBox.Models.Notification>
+
+<div class="relative group">
+    <button type="button" class="sm:p-2 p-1 rounded-full relative bg-gray-800 hover:bg-gray-700 transition-all border-2 border-transparent hover:border-gray-600 focus:ring-2 focus:ring-sky-500">
+        <svg fill="currentColor" width="24" height="24" viewBox="-3 -2 24 24" class="jam jam-bell">
+            <path d="M13.666 11.782L13 11.186V6a4 4 0 1 0-8 0v5.186l-.666.596A6.987 6.987 0 0 0 2.29 15h13.42a6.987 6.987 0 0 0-2.044-3.218zM12 17a3 3 0 0 1-6 0H0a8.978 8.978 0 0 1 3-6.708V6a6 6 0 1 1 12 0v4.292A8.978 8.978 0 0 1 18 17h-6zm-3 1a1 1 0 0 0 1-1H8a1 1 0 0 0 1 1z" />
+        </svg>
+        <div class="absolute top-0 right-0 -m-1 bg-red-500 text-white text-xs px-1.5 rounded-full shadow-sm pulse-animation" id="notificationsCount">
+            @Model.Count
+        </div>
+    </button>
+</div>
+
+<div class="hidden bg-gray-800 pr-1.5 rounded-xl shadow-xl md:w-[365px] w-96 border border-gray-700 z-[150]"
+     uk-drop="offset:6; pos: bottom-right; mode: click; animate-out: true;">
+    <div class="flex items-center justify-between gap-2 p-4 pb-2 border-b border-gray-700">
+        <h3 class="font-bold text-lg text-white">Notifications</h3>
+    </div>
+    <div class="p-3 h-[400px] overflow-y-auto space-y-2">
+        @if (Model.Any())
+        {
+            foreach (var notification in Model)
+            {
+                <div class="p-3 text-sm text-gray-300 rounded-lg bg-gray-700 hover:bg-gray-600 transition-colors">
+                    <p>@notification.Message</p>
+                    @if (notification.Type == ChatterBox.Enums.NotificationType.FollowRequest)
+                    {
+                        <div class="flex space-x-2 mt-2">
+                            <form asp-action="AcceptFollowRequest" asp-controller="Profile" method="post">
+                                <input type="hidden" name="notificationId" value="@notification.Id" />
+                                <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-2 py-1 rounded text-sm">
+                                    Accept
+                                </button>
+                            </form>
+                            <form asp-action="RejectFollowRequest" asp-controller="Profile" method="post">
+                                <input type="hidden" name="notificationId" value="@notification.Id" />
+                                <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded text-sm">
+                                    Reject
+                                </button>
+                            </form>
+                        </div>
+                    }
+                </div>
+            }
+        }
+        else
+        {
+            <div class="p-3 text-sm text-gray-300 rounded-lg bg-gray-700 hover:bg-gray-600 transition-colors">
+                No notifications...
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    .pulse-animation {
+        animation: pulse 2s infinite;
+    }
+    @@keyframes pulse {
+        0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.5); }
+        70% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+    }
+</style>
