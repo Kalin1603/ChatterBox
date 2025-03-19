@@ -8,6 +8,8 @@ using ChatterBox.Models;
 using System.Security.Claims;
 using ChatterBox.ViewModels.UserViewModels;
 using ChatterBox.Enums;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Shared;
+using ChatterBox.ViewModels.Home;
 
 namespace ChatterBox.Controllers
 {
@@ -152,6 +154,31 @@ namespace ChatterBox.Controllers
             return Redirect(Request.Headers["Referer"].ToString());
         }
 
+        [HttpPost]
+        public async Task<IActionResult> RemoveFollower(string followerId)
+        {
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(currentUserId) || string.IsNullOrEmpty(followerId))
+            {
+                return BadRequest();
+            }
+
+            var followerRelation = await _context.UserFollows
+                .FirstOrDefaultAsync(uf => uf.FollowerId == followerId && uf.FollowedUserId == currentUserId);
+
+            if (followerRelation != null)
+            {
+                _context.UserFollows.Remove(followerRelation);
+                await _context.SaveChangesAsync();
+                TempData["StatusMessage"] = $"You have removed the follower!";
+            }
+            else
+            {
+                TempData["StatusMessage"] = "This follower does not exist.";
+            }
+
+            return Redirect(Request.Headers["Referer"].ToString());
+        }
 
         [HttpPost]
         public async Task<IActionResult> AcceptFollowRequest(int notificationId)
@@ -165,7 +192,7 @@ namespace ChatterBox.Controllers
 
             var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            var sender = await _context.Users.FindAsync(currentUserId);
+            var sender = await _context.Users.FindAsync(notification.SenderId);
 
             if (notification.ReceiverId != currentUserId)
             {
@@ -234,7 +261,13 @@ namespace ChatterBox.Controllers
                 })
                 .ToListAsync();
 
-            return View(suggestedUsers);
+            var viewModel = new HomeViewModel
+            {
+                PeopleYouMayKnow = suggestedUsers,
+                StatusMessage = (string)TempData["StatusMessage"]
+            };
+
+            return View(viewModel);
         }
     }
 }
