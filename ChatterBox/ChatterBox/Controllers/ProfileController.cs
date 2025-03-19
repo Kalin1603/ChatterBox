@@ -80,7 +80,12 @@ namespace ChatterBox.Controllers
                     })
                     .ToList(),
                 IsFollowed = await _context.UserFollows
-                    .AnyAsync(uf => uf.FollowerId == currentUserId && uf.FollowedUserId == id)
+                    .AnyAsync(uf => uf.FollowerId == currentUserId && uf.FollowedUserId == id),
+                IsFollowPending = await _context.Notifications.AnyAsync(n =>
+                    n.SenderId == currentUserId &&
+                    n.ReceiverId == id &&
+                    n.Type == NotificationType.FollowRequest
+                )
             };
 
             return View(viewModel);
@@ -257,7 +262,12 @@ namespace ChatterBox.Controllers
                 .Select(u => new SuggestedUserViewModel
                 {
                     User = u,
-                    IsFollowed = false
+                    IsFollowed = false,
+                    IsFollowPending = _context.Notifications.Any(n =>
+                        n.SenderId == currentUserId &&
+                        n.ReceiverId == u.Id &&
+                        n.Type == NotificationType.FollowRequest
+                    )
                 })
                 .ToListAsync();
 
