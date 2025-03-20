@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\images\avatar\" />
+    <Folder Include="wwwroot\images\welcome\" />
     <Folder Include="wwwroot\images\placeholders\" />
     <Folder Include="wwwroot\uploads\stories\" />
     <Folder Include="wwwroot\uploads\posts\" />

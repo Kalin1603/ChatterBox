@@ -1,44 +1,124 @@
 ﻿@page
-@model LoginModel
+@model ChatterBox.Areas.Identity.Pages.Account.LoginModel
 @{
+    Layout = "/Views/Shared/_LoginLayout.cshtml"; 
     ViewData["Title"] = "Log in";
 }
 <partial name="~/Areas/Identity/Pages/Account/_StatusMessage.cshtml" model="Model.StatusMessage" />
-<div class="flex min-h-screen items-center justify-center bg-gray-900 text-white">
-    <div class="w-full max-w-md bg-gray-800 rounded-lg shadow-lg p-8">
-        <h2 class="text-2xl font-bold text-center mb-6">Log in</h2>
 
-        <form id="account" method="post" class="space-y-4">
-            <div asp-validation-summary="ModelOnly" class="text-red-500 text-sm" role="alert"></div>
-
+<div class="sm:flex">
+    <!-- Форма за логин -->
+    <div class="relative lg:w-[580px] md:w-96 w-full p-10 min-h-screen bg-white shadow-xl flex items-center pt-10 z-10">
+        <div class="w-full lg:max-w-sm mx-auto space-y-10">
             <div>
-                <label asp-for="Input.Email" class="block text-sm font-medium">Email or username</label>
-                <input asp-for="Input.Email" class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500" autocomplete="username" placeholder="name@example.com or username" />
-                <span asp-validation-for="Input.Email" class="text-red-500 text-sm"></span>
+                <h2 class="text-2xl font-semibold mb-1.5">Sign in to your account</h2>
+                <p class="text-sm text-gray-700 font-normal">
+                    If you are not registered yet,
+                    <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl" class="text-blue-700">Register here!</a>
+                </p>
             </div>
+            <form id="account" method="post" class="space-y-7 text-sm text-black font-medium">
+                <div asp-validation-summary="ModelOnly" class="col-span-2 text-red-500"></div>
+                <div>
+                    <label asp-for="Input.Email">Email address or username</label>
+                    <div class="mt-2.5">
+                        <input asp-for="Input.Email" placeholder="Email or username" required class="!w-full" autocomplete="username" />
+                        <span asp-validation-for="Input.Email" class="text-red-500 text-xs mt-1"></span>
+                    </div>
+                </div>
+                <div>
+                    <label asp-for="Input.Password">Password</label>
+                    <div class="mt-2.5">
+                        <input asp-for="Input.Password" id="password" type="password" placeholder="********" required class="!w-full" autocomplete="current-password" />
+                        <span asp-validation-for="Input.Password" class="text-red-500 text-xs mt-1"></span>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2.5">
+                        <input asp-for="Input.RememberMe" id="rememberme" name="Input.RememberMe" type="checkbox" class="form-checkbox h-4 w-4 text-blue-600" />
+                        <label for="rememberme" class="font-normal">Remember me</label>
+                    </div>
+                    <a href="#" class="text-blue-700">Forget password</a>
+                </div>
+                <div>
+                    <button id="login-submit" type="submit" class="button bg-primary text-white w-full">Sign in</button>
+                </div>
+                <div class="text-center flex items-center gap-6">
+                    <hr class="flex-1 border-slate-200">
+                    Or continue with
+                    <hr class="flex-1 border-slate-200">
+                </div>
+                <div class="flex gap-2">
+                    <!-- Външно вписване (ако е конфигурирано) -->
+                    <a asp-controller="Authentication" asp-action="ExternalLogin" asp-route-provider="Google" class="button flex-1 flex items-center gap-2 bg-primary text-white text-sm">
+                        <ion-icon name="logo-google" class="text-lg"></ion-icon> google
+                    </a>
+                    <a asp-controller="Authentication" asp-action="ExternalLogin" asp-route-provider="GitHub" class="button flex-1 flex items-center gap-2 bg-black text-white text-sm">
+                        <ion-icon name="logo-github" class="text-lg"></ion-icon> github
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
 
-            <div>
-                <label asp-for="Input.Password" class="block text-sm font-medium">Password</label>
-                <input asp-for="Input.Password" type="password" class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500" autocomplete="current-password" placeholder="********" />
-                <span asp-validation-for="Input.Password" class="text-red-500 text-sm"></span>
+    <!-- Слайдър с изображения -->
+    <div class="flex-1 relative bg-primary max-md:hidden">
+        <div class="relative w-full h-full" tabindex="-1" uk-slideshow="animation: slide; autoplay: true; autoplay-interval: 5000;">
+            <ul class="uk-slideshow-items w-full h-full">
+                <li class="w-full">
+                    <img src="~/images/welcome/welcome-01.png" alt="Welcome image 1" class="w-full h-full object-cover uk-animation-kenburns uk-animation-reverse uk-transform-origin-center-left">
+                    <div class="absolute bottom-0 w-full uk-transition-slide-bottom-small z-10">
+                        <div class="max-w-xl w-full mx-auto pb-32 px-5 z-30 relative">
+                            <h4 class="!text-white text-2xl font-semibold mt-7" uk-slideshow-parallax="y: 600,0,0">Connect with Friends</h4>
+                            <p class="!text-white text-lg mt-7 leading-8" uk-slideshow-parallax="y: 800,0,0;">
+                                Bridge the gap between miles and moments—connect with friends and weave memories together, one click at a time.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="w-full h-96 bg-gradient-to-t from-black absolute bottom-0 left-0"></div>
+                </li>
+                <li class="w-full">
+                    <img src="~/images/welcome/welcome-02.png" alt="Welcome image 2" class="w-full h-full object-cover uk-animation-kenburns uk-animation-reverse uk-transform-origin-center-left">
+                    <div class="absolute bottom-0 w-full uk-transition-slide-bottom-small z-10">
+                        <div class="max-w-xl w-full mx-auto pb-32 px-5 z-30 relative">
+                            <h4 class="!text-white text-2xl font-semibold mt-7" uk-slideshow-parallax="y: 800,0,0">Connect With Friends</h4>
+                            <p class="!text-white text-lg mt-7 leading-8" uk-slideshow-parallax="y: 800,0,0;">
+                                Rekindle old ties and spark new ones—your next 'Remember when...' moment is just a friend request away.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="w-full h-96 bg-gradient-to-t from-black absolute bottom-0 left-0"></div>
+                </li>
+                <li class="w-full">
+                    <img src="~/images/welcome/welcome-03.png" alt="Welcome image 2" class="w-full h-full object-cover uk-animation-kenburns uk-animation-reverse uk-transform-origin-center-left">
+                    <div class="absolute bottom-0 w-full uk-transition-slide-bottom-small z-10">
+                        <div class="max-w-xl w-full mx-auto pb-32 px-5 z-30 relative">
+                            <h4 class="!text-white text-2xl font-semibold mt-7" uk-slideshow-parallax="y: 800,0,0">Connect With Friends</h4>
+                            <p class="!text-white text-lg mt-7 leading-8" uk-slideshow-parallax="y: 800,0,0;">
+                                Rekindle old ties and spark new ones—your next 'Remember when...' moment is just a friend request away.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="w-full h-96 bg-gradient-to-t from-black absolute bottom-0 left-0"></div>
+                </li>
+                <li class="w-full">
+                    <img src="~/images/welcome/welcome-04.png" alt="Welcome image 2" class="w-full h-full object-cover uk-animation-kenburns uk-animation-reverse uk-transform-origin-center-left">
+                    <div class="absolute bottom-0 w-full uk-transition-slide-bottom-small z-10">
+                        <div class="max-w-xl w-full mx-auto pb-32 px-5 z-30 relative">
+                            <h4 class="!text-white text-2xl font-semibold mt-7" uk-slideshow-parallax="y: 800,0,0">Connect With Friends</h4>
+                            <p class="!text-white text-lg mt-7 leading-8" uk-slideshow-parallax="y: 800,0,0;">
+                                Rekindle old ties and spark new ones—your next 'Remember when...' moment is just a friend request away.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="w-full h-96 bg-gradient-to-t from-black absolute bottom-0 left-0"></div>
+                </li>
+            </ul>
+            <!-- Навигация на слайдъра -->
+            <div class="flex justify-center">
+                <ul class="inline-flex flex-wrap justify-center absolute bottom-8 gap-1.5 uk-dotnav uk-slideshow-nav"></ul>
             </div>
-
-            <div class="flex items-center justify-between">
-                <label class="inline-flex items-center text-sm">
-                    <input asp-for="Input.RememberMe" class="form-checkbox h-4 w-4 text-blue-600 bg-gray-700 border-gray-600 rounded" />
-                    <span class="ml-2">Remember me</span>
-                </label>
-            </div>
-
-            <button id="login-submit" type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-lg transition">
-                Log in
-            </button>
-
-            <p class="text-center text-sm">
-                Don't have an account?
-                <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl" class="text-blue-400 hover:underline">Sign up</a>
-            </p>
-        </form>
+        </div>
     </div>
 </div>
 
