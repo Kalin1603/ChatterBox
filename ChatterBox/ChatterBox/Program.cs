@@ -1,7 +1,9 @@
 using ChatterBox.Data;
 using ChatterBox.Models;
+using ChatterBox.Service;
 using ChatterBox.Services;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,7 +22,7 @@ builder.Services.AddIdentity<User, IdentityRole>(options =>
     options.Password.RequiredLength = 6;
     options.Password.RequiredUniqueChars = 1;
     options.User.RequireUniqueEmail = true;
-    options.SignIn.RequireConfirmedEmail = false;
+    options.SignIn.RequireConfirmedEmail = true;
 })
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
@@ -36,6 +38,10 @@ builder.Services.ConfigureApplicationCookie(options =>
 
 //Story cleanup service
 builder.Services.AddHostedService<StoryCleanupService>();
+
+// Email configuration
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+builder.Services.AddTransient<IEmailSender, EmailSender>();
 
 // Hashtags service
 builder.Services.AddScoped<HashtagsService>();

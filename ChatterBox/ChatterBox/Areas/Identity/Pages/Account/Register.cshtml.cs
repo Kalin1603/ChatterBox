@@ -20,6 +20,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Shared;
+using ChatterBox.Service;
 
 namespace ChatterBox.Areas.Identity.Pages.Account
 {
@@ -32,6 +33,7 @@ namespace ChatterBox.Areas.Identity.Pages.Account
         private readonly IUserEmailStore<User> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IWebHostEnvironment _env;
+        private readonly IEmailSender _emailSender;
 
         public RegisterModel(
             UserManager<User> userManager,
@@ -39,7 +41,8 @@ namespace ChatterBox.Areas.Identity.Pages.Account
             SignInManager<User> signInManager,
             ILogger<RegisterModel> logger,
             RoleManager<IdentityRole> roleManager,
-            IWebHostEnvironment env)
+            IWebHostEnvironment env,
+            IEmailSender emailSender)
         {
             _userManager = userManager;
             _userStore = userStore;
@@ -48,6 +51,7 @@ namespace ChatterBox.Areas.Identity.Pages.Account
             _logger = logger;
             _roleManager = roleManager;
             _env = env;
+            _emailSender = emailSender;
         }
         [BindProperty]
         public InputModel Input { get; set; }
@@ -166,6 +170,49 @@ namespace ChatterBox.Areas.Identity.Pages.Account
                 {
                     _logger.LogInformation("User created a new account with password.");
 
+                    var userId = await _userManager.GetUserIdAsync(user);
+                    var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+                    var callbackUrl = Url.Page(
+                        "/Account/ConfirmEmail",
+                        pageHandler: null,
+                        values: new { area = "Identity", userId = userId, code = code },
+                        protocol: Request.Scheme);
+
+                    var registerMessage =
+                        $@"
+                        <html>
+                        <head>
+                            <style>
+                                body {{ font-family: Arial, sans-serif; }}
+                                .container {{ max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px; }}
+                                .header {{ background-color: #007bff; color: white; text-align: center; padding: 10px; border-radius: 10px 10px 0 0; }}
+                                .content {{ padding: 20px; font-size: 16px; color: #333; }}
+                                .footer {{ text-align: center; font-size: 14px; color: #666; margin-top: 20px; }}
+                            </style>
+                        </head>
+                        <body>
+                            <div class='container'>
+                                <div class='header'>
+                                    <h2>Welcome to ChatterBox!</h2>
+                                </div>
+                                <div class='content'>
+                                    <p>Hello,</p>
+                                    <p>Thank you for registering to ChatterBox. To complete your registration, please confirm your email address.</p>
+                                    <p>Click the link below to confirm your account:</p>
+                                    <p><a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>Confirm your email</a></p>
+                                    <p>If you have any questions or need assistance, feel free to reach out to our support team.</p>
+                                </div>
+                                <div class='footer'>
+                                    <p>&copy; 2025 ChatterBox. All rights reserved.</p>
+                                </div>
+                            </div>
+                        </body>
+                        </html>
+                    ";
+
+                    await _emailSender.SendEmailAsync(Input.Email, "Confirm your email", registerMessage);
+
                     var roleExist = await _roleManager.RoleExistsAsync("User");
                     if (!roleExist)
                     {
@@ -174,7 +221,7 @@ namespace ChatterBox.Areas.Identity.Pages.Account
 
                     await _userManager.AddToRoleAsync(user, "User");
 
-                    StatusMessage = "Registration successful. Please log in now.";
+                    StatusMessage = "Registration successful. Please check your email to confirm your account.";
                     return RedirectToPage("Login");
                 }
                 foreach (var error in result.Errors)
