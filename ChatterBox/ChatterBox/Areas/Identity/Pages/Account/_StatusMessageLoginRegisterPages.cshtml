@@ -1,0 +1,51 @@
+﻿@model string
+
+@if (!string.IsNullOrEmpty(Model))
+{
+    var statusMessageClass = Model.StartsWith("Error") ? "bg-red-500" : "bg-green-500";
+    var iconClass = Model.StartsWith("Error") ? "fa-times-circle" : "fa-check-circle";
+
+    <div class="@statusMessageClass text-white rounded-md p-4 mb-4 shadow-md flex items-center justify-between status-message">
+        <div class="flex items-center space-x-2">
+            <i class="fas @iconClass fa-lg"></i>
+            <span class="font-medium">@Model</span>
+        </div>
+        <button type="button" class="text-white hover:opacity-75 focus:outline-none focus:ring-2 focus:ring-white/50 rounded-md" aria-label="Close" onclick="this.parentNode.remove()">
+            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const message = document.querySelector('.status-message');
+            if (message) {
+                setTimeout(() => {
+                    message.classList.add('opacity-0');
+                    setTimeout(() => message.remove(), 300);
+                }, 5000);
+            }
+        });
+    </script>
+}
+
+<style>
+    .status-message {
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 1000;
+        min-width: 300px;
+        width: calc(100% - 40px); /* Adjust width for padding on mobile */
+        max-width: 90%;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transition: opacity 0.3s ease-in-out;
+    }
+
+    .opacity-0 {
+        opacity: 0;
+    }
+</style>

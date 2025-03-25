@@ -4,10 +4,10 @@
     Layout = "/Views/Shared/_LoginLayout.cshtml"; 
     ViewData["Title"] = "Log in";
 }
-<partial name="~/Areas/Identity/Pages/Account/_StatusMessage.cshtml" model="Model.StatusMessage" />
+<partial name="~/Areas/Identity/Pages/Account/_StatusMessageLoginRegisterPages.cshtml" model="Model.StatusMessage" />
 
 <div class="sm:flex">
-    <!-- Форма за логин -->
+    <!-- Login form -->
     <div class="relative lg:w-[580px] md:w-96 w-full p-10 min-h-screen bg-white shadow-xl flex items-center pt-10 z-10">
         <div class="w-full lg:max-w-sm mx-auto space-y-10">
             <div>
@@ -49,7 +49,7 @@
                     <hr class="flex-1 border-slate-200">
                 </div>
                 <div class="flex gap-2">
-                    <!-- Външно вписване (ако е конфигурирано) -->
+                    <!-- Other devices -->
                     <a asp-controller="Authentication" asp-action="ExternalLogin" asp-route-provider="Google" class="button flex-1 flex items-center gap-2 bg-primary text-white text-sm">
                         <ion-icon name="logo-google" class="text-lg"></ion-icon> google
                     </a>
@@ -61,7 +61,7 @@
         </div>
     </div>
 
-    <!-- Слайдър с изображения -->
+    <!-- Slider -->
     <div class="flex-1 relative bg-primary max-md:hidden">
         <div class="relative w-full h-full" tabindex="-1" uk-slideshow="animation: slide; autoplay: true; autoplay-interval: 5000;">
             <ul class="uk-slideshow-items w-full h-full">
@@ -114,7 +114,7 @@
                     <div class="w-full h-96 bg-gradient-to-t from-black absolute bottom-0 left-0"></div>
                 </li>
             </ul>
-            <!-- Навигация на слайдъра -->
+            <!-- Slider navigation -->
             <div class="flex justify-center">
                 <ul class="inline-flex flex-wrap justify-center absolute bottom-8 gap-1.5 uk-dotnav uk-slideshow-nav"></ul>
             </div>

@@ -9,7 +9,7 @@
 
     if (currentUser == null)
     {
-        HttpContextAccessor.HttpContext.Response.Redirect("/Identity/Account/Register");
+        HttpContextAccessor.HttpContext.Response.Redirect("/Identity/Account/Login");
         return; // Stop further processing of this partial view
     }
 
