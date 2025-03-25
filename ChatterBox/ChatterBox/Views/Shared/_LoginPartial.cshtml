@@ -1,10 +1,19 @@
 ﻿@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Http
 @inject SignInManager<User> SignInManager
 @inject UserManager<User> UserManager
+@inject IHttpContextAccessor HttpContextAccessor
 
 @{
     var currentUser = await UserManager.GetUserAsync(User);
-    var profilePictureUrl = currentUser?.ProfilePictureURL ?? "/default-avatar.png";
+
+    if (currentUser == null)
+    {
+        HttpContextAccessor.HttpContext.Response.Redirect("/Identity/Account/Register");
+        return; // Stop further processing of this partial view
+    }
+
+    var profilePictureUrl = currentUser.ProfilePictureURL ?? "/default-avatar.png";
 }
 
 @if (SignInManager.IsSignedIn(User))
