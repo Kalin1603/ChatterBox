@@ -4,144 +4,166 @@
     ViewData["Title"] = "Profile Settings";
 }
 
-<partial name="_StatusMessage" model="Model.StatusMessage" />
+<partial name="~/Areas/Identity/Pages/Account/_StatusMessage.cshtml" model="Model.StatusMessage" />
 
-<div class="min-h-screen bg-gray-900 py-8 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-4xl mx-auto bg-gray-800/80 backdrop-blur-lg rounded-2xl shadow-xl overflow-hidden border border-gray-700/50">
-        <div class="px-8 py-6 border-b border-gray-700/50 pt-5">
-            <h1 class="text-2xl font-bold text-white tracking-tight">👤 @ViewData["Title"]</h1>
-        </div>
-
-        <form id="profile-form" method="post" enctype="multipart/form-data" class="p-8 space-y-8">
-            <div class="flex flex-col items-center group">
-                <div class="relative inline-block hover:scale-105 transition-transform duration-300">
-                    <img id="profileSettings" src="@Model.Input.ProfilePictureUrl" alt="Profile" 
-                         class="w-32 h-32 rounded-full border-4 border-gray-700/80 object-cover shadow-xl
-                                group-hover:border-sky-500 transition-colors">
-                    <label class="absolute bottom-0 right-0 bg-sky-600 p-2 rounded-full cursor-pointer 
-                               shadow-lg hover:bg-sky-500 transition-colors" title="Change photo">
-                        <input type="file" id="ProfilePictureInput" name="ProfilePicture" 
-                               class="hidden" accept="image/*" />
-                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                  d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                  d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
-                        </svg>
-                    </label>
-                </div>
-            </div>
-
-            <div asp-validation-summary="ModelOnly" class="text-red-400 text-sm" role="alert"></div>
-
-            <div class="space-y-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-300 mb-2">Username</label>
-                        <input asp-for="Input.UserName" 
-                               class="w-full bg-gray-700/50 border border-gray-600/50 rounded-lg px-4 py-3
-                                      text-gray-200 focus:ring-2 focus:ring-sky-500 focus:border-transparent" 
-                               readonly />
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-300 mb-2">Email</label>
-                        <input asp-for="Input.Email" 
-                               class="w-full bg-gray-700/50 border border-gray-600/50 rounded-lg px-4 py-3
-                                      text-gray-200 focus:ring-2 focus:ring-sky-500 focus:border-transparent" 
-                               readonly />
-                        <span asp-validation-for="Input.Email" class="text-red-400 text-sm mt-1 block"></span>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-300 mb-2">Full Name</label>
-                        <input asp-for="Input.FullName" 
-                               class="w-full bg-gray-700/50 border border-gray-600/50 rounded-lg px-4 py-3
-                                      text-gray-200 focus:ring-2 focus:ring-sky-500 focus:border-transparent" />
-                        <span asp-validation-for="Input.FullName" class="text-red-400 text-sm mt-1 block"></span>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-300 mb-2">Date of Birth</label>
-                        <input asp-for="Input.DateOfBirth" type="date" onclick="this.showPicker()"
-                               class="w-full bg-gray-700/50 border border-gray-600/50 rounded-lg px-4 py-3
-                                      text-gray-200 focus:ring-2 focus:ring-sky-500 focus:border-transparent
-                                      [&::-webkit-calendar-picker-indicator]:invert-[0.7]" />
-                        <span asp-validation-for="Input.DateOfBirth" class="text-red-400 text-sm mt-1 block"></span>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-300 mb-2">Phone</label>
-                        <input asp-for="Input.PhoneNumber" 
-                               class="w-full bg-gray-700/50 border border-gray-600/50 rounded-lg px-4 py-3
-                                      text-gray-200 focus:ring-2 focus:ring-sky-500 focus:border-transparent" />
-                        <span asp-validation-for="Input.PhoneNumber" class="text-red-400 text-sm mt-1 block"></span>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-300 mb-2">Country</label>
-                        <input asp-for="Input.Country" 
-                               class="w-full bg-gray-700/50 border border-gray-600/50 rounded-lg px-4 py-3
-                                      text-gray-200 focus:ring-2 focus:ring-sky-500 focus:border-transparent" />
-                        <span asp-validation-for="Input.Country" class="text-red-400 text-sm mt-1 block"></span>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-300 mb-2">City</label>
-                        <input asp-for="Input.City" 
-                               class="w-full bg-gray-700/50 border border-gray-600/50 rounded-lg px-4 py-3
-                                      text-gray-200 focus:ring-2 focus:ring-sky-500 focus:border-transparent" />
-                        <span asp-validation-for="Input.City" class="text-red-400 text-sm mt-1 block"></span>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-300 mb-2">State</label>
-                        <input asp-for="Input.State" 
-                               class="w-full bg-gray-700/50 border border-gray-600/50 rounded-lg px-4 py-3
-                                      text-gray-200 focus:ring-2 focus:ring-sky-500 focus:border-transparent" />
-                        <span asp-validation-for="Input.State" class="text-red-400 text-sm mt-1 block"></span>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-300 mb-2">ZIP Code</label>
-                        <input asp-for="Input.Zip" 
-                               class="w-full bg-gray-700/50 border border-gray-600/50 rounded-lg px-4 py-3
-                                      text-gray-200 focus:ring-2 focus:ring-sky-500 focus:border-transparent" />
-                        <span asp-validation-for="Input.Zip" class="text-red-400 text-sm mt-1 block"></span>
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-300 mb-2">Address</label>
-                    <input asp-for="Input.Address" 
-                           class="w-full bg-gray-700/50 border border-gray-600/50 rounded-lg px-4 py-3
-                                  text-gray-200 focus:ring-2 focus:ring-sky-500 focus:border-transparent" />
-                    <span asp-validation-for="Input.Address" class="text-red-400 text-sm mt-1 block"></span>
-                </div>
-            </div>
-
-            <div class="flex flex-col sm:flex-row justify-end gap-4 pt-8 border-t border-gray-700/50">
-                <button type="submit" 
-                        class="flex items-center justify-center gap-2 px-6 py-3 bg-sky-600 hover:bg-sky-500 
-                               text-white rounded-lg transition-all font-medium shadow-md hover:shadow-lg">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                              d="M5 13l4 4L19 7"/>
+<div class="min-h-screen bg-gray-900 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-4xl w-full bg-gray-800/80 backdrop-blur-lg rounded-2xl shadow-xl overflow-hidden border border-gray-700/50 flex w-full h-full">
+        <div id="sidebar" class="w-64 bg-gray-900 border-r border-gray-700/50 transition-transform duration-300 ease-in-out transform -translate-x-full sm:translate-x-0">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-gray-700/50">
+                <h2 class="text-lg font-semibold text-white">Menu</h2>
+                <button id="toggleSidebarButton" class="text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-gray-400 sm:hidden">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
-                    Save Changes
                 </button>
-                <a asp-page="./DeletePersonalData" 
-                   class="flex items-center justify-center gap-2 px-6 py-3 bg-red-600/80 hover:bg-red-500 
-                          text-white rounded-lg transition-all font-medium shadow-md hover:shadow-lg">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                    </svg>
+            </div>
+            <nav class="py-2">
+                <a asp-page="./Index"
+                   class="block px-6 py-3 text-gray-300 hover:bg-gray-700 hover:text-white transition duration-200 focus:outline-none focus:ring-2 focus:ring-sky-500 @(ViewData["ActivePage"] == ManageNavPages.Index ? "bg-gray-700 text-white" : "")"
+                   role="menuitem">
+                    Profile Info
+                </a>
+                <a asp-page="./ChangePassword"
+                   class="block px-6 py-3 text-gray-300 hover:bg-gray-700 hover:text-white transition duration-200 focus:outline-none focus:ring-2 focus:ring-sky-500 @(ViewData["ActivePage"] == ManageNavPages.ChangePassword ? "bg-gray-700 text-white" : "")"
+                   role="menuitem">
+                    Change Password
+                </a>
+                <a asp-page="./DeletePersonalData"
+                   class="block px-6 py-3 text-gray-300 hover:bg-gray-700 hover:text-white transition duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 @(ViewData["ActivePage"] == ManageNavPages.PersonalData ? "bg-gray-700 text-white" : "")"
+                   role="menuitem">
                     Delete Account
                 </a>
+            </nav>
+        </div>
+
+        <div class="flex-1 p-6 overflow-y-auto">
+            <div class="pb-4">
+                <h1 class="text-2xl font-bold text-white tracking-tight">👤 @ViewData["Title"]</h1>
             </div>
-        </form>
+
+            <form id="profile-form" method="post" enctype="multipart/form-data" class="space-y-6">
+                <div class="flex flex-col items-center group">
+                    <div class="relative inline-block hover:scale-105 transition-transform duration-300">
+                        <img id="profileSettings" src="@Model.Input.ProfilePictureUrl" alt="Profile"
+                             class="w-28 h-28 rounded-full border-4 border-gray-700/80 object-cover shadow-xl
+                                    group-hover:border-sky-500 transition-colors">
+                        <label class="absolute bottom-0 right-0 bg-sky-600 p-2 rounded-full cursor-pointer
+                                        shadow-lg hover:bg-sky-500 transition-colors" title="Change photo">
+                            <input type="file" id="ProfilePictureInput" name="ProfilePicture"
+                                   class="hidden" accept="image/*" />
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                        </label>
+                    </div>
+                    <span class="text-gray-400 text-sm mt-2">Click to change profile picture</span>
+                </div>
+
+                <div asp-validation-summary="ModelOnly" class="text-red-400 text-sm" role="alert"></div>
+
+                <div class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-1">Username</label>
+                            <input asp-for="Input.UserName"
+                                   class="w-full bg-gray-700/50 border border-gray-600/50 rounded-lg px-3 py-2
+                                          text-gray-200 focus:ring-2 focus:ring-sky-500 focus:border-transparent text-sm"
+                                   readonly />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-1">Email</label>
+                            <input asp-for="Input.Email"
+                                   class="w-full bg-gray-700/50 border border-gray-600/50 rounded-lg px-3 py-2
+                                          text-gray-200 focus:ring-2 focus:ring-sky-500 focus:border-transparent text-sm"
+                                   readonly />
+                            <span asp-validation-for="Input.Email" class="text-red-400 text-xs mt-0.5 block"></span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-1">Full Name</label>
+                            <input asp-for="Input.FullName"
+                                   class="w-full bg-gray-700/50 border border-gray-600/50 rounded-lg px-3 py-2
+                                          text-gray-200 focus:ring-2 focus:ring-sky-500 focus:border-transparent text-sm" />
+                            <span asp-validation-for="Input.FullName" class="text-red-400 text-xs mt-0.5 block"></span>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-1">Date of Birth</label>
+                            <input asp-for="Input.DateOfBirth" type="date" onclick="this.showPicker()"
+                                   class="w-full bg-gray-700/50 border border-gray-600/50 rounded-lg px-3 py-2
+                                          text-gray-200 focus:ring-2 focus:ring-sky-500 focus:border-transparent text-sm
+                                          [&::-webkit-calendar-picker-indicator]:invert-[0.7]" />
+                            <span asp-validation-for="Input.DateOfBirth" class="text-red-400 text-xs mt-0.5 block"></span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-1">Phone</label>
+                            <input asp-for="Input.PhoneNumber"
+                                   class="w-full bg-gray-700/50 border border-gray-600/50 rounded-lg px-3 py-2
+                                          text-gray-200 focus:ring-2 focus:ring-sky-500 focus:border-transparent text-sm" />
+                            <span asp-validation-for="Input.PhoneNumber" class="text-red-400 text-xs mt-0.5 block"></span>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-1">Country</label>
+                            <input asp-for="Input.Country"
+                                   class="w-full bg-gray-700/50 border border-gray-600/50 rounded-lg px-3 py-2
+                                          text-gray-200 focus:ring-2 focus:ring-sky-500 focus:border-transparent text-sm" />
+                            <span asp-validation-for="Input.Country" class="text-red-400 text-xs mt-0.5 block"></span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-1">City</label>
+                            <input asp-for="Input.City"
+                                   class="w-full bg-gray-700/50 border border-gray-600/50 rounded-lg px-3 py-2
+                                          text-gray-200 focus:ring-2 focus:ring-sky-500 focus:border-transparent text-sm" />
+                            <span asp-validation-for="Input.City" class="text-red-400 text-xs mt-0.5 block"></span>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-1">State</label>
+                            <input asp-for="Input.State"
+                                   class="w-full bg-gray-700/50 border border-gray-600/50 rounded-lg px-3 py-2
+                                          text-gray-200 focus:ring-2 focus:ring-sky-500 focus:border-transparent text-sm" />
+                            <span asp-validation-for="Input.State" class="text-red-400 text-xs mt-0.5 block"></span>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-1">ZIP Code</label>
+                            <input asp-for="Input.Zip"
+                                   class="w-full bg-gray-700/50 border border-gray-600/50 rounded-lg px-3 py-2
+                                          text-gray-200 focus:ring-2 focus:ring-sky-500 focus:border-transparent text-sm" />
+                            <span asp-validation-for="Input.Zip" class="text-red-400 text-xs mt-0.5 block"></span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-1">Address</label>
+                        <input asp-for="Input.Address"
+                               class="w-full bg-gray-700/50 border border-gray-600/50 rounded-lg px-3 py-2
+                                      text-gray-200 focus:ring-2 focus:ring-sky-500 focus:border-transparent text-sm" />
+                        <span asp-validation-for="Input.Address" class="text-red-400 text-xs mt-0.5 block"></span>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-end pt-6 border-t border-gray-700/50">
+                    <button type="submit"
+                            class="flex items-center justify-center gap-2 px-4 py-2 bg-sky-600 hover:bg-sky-500
+                                   text-white rounded-lg transition-all font-medium shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-sky-500 text-sm">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M5 13l4 4L19 7" />
+                        </svg>
+                        Save
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 
@@ -164,6 +186,41 @@
                     document.getElementById("profileSettings").src = e.target.result;
                 };
                 reader.readAsDataURL(file);
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebar = document.getElementById('sidebar');
+            const toggleButton = document.getElementById('toggleSidebarButton');
+
+            if (sidebar && toggleButton) {
+                let isSidebarOpen = true;
+
+                function toggleSidebar() {
+                    isSidebarOpen = !isSidebarOpen;
+                    sidebar.classList.toggle('translate-x-[-100%]');
+                }
+
+                toggleButton.addEventListener('click', toggleSidebar);
+
+                // Initially hide the sidebar on smaller screens
+                if (window.innerWidth < 640) { // Adjust breakpoint as needed
+                    sidebar.classList.add('translate-x-[-100%]');
+                    isSidebarOpen = false;
+                }
+
+                // Handle resizing to show/hide sidebar based on screen width
+                window.addEventListener('resize', function() {
+                    if (window.innerWidth < 640 && isSidebarOpen) {
+                        sidebar.classList.add('translate-x-[-100%]');
+                        isSidebarOpen = false;
+                    } else if (window.innerWidth >= 640 && !isSidebarOpen) {
+                        sidebar.classList.remove('translate-x-[-100%]');
+                        isSidebarOpen = true;
+                    } else if (window.innerWidth < 640 && !isSidebarOpen) {
+                        sidebar.classList.remove('translate-x-[-100%]'); // Ensure it's not stuck open
+                    }
+                });
             }
         });
     </script>
