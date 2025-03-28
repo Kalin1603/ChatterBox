@@ -1,15 +1,17 @@
 ﻿@model List<Story>
 
 <div>
-    <h3 class="font-extrabold text-3xl text-white text-center">Stories</h3>
-
-    <div class="relative pt-4 pb-2" tabindex="-1" uk-slider="autoplay: true; finite: true;" uk-lightbox>
+    <div class="relative pt-5 pb-2" tabindex="-1" uk-slider="autoplay: true; finite: true;" uk-lightbox>
         <div class="py-6 uk-slider-container mx-auto">
             <ul class="uk-slider-items w-full flex justify-center gap-6" uk-scrollspy="target: > li; cls: uk-animation-scale-up; delay: 20; repeat: true">
                 <!-- Create new story -->
                 <li class="md:pr-3" uk-scrollspy-class="uk-animation-fade">
                     <div class="md:w-20 md:h-20 w-16 h-16 rounded-full relative border-4 border-dashed grid place-items-center bg-slate-800 border-slate-700 shrink-0" uk-toggle="target: #create-story">
-                        <ion-icon name="camera" class="text-3xl text-gray-100"></ion-icon>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" xml:space="preserve" class="h-8 w-8 text-gray-100">
+                        <path fill="none" stroke="currentColor" stroke-width="2" stroke-miterlimit="10" d="M21.5 9 20 7h-8l-1.5 2H4v16h24V9z" />
+                        <circle fill="none" stroke="currentColor" stroke-width="2" stroke-miterlimit="10" cx="16" cy="17" r="5" />
+                        <circle cx="8" cy="12" r="1" />
+                        </svg>
                     </div>
                 </li>
                 @foreach (var story in Model)
