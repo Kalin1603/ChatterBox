@@ -11,7 +11,7 @@
     <div class="relative lg:w-[580px] md:w-96 w-full p-10 min-h-screen bg-white shadow-xl flex items-center pt-10 z-10">
         <div class="w-full lg:max-w-sm mx-auto space-y-10">
             <div>
-                <h2 class="text-2xl font-semibold mb-1.5">Sign in to your account</h2>
+                <h2 class="text-2xl font-semibold mb-1.5 text-black">Sign in to your account</h2>
                 <p class="text-sm text-black font-normal">
                     If you are not registered yet,
                     <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl" class="text-blue-700">Register here!</a>
@@ -38,24 +38,10 @@
                         <input asp-for="Input.RememberMe" id="rememberme" name="Input.RememberMe" type="checkbox" class="form-checkbox h-4 w-4 text-blue-600" />
                         <label for="rememberme" class="font-normal">Remember me</label>
                     </div>
-                    <a id="forgot-password" asp-page="./ForgotPassword" class="text-blue-700">Forgot password</a>
+                    <a id="forgot-password" asp-page="./ForgotPassword" class="text-blue-700">Forgot password?</a>
                 </div>
                 <div>
                     <button id="login-submit" type="submit" class="button bg-primary text-white w-full">Sign in</button>
-                </div>
-                <div class="text-center flex items-center gap-6">
-                    <hr class="flex-1 border-slate-200">
-                    Or continue with
-                    <hr class="flex-1 border-slate-200">
-                </div>
-                <div class="flex gap-2">
-                    <!-- Other devices -->
-                    <a asp-controller="Authentication" asp-action="ExternalLogin" asp-route-provider="Google" class="button flex-1 flex items-center gap-2 bg-primary text-white text-sm">
-                        <ion-icon name="logo-google" class="text-lg"></ion-icon> google
-                    </a>
-                    <a asp-controller="Authentication" asp-action="ExternalLogin" asp-route-provider="GitHub" class="button flex-1 flex items-center gap-2 bg-black text-white text-sm">
-                        <ion-icon name="logo-github" class="text-lg"></ion-icon> github
-                    </a>
                 </div>
             </form>
         </div>
