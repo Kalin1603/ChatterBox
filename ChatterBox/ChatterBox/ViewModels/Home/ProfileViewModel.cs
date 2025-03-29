@@ -12,6 +12,8 @@ namespace ChatterBox.ViewModels.Profile
 
         public bool IsFollowed { get; set; }
 
+        public bool IsFollower { get; set; }
+
         public bool IsFollowPending { get; set; }
 
         public List<SuggestedUserViewModel> PeopleYouMayKnow { get; set; } = new List<SuggestedUserViewModel>();

@@ -36,25 +36,31 @@
 
                 @if (User.Identity.IsAuthenticated && !isOwnProfile)
                 {
-                    <div class="absolute bottom-4 right-4">
-
+                    <div class="absolute bottom-4 right-4 flex items-center space-x-2">
                         @if (Model.IsFollowPending)
                         {
                             <button disabled class="px-4 py-2 bg-gray-500 text-white rounded-full transition duration-300">
                                 Pending
                             </button>
                         }
-
                         else
                         {
-                            <form asp-controller="Profile" method="post" class="absolute bottom-2 right-0" asp-action="@(Model.IsFollowed ? "Unfollow" : "Follow")">
+                            <form asp-controller="Profile" method="post" asp-action="@(Model.IsFollowed ? "Unfollow" : "Follow")">
                                 <input type="hidden" name="@(Model.IsFollowed ? "unfollowUserId" : "followedUserId")" value="@Model.User.Id" />
                                 <button type="submit" class="px-4 py-2 @(Model.IsFollowed ? "bg-red-500 hover:bg-red-600" : "bg-indigo-500 hover:bg-indigo-600") text-white rounded-full transition duration-300">
                                     @(Model.IsFollowed ? "Unfollow" : "Follow")
                                 </button>
                             </form>
                         }
-
+                        @if (Model.IsFollowed || Model.IsFollower)
+                        {
+                            <form asp-controller="Profile" asp-action="Chat" method="get" class="inline">
+                                <input type="hidden" name="userId" value="@Model.User.Id" />
+                                <button type="submit" class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-full transition duration-300">
+                                    Chat
+                                </button>
+                            </form>
+                        }
                     </div>
                 }
             </div>

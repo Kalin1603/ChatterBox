@@ -279,5 +279,66 @@ namespace ChatterBox.Controllers
 
             return View(viewModel);
         }
+
+        public async Task<IActionResult> Chat(string userId)
+        {
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(currentUserId)) return Unauthorized();
+
+            var isFollowing = await _context.UserFollows.AnyAsync(uf =>
+                (uf.FollowerId == currentUserId && uf.FollowedUserId == userId) ||
+                (uf.FollowerId == userId && uf.FollowedUserId == currentUserId));
+
+            if (!isFollowing) return BadRequest("You can only chat with users you follow or who follow you.");
+
+            var chat = await _context.Chats.FirstOrDefaultAsync(c =>
+                (c.InitiatorId == currentUserId && c.RecipientId == userId) ||
+                (c.InitiatorId == userId && c.RecipientId == currentUserId));
+
+            if (chat == null)
+            {
+                chat = new Chat { InitiatorId = currentUserId, RecipientId = userId };
+                _context.Chats.Add(chat);
+                await _context.SaveChangesAsync();
+            }
+
+            var messages = await _context.Messages
+                .Where(m => m.ChatId == chat.Id)
+                .Include(m => m.Sender)
+                .OrderBy(m => m.SentAt)
+                .ToListAsync();
+
+            ViewBag.ChatId = chat.Id;
+            return View("Chat", messages);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SendMessage(int chatId, string content)
+        {
+            var senderId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(senderId)) return Unauthorized();
+
+            if (string.IsNullOrEmpty(content)) return BadRequest("Message content cannot be empty.");
+
+            try
+            {
+                var message = new Message
+                {
+                    ChatId = chatId,
+                    SenderId = senderId,
+                    Content = content,
+                    SentAt = DateTime.UtcNow
+                };
+
+                _context.Messages.Add(message);
+                await _context.SaveChangesAsync();
+
+                return Ok();
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Failed to send message.");
+            }
+        }
     }
 }

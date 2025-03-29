@@ -29,6 +29,10 @@ namespace ChatterBox.Data
 
         public DbSet<Notification> Notifications { get; set; }
 
+        public DbSet<Chat> Chats { get; set; }
+
+        public DbSet<Message> Messages { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -112,6 +116,26 @@ namespace ChatterBox.Data
                 .WithMany()
                 .HasForeignKey(n => n.SenderId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            //Chats
+            modelBuilder.Entity<Chat>()
+                .HasOne(c => c.Initiator)
+                .WithMany()
+                .HasForeignKey(c => c.InitiatorId)
+                .OnDelete(DeleteBehavior.NoAction); 
+
+            modelBuilder.Entity<Chat>()
+                .HasOne(c => c.Recipient)
+                .WithMany()
+                .HasForeignKey(c => c.RecipientId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            //Messages
+            modelBuilder.Entity<Message>()
+                .HasOne(m => m.Sender)
+                .WithMany()
+                .HasForeignKey(m => m.SenderId)
+                .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

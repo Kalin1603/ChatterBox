@@ -1,0 +1,50 @@
+﻿@using System.Security.Claims
+@model List<ChatterBox.Models.Message>
+
+@{
+    ViewData["Title"] = "Chat";
+    var chatId = ViewBag.ChatId;
+}
+
+<div class="container mx-auto p-4">
+    <h1 class="text-2xl font-semibold mb-4">Chat</h1>
+
+    <div id="chat-messages" class="border p-4 h-96 overflow-y-auto mb-4">
+        @foreach (var message in Model)
+        {
+            <div class="mb-2 @(message.SenderId == User.FindFirstValue(ClaimTypes.NameIdentifier) ? "text-right" : "text-left")">
+                <strong class="font-semibold">@message.Sender.FullName:</strong>
+                <span class="ml-2">@message.Content</span>
+                <span class="text-xs text-gray-500 ml-2">@message.SentAt.ToString("HH:mm")</span>
+            </div>
+        }
+    </div>
+
+    <form id="send-message-form" class="flex">
+        <input type="hidden" name="chatId" value="@chatId" />
+        <textarea name="content" class="flex-grow border p-2 rounded-l-md" placeholder="Type your message..."></textarea>
+        <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-r-md">Send</button>
+    </form>
+</div>
+
+<script>
+    document.getElementById('send-message-form').addEventListener('submit', async function (event) {
+        event.preventDefault();
+
+        const chatId = document.querySelector('input[name="chatId"]').value;
+        const content = document.querySelector('textarea[name="content"]').value;
+
+        const response = await fetch('/Profile/SendMessage', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `chatId=${chatId}&content=${content}`
+        });
+
+        if (response.ok) {
+            // Implement real-time update using SignalR or fetch new messages.
+            location.reload(); // Replace with SignalR or fetch logic.
+        } else {
+            alert('Failed to send message.');
+        }
+    });
+</script>
