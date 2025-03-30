@@ -4,47 +4,87 @@
 @{
     ViewData["Title"] = "Chat";
     var chatId = ViewBag.ChatId;
+    var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+    var firstMessage = Model.FirstOrDefault();
+    // Определяме другия участник според това кой е текущият потребител
+    var otherUser = firstMessage != null
+        ? (firstMessage.Chat.InitiatorId == currentUserId
+            ? firstMessage.Chat.Recipient
+            : firstMessage.Chat.Initiator)
+        : null;
 }
 
-<div class="container mx-auto p-4">
-    <h1 class="text-2xl font-semibold mb-4">Chat</h1>
+<div class="flex items-center justify-center h-screen pl-10">
+    <div class="max-w-7xl w-full bg-gray-900 rounded-lg shadow-md flex flex-col" style="height: 80vh;">
+        <!-- Хедър -->
+        <div class="flex items-center p-3 border-b border-gray-700">
+            <img src="@(otherUser?.ProfilePictureURL ?? "/default-avatar.png")" class="w-10 h-10 rounded-full object-cover mr-3">
+            <h1 class="text-base font-semibold text-white">@otherUser?.FullName</h1>
+        </div>
 
-    <div id="chat-messages" class="border p-4 h-96 overflow-y-auto mb-4">
-        @foreach (var message in Model)
-        {
-            <div class="mb-2 @(message.SenderId == User.FindFirstValue(ClaimTypes.NameIdentifier) ? "text-right" : "text-left")">
-                <strong class="font-semibold">@message.Sender.FullName:</strong>
-                <span class="ml-2">@message.Content</span>
-                <span class="text-xs text-gray-500 ml-2">@message.SentAt.ToString("HH:mm")</span>
-            </div>
-        }
+        <!-- Съобщения -->
+        <div id="chat-messages" class="flex-grow p-4 overflow-y-auto space-y-4">
+
+            @{
+                DateTime? lastMessageTime = null;
+            }
+
+
+            @foreach (var message in Model)
+            {
+                var isCurrentUser = message.SenderId == currentUserId;
+                var messageTime = message.SentAt.ToLocalTime();
+
+                // Ако няма предишно съобщение или разликата е повече от 1 час, покажи часа
+                if (lastMessageTime == null || (messageTime - lastMessageTime.Value).TotalMinutes > 30)
+                {
+                    <div class="text-center text-gray-400 text-sm my-4">
+                        @messageTime.ToString("dd MMMM yyyy HH:mm", new System.Globalization.CultureInfo("bg-BG"))
+                    </div>
+                }
+
+                lastMessageTime = messageTime;
+
+                <div class="flex @(isCurrentUser ? "justify-end" : "justify-start")">
+                    <div class="flex flex-col @(isCurrentUser ? "items-end" : "items-start") max-w-[90%]">
+                        <div class="flex items-end gap-3 @(isCurrentUser ? "flex-row-reverse" : "flex-row")">
+                            <img src="@(message.Sender.ProfilePictureURL ?? "/default-avatar.png")" class="w-8 h-8 rounded-full object-cover">
+                            <div class="bg-@(isCurrentUser ? "blue-500" : "gray-700") p-3 rounded-xl text-sm text-white break-words">
+                                @message.Content
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Форма за въвеждане на съобщение -->
+        <form id="send-message-form" class="flex items-center p-3 border-t border-gray-700">
+            <input type="hidden" name="chatId" value="@chatId" />
+            <textarea name="content" rows="2" class="flex-grow resize-none border border-gray-600 p-2 rounded-xl bg-gray-800 text-sm text-white placeholder-gray-400 focus:outline-none" placeholder="Напиши съобщение..."></textarea>
+            <button type="submit" class="ml-3 bg-blue-600 hover:bg-blue-700 text-sm text-white p-2 rounded-full transition-colors">
+                <svg class="w-5 h-5 rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2z" />
+                </svg>
+            </button>
+        </form>
     </div>
-
-    <form id="send-message-form" class="flex">
-        <input type="hidden" name="chatId" value="@chatId" />
-        <textarea name="content" class="flex-grow border p-2 rounded-l-md" placeholder="Type your message..."></textarea>
-        <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-r-md">Send</button>
-    </form>
 </div>
 
 <script>
     document.getElementById('send-message-form').addEventListener('submit', async function (event) {
         event.preventDefault();
-
         const chatId = document.querySelector('input[name="chatId"]').value;
         const content = document.querySelector('textarea[name="content"]').value;
-
         const response = await fetch('/Profile/SendMessage', {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: `chatId=${chatId}&content=${content}`
+            body: `chatId=${chatId}&content=${encodeURIComponent(content)}`
         });
-
         if (response.ok) {
-            // Implement real-time update using SignalR or fetch new messages.
-            location.reload(); // Replace with SignalR or fetch logic.
+            location.reload(); // Може да се замени с динамично обновяване чрез SignalR
         } else {
-            alert('Failed to send message.');
+            alert('Неуспешно изпращане на съобщението.');
         }
     });
 </script>
