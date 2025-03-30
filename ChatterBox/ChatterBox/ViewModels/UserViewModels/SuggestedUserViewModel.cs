@@ -8,6 +8,8 @@ namespace ChatterBox.ViewModels.UserViewModels
 
         public bool IsFollowed { get; set; }
 
+        public bool IsFollower { get; set; }
+
         public bool IsFollowPending { get; set; }
     }
 }

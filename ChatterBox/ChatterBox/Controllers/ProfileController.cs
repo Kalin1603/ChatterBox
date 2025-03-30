@@ -81,6 +81,8 @@ namespace ChatterBox.Controllers
                     .ToList(),
                 IsFollowed = await _context.UserFollows
                     .AnyAsync(uf => uf.FollowerId == currentUserId && uf.FollowedUserId == id),
+                IsFollower = await _context.UserFollows
+                .AnyAsync(uf => uf.FollowerId == id && uf.FollowedUserId == currentUserId),
                 IsFollowPending = await _context.Notifications.AnyAsync(n =>
                     n.SenderId == currentUserId &&
                     n.ReceiverId == id &&
