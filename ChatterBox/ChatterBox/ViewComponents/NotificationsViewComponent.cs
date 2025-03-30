@@ -1,4 +1,5 @@
 ﻿using ChatterBox.Data;
+using ChatterBox.Models;
 using ChatterBox.ViewModels.Home;
 using ChatterBox.ViewModels.Profile;
 using Microsoft.AspNetCore.Mvc;
@@ -22,23 +23,19 @@ public class NotificationsViewComponent : ViewComponent
         }
 
         var notifications = await _context.Notifications
+        .AsNoTracking()
             .Where(n => n.ReceiverId == currentUserId)
-            .Include(n => n.Sender)  
+            .Include(n => n.Sender)
             .OrderByDescending(n => n.CreatedAt)
+            .Select(n => new NotificationViewModel
+            {
+                Id = n.Id,
+                Message = n.Message,
+                Type = n.Type,
+                SenderProfile = new ProfileViewModel { User = n.Sender! }
+            })
             .ToListAsync();
 
-        // Map Notifications to NotificationViewModels
-        var viewModels = notifications.Select(n => new NotificationViewModel
-        {
-            Id = n.Id,
-            Message = n.Message,
-            Type = n.Type,
-            SenderProfile = new ProfileViewModel
-            {
-                User = n.Sender  
-            }
-        }).ToList();
-
-        return View("Default", viewModels);  
+        return View("Default", notifications);
     }
 }

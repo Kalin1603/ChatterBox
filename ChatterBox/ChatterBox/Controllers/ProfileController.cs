@@ -307,6 +307,10 @@ namespace ChatterBox.Controllers
             var messages = await _context.Messages
                 .Where(m => m.ChatId == chat.Id)
                 .Include(m => m.Sender)
+                .Include(m => m.Chat)          
+                    .ThenInclude(c => c.Initiator)
+                .Include(m => m.Chat)         
+                     .ThenInclude(c => c.Recipient)
                 .OrderBy(m => m.SentAt)
                 .ToListAsync();
 
