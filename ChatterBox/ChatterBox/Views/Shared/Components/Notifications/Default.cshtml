@@ -1,4 +1,6 @@
-﻿@model List<ChatterBox.Models.Notification>
+﻿@using ChatterBox.ViewModels.Home
+@model List<ChatterBox.ViewModels.Home.NotificationViewModel>
+
 
 <div class="relative group">
     <button type="button" class="sm:p-2 p-1 rounded-full relative bg-gray-800 hover:bg-gray-700 transition-all border-2 border-transparent hover:border-gray-600 focus:ring-2 focus:ring-sky-500">
@@ -16,30 +18,47 @@
     <div class="flex items-center justify-between gap-2 p-4 pb-2 border-b border-gray-700">
         <h3 class="font-bold text-lg text-white">Notifications</h3>
     </div>
-    <div class="p-3 h-[400px] overflow-y-auto space-y-2">
+    <div class="p-3 h-[400px] overflow-y-auto space-y-3">
         @if (Model.Any())
         {
             foreach (var notification in Model)
             {
-                <div class="p-3 text-sm text-gray-300 rounded-lg bg-gray-700 hover:bg-gray-600 transition-colors">
-                    <p>@notification.Message</p>
-                    @if (notification.Type == ChatterBox.Enums.NotificationType.FollowRequest)
-                    {
-                        <div class="flex space-x-2 mt-2">
-                            <form asp-action="AcceptFollowRequest" asp-controller="Profile" method="post">
-                                <input type="hidden" name="notificationId" value="@notification.Id" />
-                                <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-2 py-1 rounded text-sm">
-                                    Accept
-                                </button>
-                            </form>
-                            <form asp-action="RejectFollowRequest" asp-controller="Profile" method="post">
-                                <input type="hidden" name="notificationId" value="@notification.Id" />
-                                <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded text-sm">
-                                    Reject
-                                </button>
-                            </form>
-                        </div>
-                    }
+                <div class="flex items-start p-3 text-sm text-gray-300 rounded-lg bg-gray-700 hover:bg-gray-600 transition-colors">
+                    <!-- Показване на изображението на подателя, ако е налично -->
+                    <div class="flex-shrink-0 mr-3">
+                        @if (notification.SenderProfile != null &&
+                       notification.SenderProfile.User != null &&
+                       !string.IsNullOrEmpty(notification.SenderProfile.User.ProfilePictureURL))
+                        {
+                            <img src="@notification.SenderProfile.User.ProfilePictureURL" alt="User Image" class="w-12 h-12 rounded-full object-cover border-2 border-gray-600" />
+                        }
+                        else
+                        {
+                            <img src="/images/default-user.png" alt="Default User" class="w-12 h-12 rounded-full object-cover border-2 border-gray-600" />
+                        }
+                    </div>
+                    <div class="flex-1">
+                        <p class="mb-2">
+                            @notification.Message
+                        </p>
+                        @if (notification.Type == ChatterBox.Enums.NotificationType.FollowRequest)
+                        {
+                            <div class="flex space-x-2">
+                                <form asp-action="AcceptFollowRequest" asp-controller="Profile" method="post">
+                                    <input type="hidden" name="notificationId" value="@notification.Id" />
+                                    <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm transition-colors">
+                                        Accept
+                                    </button>
+                                </form>
+                                <form asp-action="RejectFollowRequest" asp-controller="Profile" method="post">
+                                    <input type="hidden" name="notificationId" value="@notification.Id" />
+                                    <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm transition-colors">
+                                        Reject
+                                    </button>
+                                </form>
+                            </div>
+                        }
+                    </div>
                 </div>
             }
         }
@@ -56,9 +75,18 @@
     .pulse-animation {
         animation: pulse 2s infinite;
     }
+
     @@keyframes pulse {
-        0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.5); }
-        70% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
-        100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        0% {
+            box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.5);
+        }
+
+        70% {
+            box-shadow: 0 0 0 6px rgba(239, 68, 68, 0);
+        }
+
+        100% {
+            box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+        }
     }
 </style>
