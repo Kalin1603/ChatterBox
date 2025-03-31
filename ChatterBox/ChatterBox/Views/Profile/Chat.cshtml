@@ -8,17 +8,19 @@
     var otherUser = Model.FirstOrDefault()?.Chat?.InitiatorId == currentUserId
         ? Model.FirstOrDefault()?.Chat?.Recipient
         : Model.FirstOrDefault()?.Chat?.Initiator;
-
     DateTime? lastMessageTime = null;
 }
 
 <div class="flex items-center justify-center h-screen pl-10">
     <div class="max-w-7xl w-full bg-gray-900 rounded-lg shadow-md flex flex-col" style="height: 80vh;">
+        <!-- Chat Header -->
         <div class="flex items-center p-3 border-b border-gray-700">
-            <img src="@(otherUser?.ProfilePictureURL ?? "/default-avatar.png")" class="w-10 h-10 rounded-full object-cover mr-3" />
+            <img src="@(otherUser?.ProfilePictureURL ?? "/default-avatar.png")"
+                 class="w-10 h-10 rounded-full object-cover mr-3" />
             <h1 class="text-base font-semibold text-white">@otherUser?.FullName</h1>
         </div>
 
+        <!-- Messages Container -->
         <div id="chat-messages" class="flex-grow p-4 overflow-y-auto space-y-4">
             @foreach (var message in Model)
             {
@@ -30,26 +32,50 @@
                     <div class="text-center text-gray-400 text-sm my-4">
                         @messageTime.ToString("dd MMMM yyyy HH:mm", new System.Globalization.CultureInfo("en-EN"))
                     </div>
+                    lastMessageTime = messageTime;
                 }
 
-                lastMessageTime = messageTime;
-
+                <!-- Message Bubble -->
                 <div class="flex @(isCurrentUser ? "justify-end" : "justify-start")">
-                    <div class="flex flex-col @(isCurrentUser ? "items-end" : "items-start") max-w-[90%]">
-                        <div class="flex items-end gap-3 @(isCurrentUser ? "flex-row-reverse" : "flex-row")">
-                            <img src="@(message.Sender.ProfilePictureURL ?? "/default-avatar.png")" class="w-8 h-8 rounded-full object-cover" />
-                            <div class="bg-@(isCurrentUser ? "blue-500" : "gray-700") p-3 rounded-xl text-sm text-white break-words">
-                                @message.Content
-                            </div>
+                    <div class="flex items-end gap-3 @(isCurrentUser ? "flex-row-reverse" : "flex-row") max-w-[90%]">
+                        <img src="@(message.Sender.ProfilePictureURL ?? "/default-avatar.png")"
+                             class="w-8 h-8 rounded-full object-cover" />
+                        <div class="bg-@(isCurrentUser ? "blue-500" : "gray-700") p-3 rounded-xl text-sm text-white break-words">
+                            <span id="message-content-@message.Id">@message.Content</span>
+                            @if (isCurrentUser)
+                            {
+                                <button class="edit-message-button ml-2 text-black text-xs"
+                                        data-message-id="@message.Id">
+                                    Edit
+                                </button>
+                                <div id="edit-message-form-@message.Id" class="hidden">
+                                    <textarea id="edit-message-input-@message.Id"
+                                              class="border border-gray-600 p-2 rounded-xl bg-gray-800 text-sm text-white placeholder-gray-400 focus:outline-none">@message.Content</textarea>
+                                    <div class="flex gap-2 mt-2">
+                                        <button class="save-edit-message-button bg-blue-600 hover:bg-blue-700 text-sm text-white px-3 py-1 rounded-full transition-colors"
+                                                data-message-id="@message.Id">
+                                            Save
+                                        </button>
+                                        <button class="cancel-edit-message-button bg-gray-600 hover:bg-gray-700 text-sm text-white px-3 py-1 rounded-full transition-colors"
+                                                data-message-id="@message.Id">
+                                            Cancel
+                                        </button>
+                                    </div>
+                                </div>
+                            }
                         </div>
                     </div>
                 </div>
             }
         </div>
 
+        <!-- Message Input -->
         <form id="send-message-form" class="flex items-center p-3 border-t border-gray-700">
             <input type="hidden" name="chatId" value="@chatId" />
-            <textarea name="content" rows="2" class="flex-grow resize-none border border-gray-600 p-2 rounded-xl bg-gray-800 text-sm text-white placeholder-gray-400 focus:outline-none" placeholder="Write a message..."></textarea>
+            <textarea name="content" rows="2"
+                      class="flex-grow resize-none border border-gray-600 p-2 rounded-xl bg-gray-800 text-sm text-white placeholder-gray-400 focus:outline-none"
+                      placeholder="Write a message..."
+                      id="message-input"></textarea>
             <button type="submit" class="ml-3 bg-blue-600 hover:bg-blue-700 text-sm text-white p-2 rounded-full transition-colors">
                 <svg class="w-5 h-5 rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2z" />
@@ -60,6 +86,7 @@
 </div>
 
 <script>
+    // Message submission handling
     document.getElementById('send-message-form').addEventListener('submit', async function (event) {
         event.preventDefault();
         const formData = new FormData(this);
@@ -74,4 +101,45 @@
             alert('Неуспешно изпращане на съобщението.');
         }
     });
+
+    // Edit message handling
+    document.addEventListener('click', async (e) => {
+        const messageId = e.target.dataset.messageId;
+
+        if (e.target.classList.contains('edit-message-button')) {
+            showEditForm(messageId);
+        }
+        else if (e.target.classList.contains('save-edit-message-button')) {
+            await saveEdit(messageId);
+        }
+        else if (e.target.classList.contains('cancel-edit-message-button')) {
+            cancelEdit(messageId);
+        }
+    });
+
+    function showEditForm(messageId) {
+        document.getElementById(`message-content-${messageId}`).classList.add('hidden');
+        document.getElementById(`edit-message-form-${messageId}`).classList.remove('hidden');
+    }
+
+    async function saveEdit(messageId) {
+        const content = document.getElementById(`edit-message-input-${messageId}`).value;
+        const response = await fetch(`/Profile/EditMessage/${messageId}`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            body: `content=${encodeURIComponent(content)}`
+        });
+
+        if (response.ok) {
+            document.getElementById(`message-content-${messageId}`).textContent = content;
+            cancelEdit(messageId);
+        } else {
+            alert('Edit failed.');
+        }
+    }
+
+    function cancelEdit(messageId) {
+        document.getElementById(`message-content-${messageId}`).classList.remove('hidden');
+        document.getElementById(`edit-message-form-${messageId}`).classList.add('hidden');
+    }
 </script>

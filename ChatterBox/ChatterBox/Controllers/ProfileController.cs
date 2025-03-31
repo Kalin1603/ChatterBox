@@ -405,5 +405,55 @@ namespace ChatterBox.Controllers
                 return StatusCode(500, "Failed to send message");
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> EditMessage(int id)
+        {
+            var message = await _context.Messages
+                .Include(m => m.Chat)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (message == null)
+            {
+                return NotFound();
+            }
+
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (message.SenderId != currentUserId)
+            {
+                return Unauthorized();
+            }
+
+            return View(message);
+        }
+
+        [HttpPost("/Profile/EditMessage/{id}")]
+        public async Task<IActionResult> EditMessage(int id, string content)
+        {
+            var message = await _context.Messages
+                .Include(m => m.Chat)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (message == null)
+            {
+                return NotFound();
+            }
+
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (message.SenderId != currentUserId)
+            {
+                return Unauthorized();
+            }
+
+            message.Content = content;
+
+            await _context.SaveChangesAsync();
+
+            var otherUserId = message.Chat.InitiatorId == currentUserId
+                ? message.Chat.RecipientId
+                : message.Chat.InitiatorId;
+
+            return RedirectToAction("Chat", new { userId = otherUserId });
+        }
     }
 }
