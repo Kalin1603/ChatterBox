@@ -44,10 +44,17 @@
                             <span id="message-content-@message.Id">@message.Content</span>
                             @if (isCurrentUser)
                             {
-                                <button class="edit-message-button ml-2 text-black text-xs"
-                                        data-message-id="@message.Id">
-                                    Edit
-                                </button>
+                                <div class="flex gap-1 mt-1">
+                                    <button class="edit-message-button text-gray-300 hover:text-white text-xs"
+                                            data-message-id="@message.Id">
+                                        Edit
+                                    </button>
+                                    <span class="text-gray-500">|</span>
+                                    <button class="delete-message-button text-red-400 hover:text-red-300 text-xs"
+                                            data-message-id="@message.Id">
+                                        Delete
+                                    </button>
+                                </div>
                                 <div id="edit-message-form-@message.Id" class="hidden">
                                     <textarea id="edit-message-input-@message.Id"
                                               class="border border-gray-600 p-2 rounded-xl bg-gray-800 text-sm text-white placeholder-gray-400 focus:outline-none">@message.Content</textarea>
@@ -115,6 +122,10 @@
         else if (e.target.classList.contains('cancel-edit-message-button')) {
             cancelEdit(messageId);
         }
+        else if (e.target.classList.contains('delete-message-button')) {
+        await deleteMessage(messageId);
+    }
+
     });
 
     function showEditForm(messageId) {
@@ -141,5 +152,20 @@
     function cancelEdit(messageId) {
         document.getElementById(`message-content-${messageId}`).classList.remove('hidden');
         document.getElementById(`edit-message-form-${messageId}`).classList.add('hidden');
+    }
+
+    async function deleteMessage(messageId) {
+        const confirmed = confirm('Are you sure you want to delete this?');
+        if (!confirmed) return;
+
+        const response = await fetch(`/Profile/DeleteMessage/${messageId}`, {
+            method: 'POST'
+        });
+
+        if (response.ok) {
+            location.reload();
+        } else {
+            alert('Error.');
+        }
     }
 </script>

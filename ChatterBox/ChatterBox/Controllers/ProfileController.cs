@@ -455,5 +455,27 @@ namespace ChatterBox.Controllers
 
             return RedirectToAction("Chat", new { userId = otherUserId });
         }
+
+        [HttpPost("/Profile/DeleteMessage/{id}")]
+        public async Task<IActionResult> DeleteMessage(int id)
+        {
+            var message = await _context.Messages
+                .Include(m => m.Chat)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (message == null) return NotFound();
+
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (message.SenderId != currentUserId) return Unauthorized();
+
+            var otherUserId = message.Chat.InitiatorId == currentUserId
+                ? message.Chat.RecipientId
+                : message.Chat.InitiatorId;
+
+            _context.Messages.Remove(message);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Chat", new { userId = otherUserId });
+        }
     }
 }
