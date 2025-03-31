@@ -304,6 +304,20 @@ namespace ChatterBox.Controllers
                 await _context.SaveChangesAsync();
             }
 
+            // Маркиране на нотификациите като прочетени
+            var unreadNotifications = await _context.Notifications
+                .Where(n => n.ReceiverId == currentUserId &&
+                           n.ChatId == chat.Id &&
+                           n.Type == NotificationType.UnreadMessage &&
+                           !n.IsRead)
+                .ToListAsync();
+
+            foreach (var notification in unreadNotifications)
+            {
+                notification.IsRead = true;
+            }
+            await _context.SaveChangesAsync();
+
             var messages = await _context.Messages
                 .Where(m => m.ChatId == chat.Id)
                 .Include(m => m.Sender)
@@ -315,6 +329,8 @@ namespace ChatterBox.Controllers
                 .ToListAsync();
 
             ViewBag.ChatId = chat.Id;
+            ViewBag.OtherUser = chat.InitiatorId == currentUserId ? chat.Recipient : chat.Initiator;
+
             return View("Chat", messages);
         }
 
@@ -324,10 +340,15 @@ namespace ChatterBox.Controllers
             var senderId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(senderId)) return Unauthorized();
 
-            if (string.IsNullOrEmpty(content)) return BadRequest("Message content cannot be empty.");
-
             try
             {
+                // Взимаме чата и участниците
+                var chat = await _context.Chats
+                    .Include(c => c.Initiator)
+                    .Include(c => c.Recipient)
+                    .FirstOrDefaultAsync(c => c.Id == chatId);
+
+                // Създаваме съобщение
                 var message = new Message
                 {
                     ChatId = chatId,
@@ -336,14 +357,52 @@ namespace ChatterBox.Controllers
                     SentAt = DateTime.UtcNow
                 };
 
+                // Създаваме нотификация
+                var receiverId = chat.InitiatorId == senderId
+                    ? chat.RecipientId
+                    : chat.InitiatorId;
+
+                // Проверка за съществуваща непрочетена нотификация
+                var existingNotification = await _context.Notifications
+                    .FirstOrDefaultAsync(n =>
+                        n.SenderId == senderId &&
+                        n.ReceiverId == receiverId &&
+                        n.ChatId == chatId &&
+                        !n.IsRead);
+
+                var sender = await _context.Users.FindAsync(senderId);
+                var senderFullName = sender?.FullName ?? "Unknown User";
+
+                if (existingNotification == null)
+                {
+                    // Създаваме нова нотификация
+                    var notification = new Notification
+                    {
+                        Type = NotificationType.UnreadMessage,
+                        Message = $"New message from {senderFullName}",
+                        SenderId = senderId,
+                        ReceiverId = receiverId,
+                        ChatId = chatId,
+                        CreatedAt = DateTime.UtcNow,
+                        IsRead = false
+                    };
+                    _context.Notifications.Add(notification);
+                }
+                else
+                {
+                    // Актуализиране на съществуваща нотификация
+                    existingNotification.Message = $"New message from {senderFullName}";
+                    existingNotification.CreatedAt = DateTime.UtcNow;
+                }
+
                 _context.Messages.Add(message);
                 await _context.SaveChangesAsync();
 
                 return Ok();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return StatusCode(500, "Failed to send message.");
+                return StatusCode(500, "Failed to send message");
             }
         }
     }

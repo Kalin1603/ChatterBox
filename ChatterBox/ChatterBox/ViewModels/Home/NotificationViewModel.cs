@@ -12,5 +12,7 @@ namespace ChatterBox.ViewModels.Home
         public NotificationType Type { get; set; }
 
         public ProfileViewModel SenderProfile { get; set; }
+
+        public int ChatId { get; set; }
     }
 }

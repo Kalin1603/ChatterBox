@@ -23,15 +23,17 @@ public class NotificationsViewComponent : ViewComponent
         }
 
         var notifications = await _context.Notifications
-        .AsNoTracking()
-            .Where(n => n.ReceiverId == currentUserId)
+            .AsNoTracking()
+            .Where(n => n.ReceiverId == currentUserId && !n.IsRead)
             .Include(n => n.Sender)
+            .Include(n => n.Chat)
             .OrderByDescending(n => n.CreatedAt)
             .Select(n => new NotificationViewModel
             {
                 Id = n.Id,
                 Message = n.Message,
                 Type = n.Type,
+                ChatId = n.ChatId ?? 0,
                 SenderProfile = new ProfileViewModel { User = n.Sender! }
             })
             .ToListAsync();

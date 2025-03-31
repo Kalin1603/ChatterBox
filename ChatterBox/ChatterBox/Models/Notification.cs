@@ -6,6 +6,11 @@ namespace ChatterBox.Models
 {
     public class Notification
     {
+        public Notification()
+        {
+            IsRead = false;
+        }
+
         [Key]
         public int Id { get; set; }
 
@@ -16,6 +21,10 @@ namespace ChatterBox.Models
         [ForeignKey(nameof(Sender))]
         public string SenderId { get; set; }
         public User Sender { get; set; }
+
+        [ForeignKey(nameof(Chat))]
+        public int? ChatId { get; set; }
+        public Chat Chat { get; set; }
 
         public NotificationType Type { get; set; }
 

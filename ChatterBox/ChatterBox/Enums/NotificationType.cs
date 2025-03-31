@@ -2,6 +2,7 @@
 {
     public enum NotificationType
     {
-        FollowRequest
+        FollowRequest,
+        UnreadMessage
     }
 }
