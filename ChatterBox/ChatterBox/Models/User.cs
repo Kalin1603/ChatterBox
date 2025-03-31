@@ -49,5 +49,7 @@ namespace ChatterBox.Models
         public ICollection<UserFollow> Followers { get; set; } = new List<UserFollow>();
 
         public ICollection<UserFollow> Followings { get; set; } = new List<UserFollow>();
+
+        public DateTime RegistrationDate { get; set; } = DateTime.UtcNow; 
     }
 }

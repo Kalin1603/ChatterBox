@@ -29,7 +29,7 @@
                         <h1 class="text-3xl font-bold text-gray-100">@Model.User.FullName</h1>
                         <p class="text-lg text-gray-300 mt-1">@@@Model.User.UserName</p>
                         <p class="text-sm text-gray-400 mt-1">
-                            Member since @Model.User.DateOfBirth.ToString("MMMM yyyy")
+                            Member since @Model.User.RegistrationDate.ToString("dd MMMM yyyy")
                         </p>
                     </div>
                 </div>
@@ -93,7 +93,7 @@
                     <div>
                         <p class="text-sm text-gray-400">Age</p>
                         <p class="font-medium text-gray-100">@(DateTime.Now.Year - Model.User.DateOfBirth.Year) years</p>
-                        <p class="text-xs text-gray-400">Born @Model.User.DateOfBirth.ToString("dd MMM yyyy")</p>
+                        <p class="text-xs text-gray-400">Born @Model.User.DateOfBirth.ToString("dd MMMM yyyy")</p>
                     </div>
                 </div>
 

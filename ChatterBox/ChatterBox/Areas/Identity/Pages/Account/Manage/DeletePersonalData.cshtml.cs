@@ -84,6 +84,12 @@ namespace ChatterBox.Areas.Identity.Pages.Account.Manage
             RequirePassword = await _userManager.HasPasswordAsync(user);
             if (RequirePassword)
             {
+                if (string.IsNullOrEmpty(Input?.Password))
+                {
+                    ModelState.AddModelError(string.Empty, "Password is required.");
+                    return Page();
+                }
+
                 if (!await _userManager.CheckPasswordAsync(user, Input.Password))
                 {
                     ModelState.AddModelError(string.Empty, "Incorrect password.");
