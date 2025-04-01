@@ -5,65 +5,73 @@
     ViewData["Title"] = "Chat";
     var chatId = ViewBag.ChatId;
     var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-    var otherUser = Model.FirstOrDefault()?.Chat?.InitiatorId == currentUserId
-        ? Model.FirstOrDefault()?.Chat?.Recipient
-        : Model.FirstOrDefault()?.Chat?.Initiator;
+    var chat = Model.FirstOrDefault()?.Chat;
+    var otherUser = chat?.InitiatorId == currentUserId ? chat?.Recipient : chat?.Initiator;
     DateTime? lastMessageTime = null;
 }
 
-<div class="flex items-center justify-center h-screen pl-10">
-    <div class="max-w-7xl w-full bg-gray-900 rounded-lg shadow-md flex flex-col" style="height: 80vh;">
+<div class="flex items-center justify-center min-h-screen bg-gradient-to-br p-2 sm:p-4">
+    <div class="w-full max-w-3xl bg-gray-800 rounded-lg shadow-xl flex flex-col overflow-hidden" style="height: calc(100vh - 3rem); max-height: 750px;">
+
         <!-- Chat Header -->
-        <div class="flex items-center p-3 border-b border-gray-700">
-            <img src="@(otherUser?.ProfilePictureURL ?? "/default-avatar.png")"
-                 class="w-10 h-10 rounded-full object-cover mr-3" />
-            <h1 class="text-base font-semibold text-white">@otherUser?.FullName</h1>
+        <div class="flex items-center p-3 border-b border-gray-700 bg-gray-800 shadow-sm flex-shrink-0">
+            <img src="@(otherUser?.ProfilePictureURL ?? "/images/default-avatar.png")"
+                 alt="@(otherUser?.FullName ?? "User") Avatar"
+                 class="w-9 h-9 rounded-full object-cover mr-3 border border-gray-600" />
+            <div>
+                <h1 class="text-base font-semibold text-white">@(otherUser?.FullName ?? "Chat User")</h1>
+            </div>
         </div>
 
         <!-- Messages Container -->
-        <div id="chat-messages" class="flex-grow p-4 overflow-y-auto space-y-4">
-            @foreach (var message in Model)
+        <div id="chat-messages" class="flex-grow p-3 sm:p-4 overflow-y-auto space-y-3 bg-gray-900 scroll-smooth">
+            @foreach (var message in Model.OrderBy(m => m.SentAt))
             {
                 var isCurrentUser = message.SenderId == currentUserId;
                 var messageTime = message.SentAt.ToLocalTime();
 
                 if (lastMessageTime == null || (messageTime - lastMessageTime.Value).TotalMinutes > 30)
                 {
-                    <div class="text-center text-gray-400 text-sm my-4">
-                        @messageTime.ToString("dd MMMM yyyy HH:mm", new System.Globalization.CultureInfo("en-EN"))
+                    <div class="text-center text-gray-500 text-xs my-3 py-0.5 uppercase tracking-normal">
+                        @messageTime.ToString(messageTime.Date == DateTime.Today ? "'Today' HH:mm" : "dd MMM yy HH:mm", new System.Globalization.CultureInfo("en-EN"))
                     </div>
                     lastMessageTime = messageTime;
                 }
 
-                <!-- Message Bubble -->
-                <div class="flex @(isCurrentUser ? "justify-end" : "justify-start")">
-                    <div class="flex items-end gap-3 @(isCurrentUser ? "flex-row-reverse" : "flex-row") max-w-[90%]">
-                        <img src="@(message.Sender.ProfilePictureURL ?? "/default-avatar.png")"
-                             class="w-8 h-8 rounded-full object-cover" />
-                        <div class="bg-@(isCurrentUser ? "blue-500" : "gray-700") p-3 rounded-xl text-sm text-white break-words">
+                <div class="flex @(isCurrentUser ? "justify-end" : "justify-start") group">
+                    <div class="flex items-end gap-1.5 @(isCurrentUser ? "flex-row-reverse" : "flex-row") max-w-[85%] sm:max-w-[80%]">
+                        <img src="@(message.Sender.ProfilePictureURL ?? "/images/default-avatar.png")"
+                             alt="Sender Avatar"
+                             class="w-6 h-6 rounded-full object-cover self-end mb-0.5 @(isCurrentUser ? "ml-1" : "mr-1")" />
+                        <div class="relative @(isCurrentUser ? "bg-indigo-600" : "bg-gray-700") px-3 py-1.5 rounded-xl @(isCurrentUser ? "rounded-br-md" : "rounded-bl-md") text-sm text-white shadow break-words">
                             <span id="message-content-@message.Id">@message.Content</span>
+                            <span class="text-[10px] @(isCurrentUser ? "text-indigo-200" : "text-gray-400") opacity-75 ml-1.5 float-right clear-both mt-1">
+                                @messageTime.ToString("HH:mm")
+                            </span>
+
                             @if (isCurrentUser)
                             {
-                                <div class="flex gap-1 mt-1">
-                                    <button class="edit-message-button text-gray-300 hover:text-white text-xs"
-                                            data-message-id="@message.Id">
+                                <div class="flex gap-1.5 mt-1 justify-end clear-both">
+                                    <button class="edit-message-button text-gray-300 hover:text-white text-[11px] font-medium hover:bg-gray-700/50 px-1 py-0 rounded"
+                                            data-message-id="@message.Id" title="Edit">
                                         Edit
                                     </button>
-                                    <span class="text-gray-500">|</span>
-                                    <button class="delete-message-button text-red-400 hover:text-red-300 text-xs"
-                                            data-message-id="@message.Id">
+                                    <span class="text-gray-500 text-[10px] self-center">|</span>
+                                    <button class="delete-message-button text-red-400 hover:text-red-300 text-[11px] font-medium hover:bg-red-900/50 px-1 py-0 rounded"
+                                            data-message-id="@message.Id" title="Delete">
                                         Delete
                                     </button>
                                 </div>
-                                <div id="edit-message-form-@message.Id" class="hidden">
+
+                                <div id="edit-message-form-@message.Id" class="hidden mt-1.5 clear-both">
                                     <textarea id="edit-message-input-@message.Id"
-                                              class="border border-gray-600 p-2 rounded-xl bg-gray-800 text-sm text-white placeholder-gray-400 focus:outline-none">@message.Content</textarea>
-                                    <div class="flex gap-2 mt-2">
-                                        <button class="save-edit-message-button bg-blue-600 hover:bg-blue-700 text-sm text-white px-3 py-1 rounded-full transition-colors"
+                                              class="w-full block border border-gray-600 p-1.5 rounded-md bg-gray-600 text-sm text-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-transparent resize-none" rows="1">@message.Content</textarea>
+                                    <div class="flex gap-1.5 mt-1.5 justify-end">
+                                        <button class="save-edit-message-button bg-indigo-600 hover:bg-indigo-700 text-xs text-white font-semibold px-2.5 py-1 rounded-full transition-colors"
                                                 data-message-id="@message.Id">
                                             Save
                                         </button>
-                                        <button class="cancel-edit-message-button bg-gray-600 hover:bg-gray-700 text-sm text-white px-3 py-1 rounded-full transition-colors"
+                                        <button class="cancel-edit-message-button bg-gray-500 hover:bg-gray-600 text-xs text-white font-semibold px-2.5 py-1 rounded-full transition-colors"
                                                 data-message-id="@message.Id">
                                             Cancel
                                         </button>
@@ -77,15 +85,16 @@
         </div>
 
         <!-- Message Input -->
-        <form id="send-message-form" class="flex items-center p-3 border-t border-gray-700">
+        <form id="send-message-form" class="flex items-center p-2.5 border-t border-gray-700 bg-gray-800 gap-2 flex-shrink-0">
             <input type="hidden" name="chatId" value="@chatId" />
-            <textarea name="content" rows="2"
-                      class="flex-grow resize-none border border-gray-600 p-2 rounded-xl bg-gray-800 text-sm text-white placeholder-gray-400 focus:outline-none"
-                      placeholder="Write a message..."
+            <textarea name="content" rows="1"
+                      class="flex-grow resize-none border border-gray-600 px-3 py-2 rounded-lg bg-gray-700 text-sm text-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-transparent transition duration-150 ease-in-out"
+                      style="min-height: 40px; max-height: 100px;"
+                      placeholder="Type a message..."
                       id="message-input"></textarea>
-            <button type="submit" class="ml-3 bg-blue-600 hover:bg-blue-700 text-sm text-white p-2 rounded-full transition-colors">
-                <svg class="w-5 h-5 rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2z" />
+            <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white p-2 rounded-lg transition-colors duration-200 flex-shrink-0 focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-offset-gray-800 focus:ring-indigo-500" title="Send Message">
+                <svg class="w-5 h-5 rotate-90" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 16.571V11a1 1 0 112 0v5.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"></path>
                 </svg>
             </button>
         </form>
@@ -93,7 +102,6 @@
 </div>
 
 <script>
-    // Message submission handling
     document.getElementById('send-message-form').addEventListener('submit', async function (event) {
         event.preventDefault();
         const formData = new FormData(this);
@@ -105,36 +113,47 @@
         if (response.ok) {
             location.reload();
         } else {
+            console.error('Failed to send message:', response.statusText);
             alert('Неуспешно изпращане на съобщението.');
         }
     });
 
-    // Edit message handling
     document.addEventListener('click', async (e) => {
-        const messageId = e.target.dataset.messageId;
+        const editButton = e.target.closest('.edit-message-button');
+        const saveButton = e.target.closest('.save-edit-message-button');
+        const cancelButton = e.target.closest('.cancel-edit-message-button');
+        const deleteButton = e.target.closest('.delete-message-button');
 
-        if (e.target.classList.contains('edit-message-button')) {
+        let messageId;
+
+        if (editButton) {
+            messageId = editButton.dataset.messageId;
             showEditForm(messageId);
-        }
-        else if (e.target.classList.contains('save-edit-message-button')) {
+        } else if (saveButton) {
+            messageId = saveButton.dataset.messageId;
             await saveEdit(messageId);
-        }
-        else if (e.target.classList.contains('cancel-edit-message-button')) {
+        } else if (cancelButton) {
+            messageId = cancelButton.dataset.messageId;
             cancelEdit(messageId);
+        } else if (deleteButton) {
+            messageId = deleteButton.dataset.messageId;
+            await deleteMessage(messageId);
         }
-        else if (e.target.classList.contains('delete-message-button')) {
-        await deleteMessage(messageId);
-    }
-
     });
 
     function showEditForm(messageId) {
         document.getElementById(`message-content-${messageId}`).classList.add('hidden');
+        document.getElementById(`message-content-${messageId}`).closest('div').querySelector('.flex.gap-1\.5')?.classList.add('hidden');
         document.getElementById(`edit-message-form-${messageId}`).classList.remove('hidden');
+        const textarea = document.getElementById(`edit-message-input-${messageId}`);
+        textarea.focus();
+        textarea.style.height = 'auto';
+        textarea.style.height = textarea.scrollHeight + 'px';
     }
 
     async function saveEdit(messageId) {
-        const content = document.getElementById(`edit-message-input-${messageId}`).value;
+        const inputElement = document.getElementById(`edit-message-input-${messageId}`);
+        const content = inputElement.value;
         const response = await fetch(`/Profile/EditMessage/${messageId}`, {
             method: 'POST',
             headers: {'Content-Type': 'application/x-www-form-urlencoded'},
@@ -145,12 +164,14 @@
             document.getElementById(`message-content-${messageId}`).textContent = content;
             cancelEdit(messageId);
         } else {
+            console.error('Edit failed:', response.statusText);
             alert('Edit failed.');
         }
     }
 
     function cancelEdit(messageId) {
         document.getElementById(`message-content-${messageId}`).classList.remove('hidden');
+        document.getElementById(`message-content-${messageId}`).closest('div').querySelector('.flex.gap-1\.5')?.classList.remove('hidden');
         document.getElementById(`edit-message-form-${messageId}`).classList.add('hidden');
     }
 
@@ -165,7 +186,74 @@
         if (response.ok) {
             location.reload();
         } else {
+            console.error('Error deleting message:', response.statusText);
             alert('Error.');
         }
     }
+
+    const messageInput = document.getElementById('message-input');
+    if (messageInput) {
+        const initialHeight = messageInput.style.minHeight || '40px';
+        const maxHeight = messageInput.style.maxHeight;
+
+        const autoResize = () => {
+            messageInput.style.height = initialHeight;
+            let newHeight = messageInput.scrollHeight;
+            const style = window.getComputedStyle(messageInput);
+            const paddingTop = parseFloat(style.paddingTop);
+            const paddingBottom = parseFloat(style.paddingBottom);
+            const borderTop = parseFloat(style.borderTopWidth);
+            const borderBottom = parseFloat(style.borderBottomWidth);
+            let contentHeight = newHeight - paddingTop - paddingBottom;
+            newHeight = contentHeight + paddingTop + paddingBottom + borderTop + borderBottom;
+
+            if (maxHeight && newHeight > parseInt(maxHeight)) {
+                newHeight = parseInt(maxHeight);
+                messageInput.style.overflowY = 'auto';
+            } else {
+                messageInput.style.overflowY = 'hidden';
+            }
+
+            const minHeightNum = parseFloat(initialHeight);
+            if(newHeight < minHeightNum){
+                newHeight = minHeightNum;
+            }
+
+            messageInput.style.height = newHeight + 'px';
+        };
+        messageInput.addEventListener('input', autoResize);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const messageContainer = document.getElementById('chat-messages');
+        if(messageContainer){
+            messageContainer.scrollTo({ top: messageContainer.scrollHeight, behavior: 'auto' });
+        }
+    });
 </script>
+
+<style>
+    #chat-messages::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    #chat-messages::-webkit-scrollbar-track {
+        background: #1f2937;
+        border-radius: 10px;
+    }
+
+    #chat-messages::-webkit-scrollbar-thumb {
+        background-color: #4b5563;
+        border-radius: 10px;
+        border: 1px solid #1f2937;
+    }
+
+        #chat-messages::-webkit-scrollbar-thumb:hover {
+            background-color: #6b7280;
+        }
+
+    #chat-messages {
+        scrollbar-width: thin;
+        scrollbar-color: #4b5563 #1f2937;
+    }
+</style>
