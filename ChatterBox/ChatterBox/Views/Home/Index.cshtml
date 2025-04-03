@@ -56,8 +56,8 @@
 
         @if (User.Identity.IsAuthenticated)
         {
-            <div class="fixed top-0 right-6 p-4">
-                <div class="lg:space-y-4 lg:pb-8 max-lg:grid sm:grid-cols-2 max-lg:gap-6">
+            <div class="fixed top-4 right-4 z-10">
+                <div class="w-full max-w-xs lg:space-y-4 max-lg:grid max-lg:gap-4">
                     @await Component.InvokeAsync("Hashtags")
                 </div>
             </div>
