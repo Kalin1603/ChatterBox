@@ -78,4 +78,17 @@ app.MapControllerRoute(
 app.MapRazorPages()
    .WithStaticAssets();
 
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        await ApplicationDbInitializer.InitializeAsync(services);
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine("An error occurred while seeding the database: " + ex.Message);
+    }
+}
+
 app.Run();
