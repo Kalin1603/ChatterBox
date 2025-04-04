@@ -15,9 +15,9 @@
             @await Component.InvokeAsync("Stories")
 
             <!-- Posts -->
-            <div class="md:max-w-[580px] mx-auto flex-1 xl:space-y-6 space-y-3">
+            <div class="md:max-w-[580px] mx-auto flex-1 ">
 
-                <div class="bg-slate-900 rounded-xl shadow-sm md:p-4 p-2 space-y-4 text-sm font-medium border border-slate-800">
+                <div class="bg-slate-900 rounded-xl shadow-sm md:p-4 p-2 space-y-4 text-sm font-medium border border-slate-800 mb-4">
                     <div class="flex items-center md:gap-3 gap-1">
                         <div class="flex-1 bg-slate-800 hover:bg-slate-700 transition-all rounded-lg cursor-pointer" uk-toggle="target: #create-status">
                             <div class="py-2.5 text-center text-lg font-semibold text-gray-100 hover:text-gray-300">
@@ -39,16 +39,17 @@
 
                 @if (!Model.Posts.Any())
                 {
-                    <div class="bg-white rounded-xl shadow-sm md:p-4 p-2 space-y-4 text-gray-800 font-medium border1 w-full">
+                    <div class="bg-white rounded-xl shadow-sm md:p-4 p-2 space-y-4 text-gray-800 font-medium border mb-4">
                         Currently, there are no posts available. Would you like to create the first one?
                     </div>
                 }
-
                 else
                 {
                     @foreach (var post in Model.Posts)
                     {
-                        <partial name="PartialHome/_Post" model="post"></partial>
+                        <div class="mb-2">
+                            <partial name="PartialHome/_Post" model="post"></partial>
+                        </div>
                     }
                 }
             </div>
