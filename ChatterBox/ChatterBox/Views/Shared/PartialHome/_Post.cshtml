@@ -207,7 +207,8 @@
                                     _ => "Just now"
                                 };
 
-                                <li class="flex items-start gap-3 p-3 rounded-lg hover:bg-slate-800/50 transition-colors group">
+                                <li class="flex items-start gap-3 p-3 rounded-lg hover:bg-slate-800 transition-colors group">
+                                    @* <-- Updated hover background *@
                                     <div class="relative flex-shrink-0">
                                         <img src="@(comment.User.ProfilePictureURL ?? "/images/default-profile.png")"
                                              alt="@comment.User.UserName"
@@ -225,14 +226,16 @@
                                             </div>
                                             @if (comment.User.Id == currentUserId)
                                             {
-                                                <form asp-controller="Home" asp-action="RemoveComment" method="post" class="inline-block ml-auto">
-                                                    <input type="hidden" name="commentId" value="@comment.Id" />
-                                                    <button type="submit"
-                                                            class="text-red-500 hover:text-red-400 text-xs flex items-center gap-1 opacity-50 group-hover:opacity-100 transition-opacity"
-                                                            title="Remove comment">
-                                                        <ion-icon name="trash-outline" class="text-sm"></ion-icon> Delete
-                                                    </button>
-                                                </form>
+                                                <text>
+                                                    <form asp-controller="Home" asp-action="RemoveComment" method="post" class="inline-block ml-auto">
+                                                        <input type="hidden" name="commentId" value="@comment.Id" />
+                                                        <button type="submit"
+                                                                class="text-red-500 hover:text-red-400 text-xs flex items-center gap-1 opacity-50 group-hover:opacity-100 transition-opacity" @* This class makes it appear on hover *@
+                                                                title="Remove comment">
+                                                            <ion-icon name="trash-outline" class="text-sm"></ion-icon> Delete
+                                                        </button>
+                                                    </form>
+                                                </text>
                                             }
                                         </div>
                                         <p class="text-gray-200 mt-1 text-sm leading-relaxed bg-slate-800 px-3 py-2 rounded-md border border-slate-700">
@@ -260,7 +263,8 @@
                                             _ => "Just now"
                                         };
 
-                                        <li class="flex items-start gap-3 p-3 rounded-lg hover:bg-slate-800/50 transition-colors group">
+                                        <li class="flex items-start gap-3 p-3 rounded-lg hover:bg-slate-800 transition-colors group">
+                                            @* <-- Updated hover background *@
                                             <div class="relative flex-shrink-0">
                                                 <img src="@(comment.User.ProfilePictureURL ?? "/images/default-profile.png")"
                                                      alt="@comment.User.UserName"
@@ -278,14 +282,16 @@
                                                     </div>
                                                     @if (comment.User.Id == currentUserId)
                                                     {
-                                                        <form asp-controller="Home" asp-action="RemoveComment" method="post" class="inline-block ml-auto">
-                                                            <input type="hidden" name="commentId" value="@comment.Id" />
-                                                            <button type="submit"
-                                                                    class="text-red-500 hover:text-red-400 text-xs flex items-center gap-1 opacity-50 group-hover:opacity-100 transition-opacity"
-                                                                    title="Remove comment">
-                                                                <ion-icon name="trash-outline" class="text-sm"></ion-icon> Delete
-                                                            </button>
-                                                        </form>
+                                                        <text>
+                                                            <form asp-controller="Home" asp-action="RemoveComment" method="post" class="inline-block ml-auto">
+                                                                <input type="hidden" name="commentId" value="@comment.Id" />
+                                                                <button type="submit"
+                                                                        class="text-red-500 hover:text-red-400 text-xs flex items-center gap-1 opacity-50 group-hover:opacity-100 transition-opacity" @* This class makes it appear on hover *@
+                                                                        title="Remove comment">
+                                                                    <ion-icon name="trash-outline" class="text-sm"></ion-icon> Delete
+                                                                </button>
+                                                            </form>
+                                                        </text>
                                                     }
                                                 </div>
                                                 <p class="text-gray-200 mt-1 text-sm leading-relaxed bg-slate-800 px-3 py-2 rounded-md border border-slate-700">
