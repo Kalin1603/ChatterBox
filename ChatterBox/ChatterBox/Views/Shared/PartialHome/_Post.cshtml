@@ -33,7 +33,7 @@
                         <h4 class="text-gray-100 font-semibold text-lg">@Model.User.FullName</h4>
                     </a>
                     <div class="text-xs text-gray-400">@displayTime</div>
-                </div>  
+                </div>
                 @if (User.Identity.IsAuthenticated)
                 {
                     <div class="relative">
@@ -177,52 +177,27 @@
             <!-- Comments Section -->
             @if (User.Identity.IsAuthenticated)
             {
-                <div class="sm:px-6 p-3 border-t border-slate-800 space-y-4">
-                    @{
+                <div class="sm:px-6 p-3 border-t border-slate-800">
+                    <div class="flex items-center gap-2 mb-4">
+                        <svg class="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                        </svg>
+                        <h4 class="font-semibold text-gray-100 text-sm uppercase tracking-wide">Comments • @Model.Comments.Count</h4>
+                    </div>
+
+                    @if (Model.Comments.Any())
+                    {
+
+                        // Keep the logic to split comments
                         var visibleComments = Model.Comments.OrderByDescending(c => c.DateCreated).Take(3).ToList();
                         var hiddenComments = Model.Comments.OrderByDescending(c => c.DateCreated).Skip(3).ToList();
-                    }
-                    @foreach (var comment in visibleComments)
-                    {
-                        TimeSpan commentTimeAgo = DateTime.Now.Subtract(comment.DateCreated);
-                        string commentDisplayTime = commentTimeAgo switch
-                        {
-                            var t when t.TotalDays >= 1 => $"{(int)t.TotalDays}d ago",
-                            var t when t.TotalHours >= 1 => $"{(int)t.TotalHours}h ago",
-                            var t when t.TotalMinutes >= 1 => $"{(int)t.TotalMinutes}m ago",
-                            _ => "Just now"
-                        };
-                        <div class="flex items-start gap-3">
-                            <a href="#" class="shrink-0">
-                                <img src="@(comment.User.ProfilePictureURL ?? "~/images/avatar/user.png")"
-                                     class="w-8 h-8 rounded-full border border-slate-700 object-cover"
-                                     alt="@comment.User.FullName" />
-                            </a>
-                            <div class="flex-1 bg-slate-800 border border-slate-700 rounded-lg p-3 relative">
-                                <div class="flex items-center justify-between">
-                                    <a href="@Url.Action("Details", "Profile", new { id = comment.User.Id })" class="text-gray-100 font-semibold hover:underline">@comment.User.FullName</a>
-                                    <small class="text-gray-400">@commentDisplayTime</small>
-                                </div>
-                                <p class="text-gray-100 mt-1">@comment.Content</p>
-                                @if (comment.User.Id == User.FindFirstValue(ClaimTypes.NameIdentifier))
-                                {
-                                    <form asp-controller="Home" asp-action="RemoveComment" method="post" class="absolute bottom-2 right-2">
-                                        <input type="hidden" name="commentId" value="@comment.Id" />
-                                        <button type="submit"
-                                                class="text-red-500 hover:text-red-400 text-xs flex items-center gap-1"
-                                                title="Remove comment">
-                                            <ion-icon name="trash-outline" class="text-sm"></ion-icon> Delete
-                                        </button>
-                                    </form>
-                                }
-                            </div>
-                        </div>
-                    }
-                    @if (Model.Comments.Count > 3)
-                    {
-                        <div id="hiddenComments-@Model.Id" class="space-y-3" style="display: none;">
-                            @foreach (var comment in hiddenComments)
+                        var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier); 
+
+
+                        <ul class="space-y-4">
+                            @foreach (var comment in visibleComments)
                             {
+                                // Calculate time ago for this comment
                                 TimeSpan commentTimeAgo = DateTime.Now.Subtract(comment.DateCreated);
                                 string commentDisplayTime = commentTimeAgo switch
                                 {
@@ -231,58 +206,140 @@
                                     var t when t.TotalMinutes >= 1 => $"{(int)t.TotalMinutes}m ago",
                                     _ => "Just now"
                                 };
-                                <div class="flex items-start gap-3">
-                                    <a href="#" class="shrink-0">
-                                        <img src="@(comment.User.ProfilePictureURL ?? "~/images/avatar/user.png")"
-                                             class="w-8 h-8 rounded-full border border-slate-700 object-cover"
-                                             alt="@comment.User.FullName" />
-                                    </a>
-                                    <div class="flex-1 bg-slate-800 border border-slate-700 rounded-lg p-3 relative">
-                                        <div class="flex items-center justify-between">
-                                            <a href="@Url.Action("Details", "Profile", new { id = comment.User.Id })" class="text-gray-100 font-semibold hover:underline">@comment.User.FullName</a>
-                                            <small class="text-gray-400">@commentDisplayTime</small>
-                                        </div>
-                                        <p class="text-gray-100 mt-1">@comment.Content</p>
-                                        @if (comment.User.Id == User.FindFirstValue(ClaimTypes.NameIdentifier))
-                                        {
-                                            <form asp-controller="Home" asp-action="RemoveComment" method="post" class="absolute bottom-2 right-2">
-                                                <input type="hidden" name="commentId" value="@comment.Id" />
-                                                <button type="submit"
-                                                        class="text-red-500 hover:text-red-400 text-xs flex items-center gap-1"
-                                                        title="Remove comment">
-                                                    <ion-icon name="trash-outline" class="text-sm"></ion-icon> Delete
-                                                </button>
-                                            </form>
-                                        }
+
+                                <li class="flex items-start gap-3 p-3 rounded-lg hover:bg-slate-800/50 transition-colors group">
+                                    <div class="relative flex-shrink-0">
+                                        <img src="@(comment.User.ProfilePictureURL ?? "/images/default-profile.png")"
+                                             alt="@comment.User.UserName"
+                                             class="w-8 h-8 rounded-full border-2 border-slate-700 shadow-sm object-cover"
+                                             onerror="this.src='/images/default-profile.png'" />
                                     </div>
-                                </div>
+                                    <div class="flex-1 min-w-0">
+                                        <div class="flex flex-wrap items-baseline justify-between gap-x-2 gap-y-1">
+                                            <div>
+                                                <a href="@Url.Action("Details", "Profile", new { id = comment.User.Id })" class="font-medium text-gray-100 hover:underline">@comment.User.FullName</a>
+                                                <span class="text-xs text-gray-400">
+                                                    @@@comment.User.UserName •
+                                                    <time>@commentDisplayTime</time>
+                                                </span>
+                                            </div>
+                                            @if (comment.User.Id == currentUserId)
+                                            {
+                                                <form asp-controller="Home" asp-action="RemoveComment" method="post" class="inline-block ml-auto">
+                                                    <input type="hidden" name="commentId" value="@comment.Id" />
+                                                    <button type="submit"
+                                                            class="text-red-500 hover:text-red-400 text-xs flex items-center gap-1 opacity-50 group-hover:opacity-100 transition-opacity"
+                                                            title="Remove comment">
+                                                        <ion-icon name="trash-outline" class="text-sm"></ion-icon> Delete
+                                                    </button>
+                                                </form>
+                                            }
+                                        </div>
+                                        <p class="text-gray-200 mt-1 text-sm leading-relaxed bg-slate-800 px-3 py-2 rounded-md border border-slate-700">
+                                            @comment.Content
+                                        </p>
+                                    </div>
+                                </li>
                             }
+                        </ul>
+
+                        @if (Model.Comments.Count > 3)
+                        {
+                            <div id="hiddenComments-@Model.Id" class="space-y-4 mt-4" style="display: none;">
+                                <ul class="space-y-4">
+                                    
+                                    @foreach (var comment in hiddenComments)
+                                    {
+                                        // Calculate time ago for this comment
+                                        TimeSpan commentTimeAgo = DateTime.Now.Subtract(comment.DateCreated);
+                                        string commentDisplayTime = commentTimeAgo switch
+                                        {
+                                            var t when t.TotalDays >= 1 => $"{(int)t.TotalDays}d ago",
+                                            var t when t.TotalHours >= 1 => $"{(int)t.TotalHours}h ago",
+                                            var t when t.TotalMinutes >= 1 => $"{(int)t.TotalMinutes}m ago",
+                                            _ => "Just now"
+                                        };
+
+                                        <li class="flex items-start gap-3 p-3 rounded-lg hover:bg-slate-800/50 transition-colors group">
+                                            <div class="relative flex-shrink-0">
+                                                <img src="@(comment.User.ProfilePictureURL ?? "/images/default-profile.png")"
+                                                     alt="@comment.User.UserName"
+                                                     class="w-8 h-8 rounded-full border-2 border-slate-700 shadow-sm object-cover"
+                                                     onerror="this.src='/images/default-profile.png'" />
+                                            </div>
+                                            <div class="flex-1 min-w-0">
+                                                <div class="flex flex-wrap items-baseline justify-between gap-x-2 gap-y-1">
+                                                    <div>
+                                                        <a href="@Url.Action("Details", "Profile", new { id = comment.User.Id })" class="font-medium text-gray-100 hover:underline">@comment.User.FullName</a>
+                                                        <span class="text-xs text-gray-400">
+                                                            @@@comment.User.UserName •
+                                                            <time>@commentDisplayTime</time>
+                                                        </span>
+                                                    </div>
+                                                    @if (comment.User.Id == currentUserId)
+                                                    {
+                                                        <form asp-controller="Home" asp-action="RemoveComment" method="post" class="inline-block ml-auto">
+                                                            <input type="hidden" name="commentId" value="@comment.Id" />
+                                                            <button type="submit"
+                                                                    class="text-red-500 hover:text-red-400 text-xs flex items-center gap-1 opacity-50 group-hover:opacity-100 transition-opacity"
+                                                                    title="Remove comment">
+                                                                <ion-icon name="trash-outline" class="text-sm"></ion-icon> Delete
+                                                            </button>
+                                                        </form>
+                                                    }
+                                                </div>
+                                                <p class="text-gray-200 mt-1 text-sm leading-relaxed bg-slate-800 px-3 py-2 rounded-md border border-slate-700">
+                                                    @comment.Content
+                                                </p>
+                                            </div>
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+                            <button id="toggleComments-@Model.Id"
+                                    onclick="toggleComments('@Model.Id')"
+                                    class="text-indigo-400 hover:text-indigo-300 text-sm font-semibold transition-colors mt-3 inline-block">
+                                Show more (@hiddenComments.Count)
+                            </button>
+                        }
+                    }
+                    else
+                    {
+                        <div class="text-center p-4 border-2 border-dashed border-slate-700 rounded-lg mt-4">
+                            <p class="text-sm text-gray-400 italic">
+                                No comments yet. Be the first to comment!
+                            </p>
                         </div>
-                        <button id="toggleComments-@Model.Id"
-                                onclick="toggleComments('@Model.Id')"
-                                class="text-blue-400 hover:text-blue-600 text-sm font-semibold transition-colors">
-                            Show more
-                        </button>
                     }
                 </div>
 
-                <!-- Add Comment Form -->
                 <form asp-controller="Home" asp-action="CreateComment" method="post">
-                    <div class="sm:px-4 p-2.5 border-t border-slate-800 flex items-center gap-2">
-                        <img src="@Url.Content(currentUser?.ProfilePictureURL ?? "~/images/avatar/user.png")"
-                             class="w-8 h-8 rounded-full border border-slate-700 object-cover"
-                             alt="Your avatar" />
+                    <div class="sm:px-4 px-3 py-3 border-t border-slate-800 flex items-center gap-2">
+                        <img src="@Url.Content(currentUser?.ProfilePictureURL ?? "/images/default-profile.png")"
+                             class="w-8 h-8 rounded-full border border-slate-700 object-cover flex-shrink-0"
+                             alt="Your avatar"
+                             onerror="this.src='/images/default-profile.png'" />
                         <input type="hidden" name="postId" value="@Model.Id" />
                         <textarea name="content"
                                   rows="1"
-                                  class="flex-1 resize-none bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                  placeholder="Add a comment..."></textarea>
+                                  class="flex-1 resize-none bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
+                                  placeholder="Add a comment..."
+                                  oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"'></textarea>
                         <button type="submit"
-                                class="bg-blue-500 hover:bg-blue-600 text-white text-sm font-semibold rounded-full px-4 py-1.5 transition-colors">
+                                class="bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-semibold rounded-full px-4 py-1.5 transition-colors flex-shrink-0">
                             Comment
                         </button>
                     </div>
                 </form>
+            }
+            else
+            {
+                <div class="sm:px-6 p-3 border-t border-slate-800 text-center">
+                    <p class="text-gray-400 text-sm">
+                        <a asp-area="Identity" asp-page="/Account/Login" asp-route-returnUrl="@Context.Request.Path" class="text-indigo-400 hover:underline font-semibold">Log in</a> or
+                        <a asp-area="Identity" asp-page="/Account/Register" asp-route-returnUrl="@Context.Request.Path" class="text-indigo-400 hover:underline font-semibold">Sign up</a> to like or comment.
+                    </p>
+                </div>
             }
         </div>
     </div>
