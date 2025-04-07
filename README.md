@@ -10,6 +10,14 @@ ChatterBox is a modern, full-featured social networking web application built wi
 
 ---
 
+## ✨ Visual Peek
+
+Here's a glimpse of the ChatterBox login interface:
+
+![Screenshot 2025-04-06 145100](https://github.com/user-attachments/assets/c0b9646c-3119-4b40-8113-5e2ec9203744)
+
+---
+
 ## Core Features
 
 ChatterBox isn't just another feed. It's a dynamic space built with these key functionalities:
@@ -54,14 +62,6 @@ Built with a modern, scalable, and maintainable tech stack:
 * **Real-time Communication:** ASP.NET Core SignalR (for Chat & Notifications)
 * **Background Tasks:** .NET BackgroundService (e.g., for Story cleanup)
 * **Utilities:** Email Sending Service, Hashtag Parsing Logic
-
----
-
-## Visual Peek
-
-Here's a glimpse of the ChatterBox login interface:
-
-![Screenshot 2025-04-06 145100](https://github.com/user-attachments/assets/c0b9646c-3119-4b40-8113-5e2ec9203744)
 
 ---
 
