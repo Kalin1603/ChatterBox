@@ -58,7 +58,7 @@ Built with a modern, scalable, and maintainable tech stack:
 * **Data Access:** Entity Framework Core 9.0
 * **Authentication:** ASP.NET Core Identity
 * **Database:** Microsoft SQL Server (Easily configurable for other EF Core providers)
-* **Frontend:** Razor Views, Tailwind CSS, JavaScript (potentially jQuery, UIkit, or other libraries)
+* **Frontend:** Razor Views, Tailwind CSS, JavaScript (jQuery, UIkit)
 * **Real-time Communication:** ASP.NET Core SignalR (for Chat & Notifications)
 * **Background Tasks:** .NET BackgroundService (e.g., for Story cleanup)
 * **Utilities:** Email Sending Service, Hashtag Parsing Logic
