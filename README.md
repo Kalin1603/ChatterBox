@@ -15,11 +15,17 @@ ChatterBox is a modern, full-featured social networking web application built wi
 Here's a glimpse of the ChatterBox's interface:
 
 ![Screenshot 2025-04-06 145100](https://github.com/user-attachments/assets/c0b9646c-3119-4b40-8113-5e2ec9203744)
+
 ![1744146056093](https://github.com/user-attachments/assets/9f4888a5-26d4-4189-adc1-9d2a6ebb0977)
+
 ![1744146068349](https://github.com/user-attachments/assets/6d2780d2-759b-4668-abec-1670b10288bd)
+
 ![1744146207201](https://github.com/user-attachments/assets/c3861a83-16c9-4a92-95a5-412f52f19ef5)
+
 ![1744146383264](https://github.com/user-attachments/assets/8859f9ff-ed30-4e2f-8210-ce4f498aea93)
+
 ![1744146297865](https://github.com/user-attachments/assets/8d5d21df-ec68-45bf-8e7c-4072736dede5)
+
 ![1744146425611](https://github.com/user-attachments/assets/6eaaf704-bcff-44f1-bb91-817fa9984258)
 
 ---
