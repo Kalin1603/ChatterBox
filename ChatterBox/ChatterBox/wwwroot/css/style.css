@@ -1014,3 +1014,49 @@ input:checked + .switch-button:before {
   overflow-y: hidden;
   overflow-x: scroll;
 }
+
+
+
+/* ========================================================================
+    Sidebar Navigation Refactor (Corrected)
+========================================================================== */
+
+/* Base styling for all sidebar links */
+nav#side a {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem; /* 14px */
+    padding: 0.625rem 0.75rem; /* 10px 12px */
+    border-radius: 0.375rem; /* 6px */
+    transition: color 0.2s ease-in-out, background-color 0.2s ease-in-out;
+    font-weight: 500;
+    color: #4b5563; /* Default text color (slate-600) */
+}
+
+.dark nav#side a {
+    color: #d1d5db; /* Default dark text color (slate-300) */
+}
+
+/* Hover state for links */
+nav#side a:hover {
+    background-color: #f3f4f6; /* A very light gray (gray-100) */
+    color: #111827; /* Darker text on hover (gray-900) */
+}
+
+.dark nav#side a:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: #fff;
+}
+
+/* --- Active Link Styling --- */
+/* This class is added by the JavaScript snippet */
+nav#side a.active {
+    background-color: rgb(var(--color-primary) / 0.1); /* Soft primary background from your theme */
+    color: rgb(var(--color-primary));
+    font-weight: 600;
+}
+
+.dark nav#side a.active {
+    background-color: rgb(var(--color-primary) / 0.15);
+    color: #fff;
+}
