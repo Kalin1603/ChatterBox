@@ -20,7 +20,9 @@
 
         @* Side bar (left) *@
         <partial name="Navigation/_SideBar" />
-        @RenderBody()
+        <main class="pt-[--m-top] 2xl:ml-[var(--w-side)] xl:ml-[var(--w-side-sm)] transition-all duration-300">
+            @RenderBody()
+        </main>
     </div>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
