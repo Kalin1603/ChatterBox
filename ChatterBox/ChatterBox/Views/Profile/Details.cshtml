@@ -10,338 +10,347 @@
 
 <partial name="~/Areas/Identity/Pages/Account/_StatusMessage.cshtml" model="Model.StatusMessage" />
 
-<main id="site__main" class="2xl:ml-[var(--w-side)] xl:ml-[var(--w-side-sm)] p-4 h-[calc(100vh - var(--m-top))] mt-[var(--m-top)]">
-    <div class="max-w-4xl mx-auto space-y-8 pt-5">
-        <!-- Profile section -->
-        <div class="bg-slate-900 rounded-2xl shadow-lg p-6 border border-slate-800">
-            <div class="relative">
-                <div class="flex flex-col md:flex-row items-center gap-6 border-b border-slate-800 pb-4 mb-4">
+<main id="site__main" class="2xl:ml-[var(--w-side)] xl:ml-[var(--w-side-sm)] p-4 h-[calc(100vh - var(--m-top))] mt-[var(--m-top)] overflow-y-auto custom-scrollbar">
+    <div class="max-w-6xl mx-auto space-y-6 pb-10">
+        
+        <!-- Profile Header Card -->
+        <div class="bg-slate-900 rounded-2xl shadow-xl overflow-hidden border border-slate-800 relative group">
+            <!-- Decorative Cover Gradient -->
+            <div class="h-48 bg-gradient-to-r from-indigo-900 via-purple-900 to-slate-900 relative">
+                <div class="absolute inset-0 bg-slate-900/20 backdrop-blur-[1px]"></div>
+                <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent"></div>
+            </div>
 
-                    <div class="flex-shrink-0">
+            <!-- Profile Info Wrapper -->
+            <div class="px-6 pb-8 relative">
+                <!-- Profile Picture (Centered & Overlapping) -->
+                <div class="flex justify-center -mt-20 mb-4 relative z-10">
+                    <div class="relative">
                         <img src="@Model.User.ProfilePictureURL"
                              alt="@Model.User.UserName"
-                             class="w-32 h-32 rounded-full border-4 border-slate-700 shadow-lg hover:border-slate-600 transition-colors"
+                             class="w-40 h-40 rounded-full border-4 border-slate-900 shadow-2xl object-cover bg-slate-800"
                              onerror="this.src='/images/default-profile.png'" />
-                    </div>
-
-                    <div>
-                        <h1 class="text-3xl font-bold text-gray-100">@Model.User.FullName</h1>
-                        <p class="text-lg text-gray-300 mt-1">@@@Model.User.UserName</p>
-                        <p class="text-sm text-gray-400 mt-1">
-                            Member since @Model.User.RegistrationDate.ToString("dd MMMM yyyy")
-                        </p>
+                        <!-- Online Status Indicator (Optional/Mockup) -->
+                        <div class="absolute bottom-2 right-2 w-5 h-5 bg-green-500 border-4 border-slate-900 rounded-full" title="Online"></div>
                     </div>
                 </div>
 
+                <!-- User Identity -->
+                <div class="text-center space-y-2 mb-6">
+                    <h1 class="text-3xl font-bold text-white tracking-tight">@Model.User.FullName</h1>
+                    <p class="text-indigo-400 font-medium text-lg">@@@Model.User.UserName</p>
+                    <p class="text-slate-400 text-sm flex items-center justify-center gap-2">
+                        <ion-icon name="calendar-outline"></ion-icon>
+                        Member since @Model.User.RegistrationDate.ToString("MMMM yyyy")
+                    </p>
+                </div>
+
+                <!-- Stats Bar -->
+                <div class="flex justify-center items-center gap-8 mb-8 border-y border-slate-800/50 py-4 max-w-2xl mx-auto">
+                    <button onclick="openModal('followers-modal')" class="text-center group/stat hover:bg-slate-800/50 px-4 py-2 rounded-xl transition-all cursor-pointer">
+                        <span class="block text-2xl font-bold text-white group-hover/stat:text-indigo-400 transition-colors">@Model.Followers.Count</span>
+                        <span class="text-xs text-slate-400 uppercase tracking-wider font-semibold">Followers</span>
+                    </button>
+                    <button onclick="openModal('following-modal')" class="text-center group/stat hover:bg-slate-800/50 px-4 py-2 rounded-xl transition-all cursor-pointer">
+                        <span class="block text-2xl font-bold text-white group-hover/stat:text-indigo-400 transition-colors">@Model.Followings.Count</span>
+                        <span class="text-xs text-slate-400 uppercase tracking-wider font-semibold">Following</span>
+                    </button>
+                    <div class="text-center px-4 py-2">
+                        <span class="block text-2xl font-bold text-white">@Model.Posts.Count</span>
+                        <span class="text-xs text-slate-400 uppercase tracking-wider font-semibold">Posts</span>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
                 @if (User.Identity.IsAuthenticated && !isOwnProfile)
                 {
-                    <div class="absolute bottom-4 right-4 flex items-center space-x-2">
+                    <div class="flex justify-center gap-4">
                         @if (Model.IsFollowPending)
                         {
-                            <button disabled class="px-4 py-2 bg-gray-500 text-white rounded-full transition duration-300">
-                                Pending
+                            <button disabled class="px-8 py-2.5 bg-slate-700 text-slate-300 rounded-full font-medium cursor-not-allowed flex items-center gap-2">
+                                <ion-icon name="time-outline"></ion-icon> Pending
                             </button>
                         }
                         else
                         {
                             <form asp-controller="Profile" method="post" asp-action="@(Model.IsFollowed ? "Unfollow" : "Follow")">
                                 <input type="hidden" name="@(Model.IsFollowed ? "unfollowUserId" : "followedUserId")" value="@Model.User.Id" />
-                                <button type="submit" class="px-4 py-2 @(Model.IsFollowed ? "bg-red-500 hover:bg-red-600" : "bg-indigo-500 hover:bg-indigo-600") text-white rounded-full transition duration-300">
+                                <button type="submit" 
+                                    class="px-8 py-2.5 rounded-full font-medium transition-all duration-300 shadow-lg shadow-indigo-500/20 flex items-center gap-2
+                                    @(Model.IsFollowed 
+                                        ? "bg-slate-800 text-white hover:bg-red-500/10 hover:text-red-500 border border-slate-700 hover:border-red-500/50" 
+                                        : "bg-indigo-600 text-white hover:bg-indigo-700 hover:shadow-indigo-500/40")">
+                                    @if (Model.IsFollowed) { <ion-icon name="person-remove-outline"></ion-icon> } else { <ion-icon name="person-add-outline"></ion-icon> }
                                     @(Model.IsFollowed ? "Unfollow" : "Follow")
                                 </button>
                             </form>
                         }
+
                         @if (Model.IsFollowed || Model.IsFollower)
                         {
-                            <form asp-controller="Profile" asp-action="Chat" method="get" class="inline">
+                            <form asp-controller="Profile" asp-action="Chat" method="get">
                                 <input type="hidden" name="userId" value="@Model.User.Id" />
-                                <button type="submit" class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-full transition duration-300">
-                                    Chat
+                                <button type="submit" class="px-8 py-2.5 bg-slate-800 text-white border border-slate-700 hover:bg-slate-700 rounded-full font-medium transition-all flex items-center gap-2">
+                                    <ion-icon name="chatbubble-ellipses-outline"></ion-icon> Message
                                 </button>
                             </form>
                         }
                     </div>
                 }
             </div>
-
-
-            <!-- User's details -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-                <!-- Location -->
-                <div class="flex items-center gap-3 p-3 bg-slate-800 rounded-lg hover:bg-slate-750 transition-colors">
-                    <div class="p-2 bg-slate-700 rounded-lg shadow-sm">
-                        <svg class="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                        </svg>
-                    </div>
-                    <div>
-                        <p class="text-sm text-gray-400">Location</p>
-                        <p class="font-medium text-gray-100">@Model.User.City, @Model.User.State</p>
-                        <p class="text-xs text-gray-400">@Model.User.Country</p>
-                    </div>
-                </div>
-
-                <!-- Date of birth -->
-                <div class="flex items-center gap-3 p-3 bg-slate-800 rounded-lg hover:bg-slate-750 transition-colors">
-                    <div class="p-2 bg-slate-700 rounded-lg shadow-sm">
-                        <svg class="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 012-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
-                    </div>
-                    <div>
-                        <p class="text-sm text-gray-400">Age</p>
-                        <p class="font-medium text-gray-100">@(DateTime.Now.Year - Model.User.DateOfBirth.Year) years</p>
-                        <p class="text-xs text-gray-400">Born @Model.User.DateOfBirth.ToString("dd MMMM yyyy")</p>
-                    </div>
-                </div>
-
-                <!-- Address -->
-                @if (!string.IsNullOrEmpty(Model.User.Address))
-                {
-                    <div class="flex items-center gap-3 p-3 bg-slate-800 rounded-lg hover:bg-slate-750 transition-colors">
-                        <div class="p-2 bg-slate-700 rounded-lg shadow-sm">
-                            <svg class="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                            </svg>
-                        </div>
-                        <div>
-                            <p class="text-sm text-gray-400">Address</p>
-                            <p class="font-medium text-gray-100">@Model.User.Address</p>
-                            <p class="text-xs text-gray-400">ZIP: @Model.User.Zip</p>
-                        </div>
-                    </div>
-                }
-            </div>
-
-            <div class="grid grid-cols-2 gap-4">
-                <!-- Followers -->
-                <div class="flex items-center p-4 bg-slate-800 rounded-xl shadow border border-slate-700 hover:border-slate-600 transition-colors">
-                    <button onclick="openModal('followers-modal')" class="w-full text-left">
-                        <h3 class="font-bold text-lg text-gray-100 transition-colors">
-                            Followers <span class="text-indigo-400">(@Model.Followers.Count)</span>
-                        </h3>
-                        <p class="text-xs text-gray-400 mt-1">People following @Model.User.FullName</p>
-                    </button>
-                </div>
-                <!-- Following -->
-                <div class="flex items-center p-4 bg-slate-800 rounded-xl shadow border border-slate-700 hover:border-slate-600 transition-colors">
-                    <button onclick="openModal('following-modal')" class="w-full text-left">
-                        <h3 class="font-bold text-lg text-gray-100 transition-colors">
-                            Following <span class="text-indigo-400">(@Model.Followings.Count)</span>
-                        </h3>
-                        <p class="text-xs text-gray-400 mt-1">People @Model.User.FullName follows</p>
-                    </button>
-                </div>
-            </div>
         </div>
 
-        <!-- Posts (if any) -->
-        @if (Model.Posts.Any())
-        {
-            <div class="space-y-6">
-                @foreach (var post in Model.Posts)
-                {
-                    <div class="bg-slate-900 rounded-xl shadow-sm p-6 border border-slate-800">
-                        <!-- Post header -->
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="flex items-center gap-3">
-                                <img src="@post.User.ProfilePictureURL"
-                                     alt="@post.User.UserName"
-                                     class="w-10 h-10 rounded-full border-2 border-slate-700 shadow-sm"
-                                     onerror="this.src='/images/default-profile.png'" />
+        <!-- Main Content Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <!-- Left Sidebar: About Info -->
+            <div class="lg:col-span-4 space-y-6">
+                <div class="bg-slate-900 rounded-2xl p-6 border border-slate-800 shadow-lg sticky top-24">
+                    <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                        <ion-icon name="information-circle-outline" class="text-indigo-500"></ion-icon> About
+                    </h3>
+                    
+                    <div class="space-y-4">
+                        <!-- Location -->
+                        <div class="flex items-start gap-3 text-slate-300">
+                            <div class="p-2 bg-slate-800 rounded-lg text-slate-400">
+                                <ion-icon name="location-outline" class="text-xl"></ion-icon>
+                            </div>
+                            <div>
+                                <span class="block text-xs text-slate-500 uppercase font-semibold">Location</span>
+                                <span class="text-sm font-medium">@Model.User.City, @Model.User.Country</span>
+                            </div>
+                        </div>
+
+                        <!-- Age/Birthday -->
+                        <div class="flex items-start gap-3 text-slate-300">
+                            <div class="p-2 bg-slate-800 rounded-lg text-slate-400">
+                                <ion-icon name="balloon-outline" class="text-xl"></ion-icon>
+                            </div>
+                            <div>
+                                <span class="block text-xs text-slate-500 uppercase font-semibold">Born</span>
+                                <span class="text-sm font-medium">@Model.User.DateOfBirth.ToString("MMMM dd, yyyy")</span>
+                                <span class="text-xs text-slate-500 block">(@(DateTime.Now.Year - Model.User.DateOfBirth.Year) years old)</span>
+                            </div>
+                        </div>
+
+                        <!-- Address (Conditional) -->
+                        @if (!string.IsNullOrEmpty(Model.User.Address))
+                        {
+                            <div class="flex items-start gap-3 text-slate-300">
+                                <div class="p-2 bg-slate-800 rounded-lg text-slate-400">
+                                    <ion-icon name="home-outline" class="text-xl"></ion-icon>
+                                </div>
                                 <div>
-                                    <span class="block font-semibold text-gray-100">@post.User.FullName</span>
-                                    <span class="block text-sm text-gray-400">
-                                        @@@post.User.UserName • @post.DateCreated.ToString("dd MMMM, yyyy • h:mm tt")
-                                    </span>
+                                    <span class="block text-xs text-slate-500 uppercase font-semibold">Address</span>
+                                    <span class="text-sm font-medium">@Model.User.Address</span>
+                                    @if(!string.IsNullOrEmpty(Model.User.Zip)) { <span class="text-xs text-slate-500 block">ZIP: @Model.User.Zip</span> }
                                 </div>
                             </div>
-                        </div>
-                        <!-- Post content -->
-                        <div class="text-gray-200 space-y-4">
-                            <p class="text-lg leading-relaxed">@post.Content</p>
-                            @if (!string.IsNullOrEmpty(post.ImageURL))
-                            {
-                                <img src="@post.ImageURL"
-                                     alt="Post Image"
-                                     class="rounded-xl w-full object-cover max-h-96 border border-slate-800" />
-                            }
-                        </div>
-                        <!-- Comments -->
-                        <div class="mt-6 pt-4 border-t border-slate-800">
-                            <div class="flex items-center gap-2 mb-4">
-                                <svg class="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-                                </svg>
-                                <h4 class="font-semibold text-gray-100 text-sm uppercase tracking-wide">Comments • @post.Comments.Count</h4>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Posts Feed -->
+            <div class="lg:col-span-8 space-y-6">
+                @if (Model.Posts.Any())
+                {
+                    @foreach (var post in Model.Posts)
+                    {
+                        <div class="bg-slate-900 rounded-2xl shadow-lg border border-slate-800 overflow-hidden hover:border-slate-700 transition-colors">
+                            <!-- Post Header -->
+                            <div class="p-4 flex items-center justify-between border-b border-slate-800/50">
+                                <div class="flex items-center gap-3">
+                                    <img src="@post.User.ProfilePictureURL"
+                                         alt="@post.User.UserName"
+                                         class="w-10 h-10 rounded-full border border-slate-700 object-cover"
+                                         onerror="this.src='/images/default-profile.png'" />
+                                    <div>
+                                        <h4 class="font-bold text-white text-sm">@post.User.FullName</h4>
+                                        <p class="text-xs text-slate-400">@@@post.User.UserName • @post.DateCreated.ToString("MMM dd, h:mm tt")</p>
+                                    </div>
+                                </div>
+                                <button class="text-slate-400 hover:text-white transition-colors">
+                                    <ion-icon name="ellipsis-horizontal" class="text-xl"></ion-icon>
+                                </button>
                             </div>
-                            <ul class="space-y-4">
-                                @if (post.Comments.Any())
+
+                            <!-- Post Content -->
+                            <div class="p-4">
+                                <p class="text-slate-200 leading-relaxed whitespace-pre-wrap mb-4">@post.Content</p>
+                                @if (!string.IsNullOrEmpty(post.ImageURL))
                                 {
-                                    @foreach (var comment in post.Comments.OrderByDescending(c => c.DateCreated)) 
-                                    {
-                                        <li class="flex items-start gap-3 p-3 rounded-lg hover:bg-slate-800 transition-colors group">
-                                            <div class="relative flex-shrink-0">
-                                                <img src="@(comment.User.ProfilePictureURL ?? "/images/default-profile.png")" 
-                                                     alt="@comment.User.UserName"
-                                                     class="w-8 h-8 rounded-full border-2 border-slate-700 shadow-sm object-cover" 
-                                                     onerror="this.src='/images/default-profile.png'" />
-                                            </div>
-                                            <div class="flex-1 min-w-0">
-                                                <div class="flex flex-wrap items-baseline justify-between gap-x-2 gap-y-1">
-                                                    <div>
-                                                        <a href="@Url.Action("Details", "Profile", new { id = comment.User.Id })" class="font-medium text-gray-100 hover:underline">@comment.User.FullName</a>
-                                                        <span class="text-xs text-gray-400">
-                                                            @@@comment.User.UserName •
-                                                            <time>@comment.DateCreated.ToString("MMMM dd, h:mm tt")</time>
-                                                        </span>
-                                                    </div>
-
-                                                    @if (comment.User.Id == currentUserId)
-                                                    {
-                                                        <text>
-                                                            <form asp-controller="Profile" asp-action="RemoveComment" method="post" class="inline-block ml-auto">
-
-                                                                <input type="hidden" name="postId" value="@post.Id" />
-                                                                <input type="hidden" name="commentId" value="@comment.Id" />
-                                                                <button type="submit"
-                                                                        class="text-red-500 hover:text-red-400 text-xs flex items-center gap-1 opacity-50 group-hover:opacity-100 transition-opacity" 
-                                                                        title="Remove comment">
-                                                                    <ion-icon name="trash-outline" class="text-sm"></ion-icon> Delete
-                                                                </button>
-
-                                                            </form>
-                                                        </text>
-                                                    }
-
-                                                </div>
-                                                <p class="text-gray-200 mt-1 text-sm leading-relaxed bg-slate-800 px-3 py-2 rounded-md border border-slate-700">
-                                                    @comment.Content
-                                                </p>
-                                            </div>
-                                        </li>
-                                    }
-                                }
-                                else
-                                {
-                                    <div class="text-center p-4 border-2 border-dashed border-slate-700 rounded-lg">
-                                        <p class="text-sm text-gray-400 italic">
-                                            No comments yet. Be the first to comment!
-                                        </p>
+                                    <div class="rounded-xl overflow-hidden border border-slate-800 bg-slate-950">
+                                        <img src="@post.ImageURL"
+                                             alt="Post content"
+                                             class="w-full h-auto max-h-[500px] object-contain" />
                                     </div>
                                 }
-                            </ul>
+                            </div>
+
+                            <!-- Post Actions (Likes/Comments Placeholder) -->
+                            <div class="px-4 py-3 border-t border-slate-800/50 flex items-center gap-6 text-slate-400">
+                                <button class="flex items-center gap-2 hover:text-red-500 transition-colors group">
+                                    <ion-icon name="heart-outline" class="text-xl group-hover:scale-110 transition-transform"></ion-icon>
+                                    <span class="text-sm font-medium">Like</span>
+                                </button>
+                                <button class="flex items-center gap-2 hover:text-indigo-400 transition-colors group">
+                                    <ion-icon name="chatbubble-outline" class="text-xl group-hover:scale-110 transition-transform"></ion-icon>
+                                    <span class="text-sm font-medium">@post.Comments.Count Comments</span>
+                                </button>
+                                <button class="flex items-center gap-2 hover:text-green-400 transition-colors group ml-auto">
+                                    <ion-icon name="share-social-outline" class="text-xl group-hover:scale-110 transition-transform"></ion-icon>
+                                </button>
+                            </div>
+
+                            <!-- Comments Section -->
+                            @if (post.Comments.Any())
+                            {
+                                <div class="bg-slate-950/30 p-4 border-t border-slate-800/50">
+                                    <div class="space-y-4">
+                                        @foreach (var comment in post.Comments.OrderByDescending(c => c.DateCreated).Take(3)) 
+                                        {
+                                            <div class="flex gap-3 group">
+                                                <img src="@(comment.User.ProfilePictureURL ?? "/images/default-profile.png")" 
+                                                     class="w-8 h-8 rounded-full border border-slate-700 flex-shrink-0" 
+                                                     onerror="this.src='/images/default-profile.png'" />
+                                                <div class="flex-1 bg-slate-800/50 rounded-2xl rounded-tl-none p-3 hover:bg-slate-800 transition-colors">
+                                                    <div class="flex justify-between items-baseline mb-1">
+                                                        <span class="font-bold text-xs text-white">@comment.User.FullName</span>
+                                                        <span class="text-[10px] text-slate-500">@comment.DateCreated.ToString("MMM dd")</span>
+                                                    </div>
+                                                    <p class="text-sm text-slate-300">@comment.Content</p>
+                                                </div>
+                                                @if (comment.User.Id == currentUserId)
+                                                {
+                                                    <form asp-controller="Profile" asp-action="RemoveComment" method="post" class="self-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                                        <input type="hidden" name="postId" value="@post.Id" />
+                                                        <input type="hidden" name="commentId" value="@comment.Id" />
+                                                        <button type="submit" class="text-slate-500 hover:text-red-500 p-1">
+                                                            <ion-icon name="trash-outline"></ion-icon>
+                                                        </button>
+                                                    </form>
+                                                }
+                                            </div>
+                                        }
+                                        @if(post.Comments.Count > 3)
+                                        {
+                                            <button class="text-xs text-indigo-400 hover:text-indigo-300 font-medium w-full text-left pl-11">
+                                                View all @post.Comments.Count comments
+                                            </button>
+                                        }
+                                    </div>
+                                </div>
+                            }
                         </div>
+                    }
+                }
+                else
+                {
+                    <div class="bg-slate-900 rounded-2xl p-10 text-center border border-slate-800 border-dashed">
+                        <div class="w-16 h-16 bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-500">
+                            <ion-icon name="images-outline" class="text-3xl"></ion-icon>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mb-2">No posts yet</h3>
+                        <p class="text-slate-400 max-w-xs mx-auto">When @Model.User.FullName shares photos or updates, they will appear here.</p>
                     </div>
                 }
             </div>
-        }
-        else
-        {
-            <div class="bg-slate-900 rounded-xl p-8 text-center border-2 border-dashed border-slate-800">
-                <svg class="w-16 h-16 mx-auto text-slate-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-                <h3 class="text-xl font-semibold text-gray-300 mb-2">No posts yet</h3>
-                <p class="text-gray-400">When @Model.User.FullName shares something, it'll show up here.</p>
-            </div>
-        }
+        </div>
     </div>
 </main>
 
 <!-- Followers Modal -->
-<div id="followers-modal" class="hidden fixed inset-0 bg-black/50 z-[999] backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-slate-900 rounded-xl w-full max-w-md max-h-[90vh] flex flex-col">
-        <div class="p-6 border-b border-slate-800 flex justify-between items-center">
-            <h3 class="text-xl font-bold text-gray-100">Followers</h3>
-            <button onclick="closeModal('followers-modal')" class="text-2xl text-gray-400 hover:text-gray-200 transition-colors">
-                &times;
-            </button>
-        </div>
-        <div class="overflow-y-auto flex-1 p-4">
-            @if (Model.Followers.Any())
-            {
-                <div class="space-y-3">
+<div id="followers-modal" class="hidden fixed inset-0 z-[100] overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <div class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm transition-opacity" onclick="closeModal('followers-modal')"></div>
+    <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+        <div class="relative transform overflow-hidden rounded-2xl bg-slate-900 text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-lg border border-slate-800">
+            <div class="bg-slate-900 px-4 pb-4 pt-5 sm:p-6 sm:pb-4 border-b border-slate-800">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-lg font-bold leading-6 text-white" id="modal-title">Followers</h3>
+                    <button onclick="closeModal('followers-modal')" class="text-slate-400 hover:text-white transition-colors">
+                        <ion-icon name="close-outline" class="text-2xl"></ion-icon>
+                    </button>
+                </div>
+            </div>
+            <div class="max-h-[60vh] overflow-y-auto custom-scrollbar p-4 space-y-2">
+                @if (Model.Followers.Any())
+                {
                     @foreach (var follower in Model.Followers)
                     {
-                        <div class="relative">
-                            <a href="@Url.Action("Details", "Profile", new { id = follower.User.Id })" class="block">
-                                <div class="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-800 transition-colors">
-                                    <img src="@follower.User.ProfilePictureURL"
-                                         class="w-12 h-12 rounded-full border-2 border-slate-700"
-                                         onerror="this.src='/images/default-profile.png'" />
-                                    <div>
-                                        <h4 class="font-semibold text-gray-100">@follower.User.FullName</h4>
-                                        <p class="text-sm text-gray-400">@@@follower.User.UserName</p>
-                                    </div>
+                        <div class="flex items-center justify-between p-3 rounded-xl hover:bg-slate-800 transition-colors group">
+                            <a href="@Url.Action("Details", "Profile", new { id = follower.User.Id })" class="flex items-center gap-3 flex-1">
+                                <img src="@follower.User.ProfilePictureURL" class="w-10 h-10 rounded-full bg-slate-800 object-cover" onerror="this.src='/images/default-profile.png'" />
+                                <div>
+                                    <h4 class="font-semibold text-white text-sm">@follower.User.FullName</h4>
+                                    <p class="text-xs text-slate-400">@@@follower.User.UserName</p>
                                 </div>
                             </a>
-
-                            <form asp-action="RemoveFollower" asp-controller="Profile" method="post" class="absolute bottom-5 right-0">
-                                <input type="hidden" name="followerId" value="@follower.User.Id" />
-                                <button type="submit" class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-full transition duration-300">
-                                    Remove
-                                </button>
-                            </form>
+                            @if (isOwnProfile)
+                            {
+                                <form asp-action="RemoveFollower" asp-controller="Profile" method="post">
+                                    <input type="hidden" name="followerId" value="@follower.User.Id" />
+                                    <button type="submit" class="text-xs font-medium text-red-400 hover:text-red-300 bg-red-500/10 hover:bg-red-500/20 px-3 py-1.5 rounded-lg transition-colors">
+                                        Remove
+                                    </button>
+                                </form>
+                            }
                         </div>
                     }
-                </div>
-            }
-            else
-            {
-                <div class="text-center p-6 text-gray-400 italic">
-                    No followers yet
-                </div>
-            }
+                }
+                else
+                {
+                    <div class="text-center py-8 text-slate-500">No followers yet.</div>
+                }
+            </div>
         </div>
     </div>
 </div>
 
 <!-- Following Modal -->
-<div id="following-modal" class="hidden fixed inset-0 bg-black/50 z-[999] backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-slate-900 rounded-xl w-full max-w-md max-h-[90vh] flex flex-col">
-        <div class="p-6 border-b border-slate-800 flex justify-between items-center">
-            <h3 class="text-xl font-bold text-gray-100">Following</h3>
-            <button onclick="closeModal('following-modal')" class="text-2xl text-gray-400 hover:text-gray-200 transition-colors">
-                &times;
-            </button>
-        </div>
-        <div class="overflow-y-auto flex-1 p-4">
-            @if (Model.Followings.Any())
-            {
-                <div class="space-y-3">
+<div id="following-modal" class="hidden fixed inset-0 z-[100] overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <div class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm transition-opacity" onclick="closeModal('following-modal')"></div>
+    <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+        <div class="relative transform overflow-hidden rounded-2xl bg-slate-900 text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-lg border border-slate-800">
+            <div class="bg-slate-900 px-4 pb-4 pt-5 sm:p-6 sm:pb-4 border-b border-slate-800">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-lg font-bold leading-6 text-white" id="modal-title">Following</h3>
+                    <button onclick="closeModal('following-modal')" class="text-slate-400 hover:text-white transition-colors">
+                        <ion-icon name="close-outline" class="text-2xl"></ion-icon>
+                    </button>
+                </div>
+            </div>
+            <div class="max-h-[60vh] overflow-y-auto custom-scrollbar p-4 space-y-2">
+                @if (Model.Followings.Any())
+                {
                     @foreach (var following in Model.Followings)
                     {
-                        <div class="relative">
-                            <a href="@Url.Action("Details", "Profile", new { id = following.User.Id })" class="block">
-                                <div class="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-800 transition-colors">
-                                    <img src="@following.User.ProfilePictureURL"
-                                         class="w-12 h-12 rounded-full border-2 border-slate-700"
-                                         onerror="this.src='/images/default-profile.png'" />
-                                    <div>
-                                        <h4 class="font-semibold text-gray-100">@following.User.FullName</h4>
-                                        <p class="text-sm text-gray-400">@@@following.User.UserName</p>
-                                    </div>
+                        <div class="flex items-center justify-between p-3 rounded-xl hover:bg-slate-800 transition-colors group">
+                            <a href="@Url.Action("Details", "Profile", new { id = following.User.Id })" class="flex items-center gap-3 flex-1">
+                                <img src="@following.User.ProfilePictureURL" class="w-10 h-10 rounded-full bg-slate-800 object-cover" onerror="this.src='/images/default-profile.png'" />
+                                <div>
+                                    <h4 class="font-semibold text-white text-sm">@following.User.FullName</h4>
+                                    <p class="text-xs text-slate-400">@@@following.User.UserName</p>
                                 </div>
                             </a>
-
-                            <form asp-action="Unfollow" asp-controller="Profile" method="post" class="absolute bottom-5 right-0">
-                                <input type="hidden" name="unfollowUserId" value="@following.User.Id" />
-                                <button type="submit" class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-full transition duration-300">
-                                    Unfollow
-                                </button>
-                            </form>
+                            @if (isOwnProfile)
+                            {
+                                <form asp-action="Unfollow" asp-controller="Profile" method="post">
+                                    <input type="hidden" name="unfollowUserId" value="@following.User.Id" />
+                                    <button type="submit" class="text-xs font-medium text-slate-300 hover:text-white bg-slate-700 hover:bg-slate-600 px-3 py-1.5 rounded-lg transition-colors">
+                                        Unfollow
+                                    </button>
+                                </form>
+                            }
                         </div>
                     }
-                </div>
-            }
-            else
-            {
-                <div class="text-center p-6 text-gray-400 italic">
-                    Not following anyone yet
-                </div>
-            }
+                }
+                else
+                {
+                    <div class="text-center py-8 text-slate-500">Not following anyone yet.</div>
+                }
+            </div>
         </div>
     </div>
 </div>
@@ -349,19 +358,11 @@
 <script>
     function openModal(modalId) {
         document.getElementById(modalId).classList.remove('hidden');
-        document.body.classList.add('overflow-hidden');
+        document.body.style.overflow = 'hidden';
     }
 
     function closeModal(modalId) {
         document.getElementById(modalId).classList.add('hidden');
-        document.body.classList.remove('overflow-hidden');
-    }
-
-    // Затваряне на модала при клик извън него
-    window.onclick = function(event) {
-        if (event.target.classList.contains('bg-black/50')) {
-            event.target.classList.add('hidden');
-            document.body.classList.remove('overflow-hidden');
-        }
+        document.body.style.overflow = '';
     }
 </script>
