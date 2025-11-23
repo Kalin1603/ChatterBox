@@ -6,54 +6,93 @@
 
 <partial name="~/Areas/Identity/Pages/Account/_StatusMessage.cshtml" model="Model.StatusMessage" />
 
-<div class="max-w-5xl mx-auto p-20">
-    <h2 class="text-3xl font-bold text-white mb-6 text-center">
-        People You May Know
-    </h2>
-
-    @if (Model.PeopleYouMayKnow.Any())
-    {
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            @foreach (var friend in Model.PeopleYouMayKnow)
-            {
-                <div class="bg-gray-800 p-6 rounded-xl shadow-lg transform transition hover:scale-105 hover:bg-gray-700">
-                    <div class="flex flex-col items-center text-center">
-                        <a href="@Url.Action("Details", "Profile", new { id = friend.User.Id })">
-                            <img src="@friend.User.ProfilePictureURL"
-                                 class="w-20 h-20 rounded-full border-2 border-indigo-500 shadow-md"
-                                 alt="User Avatar"
-                                 onerror="this.src='/images/default-profile.png'" />
-                        </a>
-                        <a href="@Url.Action("Details", "Profile", new { id = friend.User.Id })">
-                            <h4 class="font-semibold text-white text-lg mt-3">@friend.User.FullName</h4>
-                        </a>
-
-                        @if (friend.IsFollowPending)
-                        {
-                            <button disabled
-                                    class="px-5 py-2 rounded-full text-white font-medium transition duration-300 bg-gray-500 cursor-default">
-                                Pending
-                            </button>
-                        }
-
-                        else
-                        {
-                            <form asp-action="Follow" asp-controller="Profile" method="post" class="mt-4">
-                                <input type="hidden" name="followedUserId" value="@friend.User.Id" />
-                                <button type="submit"
-                                        class="px-5 py-2 rounded-full text-white font-medium transition duration-300
-                                    @(friend.IsFollowed ? "bg-red-500 hover:bg-red-600" : "bg-indigo-500 hover:bg-indigo-600")">
-                                    @(friend.IsFollowed ? "Unfollow" : "Follow")
-                                </button>
-                            </form>
-                        }
-                    </div>
-                </div>
-            }
+<main id="site__main" class="2xl:ml-[var(--w-side)] xl:ml-[var(--w-side-sm)] p-4 h-[calc(100vh - var(--m-top))] mt-[var(--m-top)] overflow-y-auto custom-scrollbar">
+    <div class="max-w-7xl mx-auto space-y-8 pb-10">
+        
+        <!-- Header Section -->
+        <div class="relative rounded-2xl overflow-hidden bg-slate-900 border border-slate-800 shadow-xl">
+            <div class="absolute inset-0 bg-gradient-to-r from-indigo-900/50 via-purple-900/50 to-slate-900/50"></div>
+            <div class="relative p-8 text-center">
+                <h2 class="text-3xl font-bold text-white mb-2 tracking-tight">People You May Know</h2>
+                <p class="text-slate-400 max-w-2xl mx-auto">Expand your network by connecting with people who share your interests or have mutual friends.</p>
+            </div>
         </div>
-    }
-    else
-    {
-        <p class="text-gray-400 text-center mt-6">No suggested friends at the moment.</p>
-    }
-</div>
+
+        @if (Model.PeopleYouMayKnow.Any())
+        {
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                @foreach (var friend in Model.PeopleYouMayKnow)
+                {
+                    <div class="bg-slate-900 rounded-2xl border border-slate-800 shadow-lg overflow-hidden group hover:border-slate-700 transition-all duration-300 hover:-translate-y-1">
+                        <!-- Card Cover -->
+                        <div class="h-24 bg-gradient-to-r from-slate-800 to-slate-700 relative">
+                            <div class="absolute inset-0 bg-slate-900/10"></div>
+                        </div>
+
+                        <!-- Card Content -->
+                        <div class="px-6 pb-6 relative">
+                            <!-- Avatar -->
+                            <div class="flex justify-center -mt-12 mb-4">
+                                <a href="@Url.Action("Details", "Profile", new { id = friend.User.Id })" class="relative">
+                                    <img src="@friend.User.ProfilePictureURL"
+                                         class="w-24 h-24 rounded-full border-4 border-slate-900 shadow-xl object-cover bg-slate-800 group-hover:scale-105 transition-transform duration-300"
+                                         alt="@friend.User.UserName"
+                                         onerror="this.src='/images/default-profile.png'" />
+                                </a>
+                            </div>
+
+                            <!-- User Info -->
+                            <div class="text-center mb-6">
+                                <a href="@Url.Action("Details", "Profile", new { id = friend.User.Id })" class="block group-hover:text-indigo-400 transition-colors">
+                                    <h4 class="font-bold text-white text-lg truncate">@friend.User.FullName</h4>
+                                </a>
+                                <p class="text-sm text-slate-500 mb-2">@@@friend.User.UserName</p>
+                                
+                                <!-- Location or Mutuals (Placeholder) -->
+                                <div class="flex items-center justify-center gap-1 text-xs text-slate-400">
+                                    <ion-icon name="location-outline"></ion-icon>
+                                    <span class="truncate max-w-[150px]">@friend.User.City, @friend.User.Country</span>
+                                </div>
+                            </div>
+
+                            <!-- Actions -->
+                            <div class="flex justify-center">
+                                @if (friend.IsFollowPending)
+                                {
+                                    <button disabled
+                                            class="w-full py-2.5 rounded-xl bg-slate-800 text-slate-400 font-medium cursor-not-allowed flex items-center justify-center gap-2 border border-slate-700">
+                                        <ion-icon name="time-outline"></ion-icon> Pending
+                                    </button>
+                                }
+                                else
+                                {
+                                    <form asp-action="Follow" asp-controller="Profile" method="post" class="w-full">
+                                        <input type="hidden" name="followedUserId" value="@friend.User.Id" />
+                                        <button type="submit"
+                                                class="w-full py-2.5 rounded-xl font-medium transition-all duration-300 flex items-center justify-center gap-2 shadow-lg shadow-indigo-500/10
+                                            @(friend.IsFollowed 
+                                                ? "bg-slate-800 text-white hover:bg-red-500/10 hover:text-red-500 border border-slate-700 hover:border-red-500/50" 
+                                                : "bg-indigo-600 text-white hover:bg-indigo-700 hover:shadow-indigo-500/30")">
+                                            @if (friend.IsFollowed) { <ion-icon name="person-remove-outline"></ion-icon> } else { <ion-icon name="person-add-outline"></ion-icon> }
+                                            @(friend.IsFollowed ? "Unfollow" : "Follow")
+                                        </button>
+                                    </form>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="bg-slate-900 rounded-2xl p-12 text-center border border-slate-800 border-dashed max-w-lg mx-auto mt-10">
+                <div class="w-20 h-20 bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-6 text-slate-600">
+                    <ion-icon name="people-outline" class="text-4xl"></ion-icon>
+                </div>
+                <h3 class="text-xl font-bold text-white mb-2">No suggestions available</h3>
+                <p class="text-slate-400">We don't have any friend suggestions for you right now. Try updating your profile or searching for people you know.</p>
+            </div>
+        }
+    </div>
+</main>
